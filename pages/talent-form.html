@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nocturnal Staffing Agency — Founding Talent Registration</title>
+<style>body{font-family:system-ui,sans-serif;max-width:640px;margin:2rem auto;padding:0 1rem}label{display:block;margin:.5rem 0}fieldset{margin:1rem 0}.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}#msg{border:1px solid #888;padding:1rem;margin:1rem 0;display:none}#msg.err{border-color:#b00}</style>
+</head>
+<body>
+<h1>Founding Talent Registration</h1>
+<p>Registration is free.</p>
+<form id="f" novalidate>
+<input class="hp" type="text" name="website" value="" autocomplete="off" tabindex="-1" aria-hidden="true">
+
+<label>Full legal name * <input name="fullName" type="text" required></label>
+<label>Email address * <input name="email" type="email" required></label>
+<label>Mobile phone * <input name="phone" type="tel" required></label>
+<label>Date of birth * <input name="dob" type="date" required></label>
+<p>You must be 18 or older to register, and 18+ for alcohol service roles.</p>
+<fieldset><legend>Primary role *</legend><label><input type="radio" name="primaryRole" value="Bartender" required> Bartender</label>
+<label><input type="radio" name="primaryRole" value="Barback" required> Barback</label>
+<label><input type="radio" name="primaryRole" value="Door Staff" required> Door Staff</label>
+<label><input type="radio" name="primaryRole" value="VIP Host" required> VIP Host</label>
+<label><input type="radio" name="primaryRole" value="Bottle Service" required> Bottle Service</label>
+<label><input type="radio" name="primaryRole" value="Venue Support Staff" required> Venue Support Staff</label>
+<label><input type="radio" name="primaryRole" value="Other" required> Other</label></fieldset>
+<label id="specWrap" style="display:none">Other role, please specify (one line) <input name="otherSpecify" type="text"></label>
+<fieldset><legend>Other roles you can work</legend><label><input type="checkbox" name="otherRoles" value="Bartender"> Bartender</label>
+<label><input type="checkbox" name="otherRoles" value="Barback"> Barback</label>
+<label><input type="checkbox" name="otherRoles" value="Door Staff"> Door Staff</label>
+<label><input type="checkbox" name="otherRoles" value="VIP Host"> VIP Host</label>
+<label><input type="checkbox" name="otherRoles" value="Venue Support Staff"> Venue Support Staff</label></fieldset>
+<label>Your state * <select name="state" required><option value="">Select your state</option><option value="Alabama">Alabama</option><option value="Alaska">Alaska</option><option value="Arizona">Arizona</option><option value="Arkansas">Arkansas</option><option value="California">California</option><option value="Colorado">Colorado</option><option value="Connecticut">Connecticut</option><option value="Delaware">Delaware</option><option value="Florida">Florida</option><option value="Georgia">Georgia</option><option value="Hawaii">Hawaii</option><option value="Idaho">Idaho</option><option value="Illinois">Illinois</option><option value="Indiana">Indiana</option><option value="Iowa">Iowa</option><option value="Kansas">Kansas</option><option value="Kentucky">Kentucky</option><option value="Louisiana">Louisiana</option><option value="Maine">Maine</option><option value="Maryland">Maryland</option><option value="Massachusetts">Massachusetts</option><option value="Michigan">Michigan</option><option value="Minnesota">Minnesota</option><option value="Mississippi">Mississippi</option><option value="Missouri">Missouri</option><option value="Montana">Montana</option><option value="Nebraska">Nebraska</option><option value="Nevada">Nevada</option><option value="New Hampshire">New Hampshire</option><option value="New Jersey">New Jersey</option><option value="New Mexico">New Mexico</option><option value="New York">New York</option><option value="North Carolina">North Carolina</option><option value="North Dakota">North Dakota</option><option value="Ohio">Ohio</option><option value="Oklahoma">Oklahoma</option><option value="Oregon">Oregon</option><option value="Pennsylvania">Pennsylvania</option><option value="Rhode Island">Rhode Island</option><option value="South Carolina">South Carolina</option><option value="South Dakota">South Dakota</option><option value="Tennessee">Tennessee</option><option value="Texas">Texas</option><option value="Utah">Utah</option><option value="Vermont">Vermont</option><option value="Virginia">Virginia</option><option value="Washington">Washington</option><option value="West Virginia">West Virginia</option><option value="Wisconsin">Wisconsin</option><option value="Wyoming">Wyoming</option></select></label>
+<label>Your city * <input name="city" type="text" required></label>
+<fieldset><legend>Years of nightlife or hospitality experience *</legend><label><input type="radio" name="experience" value="Less than 1 year" required> Less than 1 year</label>
+<label><input type="radio" name="experience" value="1–2 years" required> 1–2 years</label>
+<label><input type="radio" name="experience" value="3–5 years" required> 3–5 years</label>
+<label><input type="radio" name="experience" value="5+ years" required> 5+ years</label></fieldset>
+<fieldset><legend>Certifications or credentials you hold</legend><label><input type="checkbox" name="certifications" value="Florida Responsible Vendor"> Florida Responsible Vendor</label>
+<label><input type="checkbox" name="certifications" value="alcohol service training"> alcohol service training</label>
+<label><input type="checkbox" name="certifications" value="Food handler card"> Food handler card</label>
+<label><input type="checkbox" name="certifications" value="Security Class D license"> Security Class D license</label>
+<label><input type="checkbox" name="certifications" value="CPR or first aid"> CPR or first aid</label>
+<label><input type="checkbox" name="certifications" value="None yet"> None yet</label></fieldset>
+<fieldset><legend>Do you have reliable transportation to venues across your zone? *</legend><label><input type="radio" name="transportation" value="Yes" required> Yes</label>
+<label><input type="radio" name="transportation" value="No" required> No</label></fieldset>
+<fieldset><legend>Typical availability</legend><label><input type="checkbox" name="availability" value="Thursday"> Thursday</label>
+<label><input type="checkbox" name="availability" value="Friday"> Friday</label>
+<label><input type="checkbox" name="availability" value="Saturday"> Saturday</label>
+<label><input type="checkbox" name="availability" value="Sunday"> Sunday</label>
+<label><input type="checkbox" name="availability" value="Weeknights"> Weeknights</label></fieldset>
+<label>Anything we should know? <textarea name="notes"></textarea></label>
+<label><input type="checkbox" name="confirmation" required> Confirmation * — I confirm the information above is true, I understand verification happens before my first placement, and I agree to be contacted.</label>
+
+<button type="submit">Submit registration</button>
+</form>
+<div id="msg" role="status"></div>
+<script>
+const form=document.getElementById('f'), msg=document.getElementById('msg');
+function vals(n){return [...form.querySelectorAll('input[name="'+n+'"]:checked')].map(i=>i.value)}
+function show(text, err){msg.innerHTML=text; msg.className=err?'err':''; msg.style.display='block';}
+
+form.querySelectorAll('input[name="primaryRole"]').forEach(i=>i.addEventListener('change',()=>{
+  const w=document.getElementById('specWrap');
+  w.style.display = form.querySelector('input[name="primaryRole"]:checked')?.value==='Other' ? 'block' : 'none';
+}));
+function req(n){const el=form.elements[n]; return el && el.value.trim();}
+function validate(){
+  const need=['fullName','email','phone','dob','state','city'];
+  for(const n of need) if(!req(n)) return 'Missing required field: '+n;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.elements.email.value.trim())) return 'Invalid email address.';
+  const pr=form.querySelector('input[name="primaryRole"]:checked'); if(!pr) return 'Missing required field: primaryRole';
+  if(pr.value==='Other' && !req('otherSpecify')) return 'Other role requires a one-line specify.';
+  const ex=form.querySelector('input[name="experience"]:checked'); if(!ex) return 'Missing required field: experience';
+  const tr=form.querySelector('input[name="transportation"]:checked'); if(!tr) return 'Missing required field: transportation';
+  if(!form.elements.confirmation.checked) return 'Missing required field: confirmation';
+  return null;
+}
+function build(){
+  return {kind:'talent', website: form.elements.website.value, fullName: form.elements.fullName.value.trim(), email: form.elements.email.value.trim(), phone: form.elements.phone.value.trim(), dob: form.elements.dob.value, primaryRole: form.querySelector('input[name="primaryRole"]:checked').value, otherSpecify: form.elements.otherSpecify.value.trim(), otherRoles: vals('otherRoles'), state: form.elements.state.value, city: form.elements.city.value.trim(), experience: form.querySelector('input[name="experience"]:checked').value, certifications: vals('certifications'), transportation: form.querySelector('input[name="transportation"]:checked').value, availability: vals('availability'), notes: form.elements.notes.value.trim(), confirmation: form.elements.confirmation.checked};
+}
+
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const err=validate();
+  if(err){show('Please fix this before submitting: '+err, true); return;}
+  const body=build();
+  try{
+    const r=await fetch('/intake', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok && j.ok){form.style.display='none'; show("You're on the founding bench list. 🌙<br>Next step: complete your talent signup at nocturnalstaffing.com so you enter verification. Founding Talent (first 50) claim early — founding spots are limited.<br>We verify every registration personally — watch your email for your next steps. — Nocturnal Staffing Agency");}
+    else show('Registration could not be saved — please try again.' + (j.error ? ' ('+j.error+')' : ''), true);
+  }catch(_e){show('Registration could not be saved — please try again.', true);}
+});
+</script>
+</body>
+</html>

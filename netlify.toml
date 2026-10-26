@@ -1,0 +1,18 @@
+# Nocturnal front door — deploy config (ADD to jrellis1042/jrellis1042.github.io
+# repo root at flip time; this file does NOT exist in that repo today).
+# The repo is already Git-linked to Netlify site tubular-phoenix-13e746 with
+# auto-publishing on, so adding this file + netlify/functions/ deploys the
+# functions on the next push. No separate functions site is needed.
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/intake"
+  to = "/.netlify/functions/intake"
+  status = 200
+
+[[redirects]]
+  from = "/counts"
+  to = "/.netlify/functions/counts"
+  status = 200
