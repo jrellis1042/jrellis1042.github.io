@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nocturnal Staffing Agency — Founding Venue Registration</title>
+<style>body{font-family:system-ui,sans-serif;max-width:640px;margin:2rem auto;padding:0 1rem}label{display:block;margin:.5rem 0}fieldset{margin:1rem 0}.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}#msg{border:1px solid #888;padding:1rem;margin:1rem 0;display:none}#msg.err{border-color:#b00}</style>
+</head>
+<body>
+<h1>Founding Venue Registration</h1>
+<p>Registration is free.</p>
+<form id="f" novalidate>
+<input class="hp" type="text" name="website" value="" autocomplete="off" tabindex="-1" aria-hidden="true">
+
+<label>Venue / business name * <input name="venueName" type="text" required></label>
+<label>Your name * <input name="contactName" type="text" required></label>
+<label>Your role * <select name="contactRole" required><option value="">Select your role</option><option value="Owner">Owner</option><option value="General Manager">General Manager</option><option value="Bar Manager">Bar Manager</option><option value="Hiring Manager">Hiring Manager</option><option value="Other">Other</option></select></label>
+<label>Business email * <input name="email" type="email" required></label>
+<label>Business phone * <input name="phone" type="tel" required></label>
+<label>Venue type * <select name="venueType" required><option value="">Select venue type</option><option value="Nightclub">Nightclub</option><option value="Bar">Bar</option><option value="Lounge">Lounge</option><option value="Restaurant with bar">Restaurant with bar</option><option value="Event venue">Event venue</option><option value="Other">Other</option></select></label>
+<label>State * <select name="state" required><option value="">Select your state</option><option value="Alabama">Alabama</option><option value="Alaska">Alaska</option><option value="Arizona">Arizona</option><option value="Arkansas">Arkansas</option><option value="California">California</option><option value="Colorado">Colorado</option><option value="Connecticut">Connecticut</option><option value="Delaware">Delaware</option><option value="Florida">Florida</option><option value="Georgia">Georgia</option><option value="Hawaii">Hawaii</option><option value="Idaho">Idaho</option><option value="Illinois">Illinois</option><option value="Indiana">Indiana</option><option value="Iowa">Iowa</option><option value="Kansas">Kansas</option><option value="Kentucky">Kentucky</option><option value="Louisiana">Louisiana</option><option value="Maine">Maine</option><option value="Maryland">Maryland</option><option value="Massachusetts">Massachusetts</option><option value="Michigan">Michigan</option><option value="Minnesota">Minnesota</option><option value="Mississippi">Mississippi</option><option value="Missouri">Missouri</option><option value="Montana">Montana</option><option value="Nebraska">Nebraska</option><option value="Nevada">Nevada</option><option value="New Hampshire">New Hampshire</option><option value="New Jersey">New Jersey</option><option value="New Mexico">New Mexico</option><option value="New York">New York</option><option value="North Carolina">North Carolina</option><option value="North Dakota">North Dakota</option><option value="Ohio">Ohio</option><option value="Oklahoma">Oklahoma</option><option value="Oregon">Oregon</option><option value="Pennsylvania">Pennsylvania</option><option value="Rhode Island">Rhode Island</option><option value="South Carolina">South Carolina</option><option value="South Dakota">South Dakota</option><option value="Tennessee">Tennessee</option><option value="Texas">Texas</option><option value="Utah">Utah</option><option value="Vermont">Vermont</option><option value="Virginia">Virginia</option><option value="Washington">Washington</option><option value="West Virginia">West Virginia</option><option value="Wisconsin">Wisconsin</option><option value="Wyoming">Wyoming</option></select></label>
+<label>City * <input name="city" type="text" required></label>
+<label>Street address of the venue <input name="address" type="text"></label>
+<fieldset><legend>Which roles do you need covered?</legend><label><input type="checkbox" name="rolesNeeded" value="Bartenders"> Bartenders</label>
+<label><input type="checkbox" name="rolesNeeded" value="Barbacks"> Barbacks</label>
+<label><input type="checkbox" name="rolesNeeded" value="Door staff"> Door staff</label>
+<label><input type="checkbox" name="rolesNeeded" value="VIP hosts"> VIP hosts</label>
+<label><input type="checkbox" name="rolesNeeded" value="Bottle Service"> Bottle Service</label>
+<label><input type="checkbox" name="rolesNeeded" value="Venue support staff"> Venue support staff</label>
+<label><input type="checkbox" name="rolesNeeded" value="Other"> Other</label></fieldset>
+<fieldset><legend>Your busiest nights</legend><label><input type="checkbox" name="busiestNights" value="Thursday"> Thursday</label>
+<label><input type="checkbox" name="busiestNights" value="Friday"> Friday</label>
+<label><input type="checkbox" name="busiestNights" value="Saturday"> Saturday</label>
+<label><input type="checkbox" name="busiestNights" value="Sunday"> Sunday</label>
+<label><input type="checkbox" name="busiestNights" value="Weeknights"> Weeknights</label>
+<label><input type="checkbox" name="busiestNights" value="Special events only"> Special events only</label></fieldset>
+<fieldset><legend>How often do call-outs or no-shows hurt you? *</legend><label><input type="radio" name="calloutFrequency" value="Almost every weekend" required> Almost every weekend</label>
+<label><input type="radio" name="calloutFrequency" value="A few times a month" required> A few times a month</label>
+<label><input type="radio" name="calloutFrequency" value="Rarely — but it burns when it happens" required> Rarely — but it burns when it happens</label>
+<label><input type="radio" name="calloutFrequency" value="Almost never" required> Almost never</label></fieldset>
+<label>Anything we should know about your venue? <textarea name="notes"></textarea></label>
+<label><input type="checkbox" name="confirmation" required> Confirmation * — I confirm the information above is true and I am authorized to register this venue, I understand review happens and postings go live once setup including payment is complete, and I agree to be contacted.</label>
+
+<button type="submit">Submit registration</button>
+</form>
+<div id="msg" role="status"></div>
+<script>
+const form=document.getElementById('f'), msg=document.getElementById('msg');
+function vals(n){return [...form.querySelectorAll('input[name="'+n+'"]:checked')].map(i=>i.value)}
+function show(text, err){msg.innerHTML=text; msg.className=err?'err':''; msg.style.display='block';}
+
+function req(n){const el=form.elements[n]; return el && el.value.trim();}
+function validate(){
+  const need=['venueName','contactName','contactRole','email','phone','venueType','state','city'];
+  for(const n of need) if(!req(n)) return 'Missing required field: '+n;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.elements.email.value.trim())) return 'Invalid email address.';
+  const cf=form.querySelector('input[name="calloutFrequency"]:checked'); if(!cf) return 'Missing required field: calloutFrequency';
+  if(!form.elements.confirmation.checked) return 'Missing required field: confirmation';
+  return null;
+}
+function build(){
+  return {kind:'venue', website: form.elements.website.value, venueName: form.elements.venueName.value.trim(), contactName: form.elements.contactName.value.trim(), contactRole: form.elements.contactRole.value, email: form.elements.email.value.trim(), phone: form.elements.phone.value.trim(), venueType: form.elements.venueType.value, state: form.elements.state.value, city: form.elements.city.value.trim(), address: form.elements.address.value.trim(), rolesNeeded: vals('rolesNeeded'), busiestNights: vals('busiestNights'), calloutFrequency: form.querySelector('input[name="calloutFrequency"]:checked').value, notes: form.elements.notes.value.trim(), confirmation: form.elements.confirmation.checked};
+}
+
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const err=validate();
+  if(err){show('Please fix this before submitting: '+err, true); return;}
+  const body=build();
+  try{
+    const r=await fetch('/intake', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok && j.ok){form.style.display='none'; show('You\'re in — your Founding Venue registration is confirmed. 🌙<br>Your registration just reserved something: Nocturnal Reserve founding rates, locked for Founding Venues only. See what your registration unlocked: <a href="https://nocturnalstaffing.com/?audience=venue#reserve">https://nocturnalstaffing.com/?audience=venue#reserve</a><br>Next step: complete your venue signup at nocturnalstaffing.com so your venue enters verification. Founding spots are limited — the first 10 venues lock founding standing.');}
+    else show('Registration could not be saved — please try again.' + (j.error ? ' ('+j.error+')' : ''), true);
+  }catch(_e){show('Registration could not be saved — please try again.', true);}
+});
+</script>
+</body>
+</html>
