@@ -217,7 +217,7 @@ async function buildMe(session) {
 exports.handler = async (event) => {
   try {
     if (!P.sessionSecret()) return unavailable();
-    const store = P.getStore();
+    const store = P.getStore(event);
     const method = event.httpMethod;
     let body = {};
     if (event.body) { try { body = JSON.parse(event.body); } catch { return L.bad('Invalid JSON body.'); } }

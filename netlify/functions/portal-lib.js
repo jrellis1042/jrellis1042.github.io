@@ -40,7 +40,7 @@ function requireSecret() {
 // clearly-marked FILE-BACKED TEST STORE. If neither is available, every auth
 // action fails closed (never a silent in-memory store in production).
 let fileStorePath = null;
-function getStore() {
+function getStore(event) {
   if (process.env.PORTAL_AUTH_ALLOW_FILE_STORE === '1') {
     const p = process.env.PORTAL_AUTH_FILE_STORE || '/tmp/nocturnal-portal-auth-test-store.json';
     fileStorePath = p;
@@ -69,6 +69,13 @@ function getStore() {
   let blobs;
   try { blobs = require('@netlify/blobs'); } catch {
     throw new Error('Portal auth store is unavailable (Blobs not installed).');
+  }
+  // Lambda compatibility mode (exports.handler): Blobs is NOT auto-configured.
+  // connectLambda(event) must run immediately before getStore, using the
+  // credentials Netlify provides with the Lambda event. Do NOT pass siteID
+  // or token to getStore in code that runs on Netlify.
+  if (event && typeof blobs.connectLambda === 'function') {
+    try { blobs.connectLambda(event); } catch {}
   }
   const store = blobs.getStore('nocturnal-portal-auth');
   return {

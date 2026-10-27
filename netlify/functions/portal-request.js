@@ -17,7 +17,7 @@ exports.handler = async (event) => {
     if (!P.sessionSecret()) return { statusCode: 503, body: JSON.stringify({ ok: false, error: 'Sign-in is not available right now.' }) };
     let b = {};
     try { b = JSON.parse(event.body || '{}'); } catch { return L.bad('Invalid JSON body.'); }
-    const store = P.getStore();
+    const store = P.getStore(event);
     const session = await P.readSession(store, P.tokenFromEvent(event));
     if (!session || session.role !== 'venue') return { statusCode: 401, body: JSON.stringify({ ok: false, error: P.GENERIC_REFUSAL }) };
 
