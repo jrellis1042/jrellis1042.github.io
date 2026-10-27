@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nocturnal Staffing Agency — Recruiter Portal</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem;background:#0b0b10;color:#f2f2f2}h1,h2{color:#fff}.ticker{border:1px solid #f0a;border-radius:8px;padding:.75rem 1rem;overflow:hidden;white-space:nowrap}.ticker span{display:inline-block;padding-right:2rem}label{display:block;margin:.5rem 0}input{width:100%;padding:.5rem;margin-top:.25rem;background:#17171f;color:#fff;border:1px solid #444;border-radius:6px}button{padding:.6rem 1rem;border-radius:6px;border:0;background:#f0a;color:#111;font-weight:700;cursor:pointer}.card{border:1px solid #333;border-radius:10px;padding:1rem;margin:1rem 0}#msg{border:1px solid #888;padding:1rem;margin:1rem 0;display:none}#msg.err{border-color:#e33}.muted{color:#bbb}.hidden{display:none}a{color:#f9a}.warn{border:1px solid #e33;border-radius:8px;padding:.75rem}</style>
+</head>
+<body>
+<h1>Recruiter Portal</h1>
+<div class="ticker" id="ticker" role="status">Registration counts loading…</div>
+<p class="muted">Sign in with the email your recruiter record is under. You can sign in only once your recruiter record has been approved. A referral never registers anyone — every person you refer still registers themselves.</p>
+<p class="warn">This portal is private to your signed-in session. Do not publish, post, or share anything shown here.</p>
+<section id="login" class="card">
+<h2>Sign in</h2>
+<label>Email address <input id="email" type="email" autocomplete="email"></label>
+<label>Password <input id="pw" type="password" autocomplete="current-password"></label>
+<p><label><input id="mode" type="checkbox"> First time here — create my password</label></p>
+<button id="go" type="button">Continue</button>
+<button id="out" type="button" class="hidden">Sign out</button>
+<div id="msg" role="status"></div>
+</section>
+<section id="dash" class="card hidden">
+<h2>Your recruiter record</h2>
+<p>Referral code: <strong id="code"></strong></p>
+<h2>Referrals you reported</h2>
+<ul id="refs"></ul>
+<p class="muted">Referral attribution only — a referral is not a registration, not an account, and not verification.</p>
+<h2>Credential reviews you recorded</h2>
+<ul id="reviews"></ul>
+<p class="muted">A recruiter review is an endorsement, never verification. Verification is a separate step.</p>
+<h2>Private terms for your sales conversations</h2>
+<div id="pricing"></div>
+<h2>Pilot pay</h2>
+<div id="pay"></div>
+<p class="muted">No payout date is promised in the pilot. Pay follows revenue actually received, monthly in arrears.</p>
+</section>
+<p class="muted"><a href="/pages/recruiter-portal.html">Recruiter forms (application, referral report, edit request)</a> · <a href="/">Back to the front door</a></p>
+<script>
+const AUTH='/portal-auth';
+const msg=document.getElementById('msg');
+function show(t,err){msg.textContent=t;msg.className=err?'err':'';msg.style.display='block';}
+async function ticker(){
+  try{const r=await fetch('/counts');const c=await r.json();
+    document.getElementById('ticker').innerHTML='<span>'+c.combined+' OF '+c.gate+' REGISTERED</span><span>FOUNDING TALENT '+c.talent+' OF 50</span><span>FOUNDING VENUES '+c.venue+' OF 10</span><span>REGISTRATION IS FREE</span>';
+  }catch{document.getElementById('ticker').textContent='Registration counts unavailable right now.';}
+}
+ticker(); setInterval(ticker,60000);
+async function call(body){
+  const r=await fetch(AUTH,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(body)});
+  return r.json();
+}
+async function me(){
+  const m=await call({action:'me'});
+  if(!m.ok){show(m.error||'Sign-in is not available for that email.',true);return;}
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('dash').classList.remove('hidden');
+  document.getElementById('code').textContent=m.referralCode||'Not assigned yet — assigned at approval.';
+  document.getElementById('refs').innerHTML = m.referrals.length ? m.referrals.map(r=>'<li>'+r.kind+': '+r.name+(r.role?' — '+r.role:'')+(r.city?' — '+r.city:'')+'</li>').join('') : '<li>None yet.</li>';
+  document.getElementById('reviews').innerHTML = m.reviews.length ? m.reviews.map(r=>'<li>'+r.talent+' — '+r.outcome+'</li>').join('') : '<li>None yet.</li>';
+  // Private terms render ONLY from the signed-in session response, never
+  // from this page's static markup.
+  const p=m.privatePricing;
+  document.getElementById('pricing').innerHTML = '<p>Reserve membership, per month: '+p.membershipPerMonth+'</p><p>Placement, member / non-member / premium: '+p.placementMember+' / '+p.placementNonMember+' / '+p.placementPremium+'</p><p>Replacement guarantee: '+p.replacementGuaranteeDays+' days. Introduction coverage: '+p.introductionCoverageMonths+' months.</p><p class="muted">'+p.note+'</p>';
+  const pay=m.pilotPay;
+  document.getElementById('pay').innerHTML = '<p>Talent placement share: '+pay.talentSharePercent+'% of the fee received. Venue share: '+pay.venueShareOneTime+' per venue that becomes payment-active. Earned to date: '+pay.earnedToDate+'.</p><p class="muted">'+pay.note+'</p>';
+  document.getElementById('out').classList.remove('hidden');
+}
+document.getElementById('go').addEventListener('click',async()=>{
+  const email=document.getElementById('email').value.trim(), pw=document.getElementById('pw').value;
+  if(!email||!pw){show('Email and password are required.',true);return;}
+  const action=document.getElementById('mode').checked?'create-password':'signin';
+  const res=await call({action,email,role:'recruiter',password:pw});
+  if(!res.ok){show(res.error||'Sign-in is not available for that email.',true);return;}
+  show('Signed in.'); me();
+});
+document.getElementById('out').addEventListener('click',async()=>{await call({action:'signout'});location.reload();});
+me();
+</script>
+</body>
+</html>

@@ -1,6 +1,5 @@
-# Nocturnal front door — deploy config (ADD to jrellis1042/jrellis1042.github.io
-# repo root at flip time; this file does NOT exist in that repo today).
-# The repo is already Git-linked to Netlify site tubular-phoenix-13e746 with
+# Nocturnal front door — deploy config
+# The repo is Git-linked to Netlify site tubular-phoenix-13e746 with
 # auto-publishing on, so adding this file + netlify/functions/ deploys the
 # functions on the next push. No separate functions site is needed.
 [build]
@@ -20,4 +19,34 @@
 [[redirects]]
   from = "/recruiter"
   to = "/.netlify/functions/recruiter"
+  status = 200
+
+[[redirects]]
+  from = "/portal-auth"
+  to = "/.netlify/functions/portal-auth"
+  status = 200
+
+[[redirects]]
+  from = "/portal-request"
+  to = "/.netlify/functions/portal-request"
+  status = 200
+
+[[redirects]]
+  from = "/talent-portal"
+  to = "/pages/talent-portal.html"
+  status = 200
+
+[[redirects]]
+  from = "/venue-portal"
+  to = "/pages/venue-portal.html"
+  status = 200
+
+[[redirects]]
+  from = "/recruiter-portal-v2"
+  to = "/pages/recruiter-portal-v2.html"
+  status = 200
+
+[[redirects]]
+  from = "/owner-portal"
+  to = "/pages/owner-portal.html"
   status = 200

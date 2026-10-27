@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nocturnal Staffing Agency — Venue Portal</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem;background:#0b0b10;color:#f2f2f2}h1,h2{color:#fff}.ticker{border:1px solid #f0a;border-radius:8px;padding:.75rem 1rem;overflow:hidden;white-space:nowrap}.ticker span{display:inline-block;padding-right:2rem}label{display:block;margin:.5rem 0}input,select,textarea{width:100%;padding:.5rem;margin-top:.25rem;background:#17171f;color:#fff;border:1px solid #444;border-radius:6px}button{padding:.6rem 1rem;border-radius:6px;border:0;background:#f0a;color:#111;font-weight:700;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.card{border:1px solid #333;border-radius:10px;padding:1rem;margin:1rem 0}#msg{border:1px solid #888;padding:1rem;margin:1rem 0;display:none}#msg.err{border-color:#e33}.muted{color:#bbb}.hidden{display:none}a{color:#f9a}</style>
+</head>
+<body>
+<h1>Venue Portal</h1>
+<div class="ticker" id="ticker" role="status">Registration counts loading…</div>
+<p class="muted">Sign in with the email your venue registered with. You can sign in only once your registration has been approved.</p>
+<section id="login" class="card">
+<h2>Sign in</h2>
+<label>Email address <input id="email" type="email" autocomplete="email"></label>
+<label>Password <input id="pw" type="password" autocomplete="current-password"></label>
+<p><label><input id="mode" type="checkbox"> First time here — create my password</label></p>
+<button id="go" type="button">Continue</button>
+<button id="out" type="button" class="hidden">Sign out</button>
+<div id="msg" role="status"></div>
+</section>
+<section id="dash" class="card hidden">
+<h2>Your venue status</h2>
+<p id="banner"></p>
+<p>Stage: <span id="stage"></span> · Verification: <span id="verif"></span> · Agreement: <span id="agree"></span></p>
+<p id="payBanner"></p>
+<h2>Post a staffing request</h2>
+<p id="postGate" class="muted"></p>
+<form id="postForm">
+<label>Role needed
+<select id="role">
+<option>Bartender</option><option>Barback</option><option>Door Staff</option><option>VIP Host</option><option>Bottle Service</option><option>Venue Support</option><option>Other</option>
+</select></label>
+<label id="specWrap" class="hidden">Other role, please specify (one line) <input id="spec" type="text"></label>
+<label>Date <input id="date" type="date" required></label>
+<label>Time window <input id="window" type="text" placeholder="e.g. 8pm – 2am"></label>
+<label>Dress code <input id="dress" type="text"></label>
+<label>Notes <textarea id="notes"></textarea></label>
+<button id="postBtn" type="submit">Post request</button>
+</form>
+<h2>My requests</h2>
+<ul id="requests"></ul>
+<h2>My placements</h2>
+<ul id="placements"></ul>
+<p id="placeNote" class="muted"></p>
+<h2>Membership and placement terms</h2>
+<p id="pricing" class="muted"></p>
+</section>
+<p class="muted"><a href="/pages/venue-form.html">Register as a venue</a> · <a href="/">Back to the front door</a></p>
+<script>
+const AUTH='/portal-auth', REQ='/portal-request';
+const msg=document.getElementById('msg');
+function show(t,err){msg.textContent=t;msg.className=err?'err':'';msg.style.display='block';}
+async function ticker(){
+  try{const r=await fetch('/counts');const c=await r.json();
+    document.getElementById('ticker').innerHTML='<span>'+c.combined+' OF '+c.gate+' REGISTERED</span><span>FOUNDING TALENT '+c.talent+' OF 50</span><span>FOUNDING VENUES '+c.venue+' OF 10</span><span>REGISTRATION IS FREE</span>';
+  }catch{document.getElementById('ticker').textContent='Registration counts unavailable right now.';}
+}
+ticker(); setInterval(ticker,60000);
+async function call(url,body){
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(body)});
+  return r.json();
+}
+let postAllowed=false;
+async function me(){
+  const m=await call(AUTH,{action:'me'});
+  if(!m.ok){show(m.error||'Sign-in is not available for that email.',true);return;}
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('dash').classList.remove('hidden');
+  document.getElementById('banner').textContent = m.verified ? 'Your venue is verified.' : 'Registration approved — your venue is in the verification queue. Verification and payment both come before a posting goes live.';
+  document.getElementById('stage').textContent=m.stage; document.getElementById('verif').textContent=m.verification; document.getElementById('agree').textContent=m.agreement;
+  document.getElementById('payBanner').textContent=m.paymentBanner;
+  document.getElementById('postGate').textContent=m.postGateMessage;
+  postAllowed=!m.postDisabled; document.getElementById('postBtn').disabled=!postAllowed;
+  document.getElementById('requests').innerHTML = m.requests.length ? m.requests.map(r=>'<li>'+r.role+' — '+r.date+' '+r.window+'</li>').join('') : '<li>None yet.</li>';
+  document.getElementById('placements').innerHTML = m.placements.length ? m.placements.map(p=>'<li>'+p+'</li>').join('') : '<li>None yet.</li>';
+  document.getElementById('placeNote').textContent=m.placementsNote;
+  document.getElementById('pricing').textContent=m.pricingModel.model+' — replacement guarantee and introduction coverage terms apply. Full terms are shared in a private conversation.';
+  document.getElementById('out').classList.remove('hidden');
+}
+document.getElementById('role').addEventListener('change',e=>{
+  document.getElementById('specWrap').classList.toggle('hidden',e.target.value!=='Other');
+});
+document.getElementById('postForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!postAllowed){show('Posting is not available for your venue yet.',true);return;}
+  const res=await call(REQ,{role:document.getElementById('role').value,otherSpecify:document.getElementById('spec').value.trim(),date:document.getElementById('date').value,window:document.getElementById('window').value.trim(),dress:document.getElementById('dress').value.trim(),notes:document.getElementById('notes').value.trim()});
+  if(!res.ok){show(res.error||'Your request could not be saved.',true);return;}
+  show('Request posted. It will appear in the talent preview.'); me();
+});
+document.getElementById('go').addEventListener('click',async()=>{
+  const email=document.getElementById('email').value.trim(), pw=document.getElementById('pw').value;
+  if(!email||!pw){show('Email and password are required.',true);return;}
+  const action=document.getElementById('mode').checked?'create-password':'signin';
+  const res=await call(AUTH,{action,email,role:'venue',password:pw});
+  if(!res.ok){show(res.error||'Sign-in is not available for that email.',true);return;}
+  show('Signed in.'); me();
+});
+document.getElementById('out').addEventListener('click',async()=>{await call(AUTH,{action:'signout'});location.reload();});
+me();
+</script>
+</body>
+</html>

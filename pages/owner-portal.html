@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nocturnal Staffing Agency — Owner Portal</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem;background:#0b0b10;color:#f2f2f2}h1,h2{color:#fff}.ticker{border:1px solid #f0a;border-radius:8px;padding:.75rem 1rem;overflow:hidden;white-space:nowrap}.ticker span{display:inline-block;padding-right:2rem}label{display:block;margin:.5rem 0}input{width:100%;padding:.5rem;margin-top:.25rem;background:#17171f;color:#fff;border:1px solid #444;border-radius:6px}button{padding:.6rem 1rem;border-radius:6px;border:0;background:#f0a;color:#111;font-weight:700;cursor:pointer}.card{border:1px solid #333;border-radius:10px;padding:1rem;margin:1rem 0}#msg{border:1px solid #888;padding:1rem;margin:1rem 0;display:none}#msg.err{border-color:#e33}.muted{color:#bbb}.hidden{display:none}a{color:#f9a}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:.4rem;border-bottom:1px solid #333}</style>
+</head>
+<body>
+<h1>Owner Portal</h1>
+<div class="ticker" id="ticker" role="status">Registration counts loading…</div>
+<p class="muted">Read-only overview (v1). No toggles, payment changes, deal moves, or approvals are available here.</p>
+<section id="login" class="card">
+<h2>Sign in</h2>
+<label>Email address <input id="email" type="email" autocomplete="email"></label>
+<label>Password <input id="pw" type="password" autocomplete="current-password"></label>
+<p><label><input id="mode" type="checkbox"> First time here — create my password</label></p>
+<button id="go" type="button">Continue</button>
+<button id="out" type="button" class="hidden">Sign out</button>
+<div id="msg" role="status"></div>
+</section>
+<section id="dash" class="card hidden">
+<h2>Registration counts</h2>
+<p id="counts"></p>
+<h2>Pipeline counts</h2>
+<p id="pipelines"></p>
+<h2>Talent roster (approved, by status)</h2>
+<table><thead><tr><th>Name</th><th>Stage</th><th>Verification</th><th>Zone</th></tr></thead><tbody id="talent"></tbody></table>
+<h2>Venue roster (approved, by status)</h2>
+<table><thead><tr><th>Venue</th><th>Stage</th><th>Verification</th><th>Payment active</th></tr></thead><tbody id="venues"></tbody></table>
+<p id="note" class="muted"></p>
+</section>
+<p class="muted"><a href="/">Back to the front door</a></p>
+<script>
+const AUTH='/portal-auth';
+const msg=document.getElementById('msg');
+function show(t,err){msg.textContent=t;msg.className=err?'err':'';msg.style.display='block';}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+async function ticker(){
+  try{const r=await fetch('/counts');const c=await r.json();
+    document.getElementById('ticker').innerHTML='<span>'+c.combined+' OF '+c.gate+' REGISTERED</span><span>FOUNDING TALENT '+c.talent+' OF 50</span><span>FOUNDING VENUES '+c.venue+' OF 10</span><span>REGISTRATION IS FREE</span>';
+  }catch{document.getElementById('ticker').textContent='Registration counts unavailable right now.';}
+}
+ticker(); setInterval(ticker,60000);
+async function call(body){
+  const r=await fetch(AUTH,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(body)});
+  return r.json();
+}
+async function me(){
+  const m=await call({action:'me'});
+  if(!m.ok||m.role!=='owner'){if(!m.ok)show(m.error||'Sign-in is not available for that email.',true);return;}
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('dash').classList.remove('hidden');
+  document.getElementById('counts').textContent=m.counts.combined+' of '+m.counts.gate+' registered · '+m.counts.talent+' talent · '+m.counts.venue+' venues · Claiming '+(m.counts.claimingOpen?'open':'opens at '+m.counts.gate);
+  document.getElementById('pipelines').textContent=Object.keys(m.pipelineCounts).map(function(k){return 'Pipeline '+k+': '+m.pipelineCounts[k];}).join(' · ')||'No open deals.';
+  document.getElementById('talent').innerHTML=m.talentRoster.length?m.talentRoster.map(function(r){return '<tr><td>'+esc(r.name)+'</td><td>'+esc(r.stage)+'</td><td>'+esc(r.verification)+'</td><td>'+esc(r.zone||'Nationwide')+'</td></tr>';}).join(''):'<tr><td colspan="4">None yet.</td></tr>';
+  document.getElementById('venues').innerHTML=m.venueRoster.length?m.venueRoster.map(function(r){return '<tr><td>'+esc(r.name)+'</td><td>'+esc(r.stage)+'</td><td>'+esc(r.verification)+'</td><td>'+(r.paymentActive?'Yes':'No')+'</td></tr>';}).join(''):'<tr><td colspan="4">None yet.</td></tr>';
+  document.getElementById('note').textContent=m.note;
+  document.getElementById('out').classList.remove('hidden');
+}
+document.getElementById('go').addEventListener('click',async()=>{
+  const email=document.getElementById('email').value.trim(), pw=document.getElementById('pw').value;
+  if(!email||!pw){show('Email and password are required.',true);return;}
+  const action=document.getElementById('mode').checked?'create-password':'signin';
+  const res=await call({action,email,role:'owner',password:pw});
+  if(!res.ok){show(res.error||'Sign-in is not available for that email.',true);return;}
+  show('Signed in.'); me();
+});
+document.getElementById('out').addEventListener('click',async()=>{await call({action:'signout'});location.reload();});
+me();
+</script>
+</body>
+</html>
