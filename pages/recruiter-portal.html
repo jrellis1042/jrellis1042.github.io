@@ -10,6 +10,7 @@
 <h1>Recruiter Portal</h1>
 <p>Recruit nightlife workers, refer them to register free, review their credentials, and endorse the ones you stand behind. A recruiter endorsement is not verification — verification still goes through Nocturnal's verifier, and no candidate is verified until that step is complete.</p>
 <p>Registration is free for talent and venues at <a href="https://nocturnalstaffing.com">nocturnalstaffing.com</a>. No prices are listed on this page.</p>
+<p><strong>Two portals, two jobs.</strong> This public page is for forms only — it has no sign-in. Use it to apply, report a referral, or request a portal change. The signed-in app portal is separate: that is where an approved recruiter signs in, sees referrals, credential reviews, endorsements, private pricing for private sales conversations, and pilot pay tracking. A form submitted here is logged in Pipedrive and then entered into the app portal by Nocturnal — it does not appear in the app dashboard automatically, and it never creates an app account on its own.</p>
 
 <h2>1. Apply to be a recruiter</h2>
 <form id="app" novalidate>
@@ -19,9 +20,12 @@
 <label>Phone * <input name="phone" type="tel" required></label>
 <label>City * <input name="city" type="text" required></label>
 <label>Referral code, if you have one <input name="recruiterCode" type="text"></label>
-<label>Reference <input name="reference" type="text"></label>
+<label>Professional reference (name + how to reach them) * <input name="reference" type="text" required></label>
+<label>Certifications / licenses, with issuer and expiry * <textarea name="certifications" required></textarea></label>
+<label>Venue work history (venues, roles, years) * <textarea name="venueHistory" required></textarea></label>
 <label>Club promoting / recruiting history * <textarea name="history" required></textarea></label>
 <label>Venues you know <textarea name="venues"></textarea></label>
+<p>Proof is required before approval: certifications, venue work history, and a reachable reference. An application without all three is logged as proof-incomplete and is not approved.</p>
 <button type="submit">Submit application</button>
 </form>
 <div class="msg" id="msg-app" role="status"></div>
@@ -41,7 +45,23 @@
 </form>
 <div class="msg" id="msg-ref" role="status"></div>
 
-<h2>3. Request a change to this portal</h2>
+<h2>3. Report a venue referral</h2>
+<p>Use this after you have sent a venue to register. This form does not register them — they must still register themselves. It only attributes the referral to you.</p>
+<form id="vref" novalidate>
+<input class="hp" type="text" name="website" value="" autocomplete="off" tabindex="-1" aria-hidden="true">
+<label>Your name * <input name="recruiterName" type="text" required></label>
+<label>Your email * <input name="recruiterEmail" type="email" required></label>
+<label>Your referral code <input name="recruiterCode" type="text"></label>
+<label>Venue name * <input name="venueName" type="text" required></label>
+<label>Venue contact name * <input name="venueContactName" type="text" required></label>
+<label>Venue contact email * <input name="venueContactEmail" type="email" required></label>
+<label>Venue city * <input name="venueCity" type="text" required></label>
+<label>Notes <textarea name="venueNotes"></textarea></label>
+<button type="submit">Submit venue referral</button>
+</form>
+<div class="msg" id="msg-vref" role="status"></div>
+
+<h2>4. Request a change to this portal</h2>
 <p>Recruiters may request edits to this portal any way they wish. Requests are logged for review and applied through the normal process. Requests that would publish pricing, name the owner in public copy, verify talent without the verifier, create app accounts, move deals, or promise placements or pay are flagged for the owner first and are not applied automatically.</p>
 <form id="edit" novalidate>
 <input class="hp" type="text" name="website" value="" autocomplete="off" tabindex="-1" aria-hidden="true">
@@ -69,8 +89,9 @@ async function submit(formId, msgId, kind, build){
   });
 }
 function v(f,n){return f.elements[n] ? f.elements[n].value.trim() : '';}
-submit('app','msg-app','application',f=>({recruiterName:v(f,'recruiterName'),recruiterEmail:v(f,'recruiterEmail'),phone:v(f,'phone'),city:v(f,'city'),recruiterCode:v(f,'recruiterCode'),reference:v(f,'reference'),history:v(f,'history'),venues:v(f,'venues')}));
+submit('app','msg-app','application',f=>({recruiterName:v(f,'recruiterName'),recruiterEmail:v(f,'recruiterEmail'),phone:v(f,'phone'),city:v(f,'city'),recruiterCode:v(f,'recruiterCode'),reference:v(f,'reference'),certifications:v(f,'certifications'),venueHistory:v(f,'venueHistory'),history:v(f,'history'),venues:v(f,'venues')}));
 submit('ref','msg-ref','referral',f=>({recruiterName:v(f,'recruiterName'),recruiterEmail:v(f,'recruiterEmail'),recruiterCode:v(f,'recruiterCode'),talentName:v(f,'talentName'),talentEmail:v(f,'talentEmail'),talentRole:f.elements.talentRole.value,talentNotes:v(f,'talentNotes')}));
+submit('vref','msg-vref','venue-referral',f=>({recruiterName:v(f,'recruiterName'),recruiterEmail:v(f,'recruiterEmail'),recruiterCode:v(f,'recruiterCode'),venueName:v(f,'venueName'),venueContactName:v(f,'venueContactName'),venueContactEmail:v(f,'venueContactEmail'),venueCity:v(f,'venueCity'),venueNotes:v(f,'venueNotes')}));
 submit('edit','msg-edit','edit-request',f=>({recruiterName:v(f,'recruiterName'),recruiterEmail:v(f,'recruiterEmail'),recruiterCode:v(f,'recruiterCode'),editText:v(f,'editText')}));
 </script>
 </body>

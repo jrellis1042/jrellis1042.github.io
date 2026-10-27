@@ -8,6 +8,10 @@
 //     register the talent and does NOT create an app account. The talent
 //     must still register themselves at /pages/talent-form.html; this
 //     note only attributes the referral to the recruiter code.
+//   venue-referral — a recruiter reports a venue they referred. This does NOT
+//     register the venue and does NOT create an app account. The venue must
+//     still register themselves at /pages/venue-form.html; this note only
+//     attributes the referral to the recruiter code.
 //   edit-request — a recruiter requests a change to her portal. The request
 //     is logged as a note for review; it is NOT applied automatically.
 //     Requests that would break standing rules (public pricing, owner
@@ -27,10 +31,13 @@ exports.handler = async (event) => {
     try { b = JSON.parse(event.body || '{}'); } catch { return L.bad('Invalid JSON body.'); }
     if (b.website) return L.ok({ ok: true, ignored: true });
     const kind = b.kind;
-    if (!['application', 'referral', 'edit-request'].includes(kind)) return L.bad('kind must be "application", "referral", or "edit-request".');
+    if (!['application', 'referral', 'venue-referral', 'edit-request'].includes(kind)) return L.bad('kind must be "application", "referral", "venue-referral", or "edit-request".');
     if (!b.recruiterName || !b.recruiterEmail || !L.isEmail(b.recruiterEmail)) return L.bad('Recruiter name and a valid email are required.');
     if (kind === 'application') {
       if (!b.phone || !b.city || !b.history) return L.bad('Application requires phone, city, and promoting history.');
+    }
+    if (kind === 'venue-referral') {
+      if (!b.venueName || !b.venueContactName || !b.venueContactEmail || !L.isEmail(b.venueContactEmail) || !b.venueCity) return L.bad('Venue referral requires venue name, contact name, valid contact email, and city.');
     }
     if (kind === 'referral') {
       if (!b.talentName || !b.talentEmail || !L.isEmail(b.talentEmail) || !b.talentRole) return L.bad('Referral requires talent name, valid talent email, and talent role.');
@@ -47,8 +54,13 @@ exports.handler = async (event) => {
     }
     const code = (b.recruiterCode || '').trim().toUpperCase();
     let content = '';
-    if (kind === 'application') content = `RECRUITER APPLICATION ${new Date().toISOString()}: name=${b.recruiterName}; email=${b.recruiterEmail}; phone=${b.phone}; city=${b.city}; code=${code || 'none yet'}; reference=${b.reference || ''}; history=${b.history}; venues=${b.venues || ''}. Application only — NOT an approval, NOT verification, NOT an app account.`;
+    if (kind === 'application') {
+      const proofComplete = Boolean((b.certifications || '').trim() && (b.venueHistory || '').trim() && (b.reference || '').trim());
+      const proofStatus = proofComplete ? 'PROOF COMPLETE — ready for proof review (still NOT an approval)' : 'PROOF INCOMPLETE — proof gate NOT passed: certifications, venue work history, and a reference are all required before approval. Do NOT approve.';
+      content = `RECRUITER APPLICATION ${new Date().toISOString()}: name=${b.recruiterName}; email=${b.recruiterEmail}; phone=${b.phone}; city=${b.city}; code=${code || 'none yet'}; reference=${b.reference || ''}; history=${b.history}; venues=${b.venues || ''}; certifications=${b.certifications || ''}; venueHistory=${b.venueHistory || ''}. ${proofStatus} Application only — NOT an approval, NOT verification, NOT an app account.`;
+    }
     if (kind === 'referral') content = `RECRUITER REFERRAL ${new Date().toISOString()}: recruiter=${b.recruiterName} (${b.recruiterEmail}, code=${code || 'none'}); talent=${b.talentName} (${b.talentEmail}); role=${b.talentRole}; notes=${b.talentNotes || ''}. Referral attribution ONLY — talent must still register themselves; this is NOT a registration, NOT an app account, NOT verification.`;
+    if (kind === 'venue-referral') content = `RECRUITER VENUE REFERRAL ${new Date().toISOString()}: recruiter=${b.recruiterName} (${b.recruiterEmail}, code=${code || 'none'}); venue=${b.venueName}; contact=${b.venueContactName} (${b.venueContactEmail}); city=${b.venueCity}; notes=${b.venueNotes || ''}. Referral attribution ONLY — venue must still register themselves; this is NOT a registration, NOT an app account, NOT verification.`;
     if (kind === 'edit-request') {
       const flag = /price|\$|owner|verif|guarantee|placement.*fee/i.test(b.editText) ? ' FLAGGED for Rashad review — edit text touches pricing, owner, verification, or a guarantee. Do NOT apply without Rashad.' : '';
       content = `RECRUITER PORTAL EDIT REQUEST ${new Date().toISOString()}: recruiter=${b.recruiterName} (${b.recruiterEmail}, code=${code || 'none'}); request=${b.editText}.${flag}`;
