@@ -16,3 +16,8 @@
   from = "/counts"
   to = "/.netlify/functions/counts"
   status = 200
+
+[[redirects]]
+  from = "/recruiter"
+  to = "/.netlify/functions/recruiter"
+  status = 200

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nocturnal Staffing Agency — Recruiter Portal</title>
+<style>body{font-family:system-ui,sans-serif;max-width:680px;margin:2rem auto;padding:0 1rem}label{display:block;margin:.5rem 0}h2{margin-top:2.5rem}.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}.msg{border:1px solid #888;padding:1rem;margin:1rem 0;display:none}.msg.err{border-color:#b00}</style>
+</head>
+<body>
+<h1>Recruiter Portal</h1>
+<p>Recruit nightlife workers, refer them to register free, review their credentials, and endorse the ones you stand behind. A recruiter endorsement is not verification — verification still goes through Nocturnal's verifier, and no candidate is verified until that step is complete.</p>
+<p>Registration is free for talent and venues at <a href="https://nocturnalstaffing.com">nocturnalstaffing.com</a>. No prices are listed on this page.</p>
+
+<h2>1. Apply to be a recruiter</h2>
+<form id="app" novalidate>
+<input class="hp" type="text" name="website" value="" autocomplete="off" tabindex="-1" aria-hidden="true">
+<label>Full name * <input name="recruiterName" type="text" required></label>
+<label>Email * <input name="recruiterEmail" type="email" required></label>
+<label>Phone * <input name="phone" type="tel" required></label>
+<label>City * <input name="city" type="text" required></label>
+<label>Referral code, if you have one <input name="recruiterCode" type="text"></label>
+<label>Reference <input name="reference" type="text"></label>
+<label>Club promoting / recruiting history * <textarea name="history" required></textarea></label>
+<label>Venues you know <textarea name="venues"></textarea></label>
+<button type="submit">Submit application</button>
+</form>
+<div class="msg" id="msg-app" role="status"></div>
+
+<h2>2. Report a referral</h2>
+<p>Use this after you have sent a candidate to register. This form does not register them — they must still register themselves. It only attributes the referral to you.</p>
+<form id="ref" novalidate>
+<input class="hp" type="text" name="website" value="" autocomplete="off" tabindex="-1" aria-hidden="true">
+<label>Your name * <input name="recruiterName" type="text" required></label>
+<label>Your email * <input name="recruiterEmail" type="email" required></label>
+<label>Your referral code <input name="recruiterCode" type="text"></label>
+<label>Talent full name * <input name="talentName" type="text" required></label>
+<label>Talent email * <input name="talentEmail" type="email" required></label>
+<label>Talent role * <select name="talentRole" required><option value="">Select a role</option><option>Bartender</option><option>Barback</option><option>Door Staff</option><option>VIP Host</option><option>Bottle Service</option><option>Venue Support Staff</option><option>Other</option></select></label>
+<label>Notes <textarea name="talentNotes"></textarea></label>
+<button type="submit">Submit referral</button>
+</form>
+<div class="msg" id="msg-ref" role="status"></div>
+
+<h2>3. Request a change to this portal</h2>
+<p>Recruiters may request edits to this portal any way they wish. Requests are logged for review and applied through the normal process. Requests that would publish pricing, name the owner in public copy, verify talent without the verifier, create app accounts, move deals, or promise placements or pay are flagged for the owner first and are not applied automatically.</p>
+<form id="edit" novalidate>
+<input class="hp" type="text" name="website" value="" autocomplete="off" tabindex="-1" aria-hidden="true">
+<label>Your name * <input name="recruiterName" type="text" required></label>
+<label>Your email * <input name="recruiterEmail" type="email" required></label>
+<label>Your referral code <input name="recruiterCode" type="text"></label>
+<label>Change you are requesting * <textarea name="editText" required></textarea></label>
+<button type="submit">Submit edit request</button>
+</form>
+<div class="msg" id="msg-edit" role="status"></div>
+
+<script>
+async function submit(formId, msgId, kind, build){
+  const form=document.getElementById(formId), msg=document.getElementById(msgId);
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const body=Object.assign({kind, website: form.elements.website.value}, build(form));
+    for(const k in body){ if(body[k]===undefined) body[k]=''; }
+    try{
+      const r=await fetch('/recruiter', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+      const j=await r.json().catch(()=>({}));
+      if(r.ok && j.ok){msg.innerHTML='Saved. Thank you.'; msg.className='msg'; msg.style.display='block'; form.reset();}
+      else {msg.innerHTML='Could not be saved — please try again.' + (j.error ? ' ('+j.error+')' : ''); msg.className='msg err'; msg.style.display='block';}
+    }catch(_e){msg.innerHTML='Could not be saved — please try again.'; msg.className='msg err'; msg.style.display='block';}
+  });
+}
+function v(f,n){return f.elements[n] ? f.elements[n].value.trim() : '';}
+submit('app','msg-app','application',f=>({recruiterName:v(f,'recruiterName'),recruiterEmail:v(f,'recruiterEmail'),phone:v(f,'phone'),city:v(f,'city'),recruiterCode:v(f,'recruiterCode'),reference:v(f,'reference'),history:v(f,'history'),venues:v(f,'venues')}));
+submit('ref','msg-ref','referral',f=>({recruiterName:v(f,'recruiterName'),recruiterEmail:v(f,'recruiterEmail'),recruiterCode:v(f,'recruiterCode'),talentName:v(f,'talentName'),talentEmail:v(f,'talentEmail'),talentRole:f.elements.talentRole.value,talentNotes:v(f,'talentNotes')}));
+submit('edit','msg-edit','edit-request',f=>({recruiterName:v(f,'recruiterName'),recruiterEmail:v(f,'recruiterEmail'),recruiterCode:v(f,'recruiterCode'),editText:v(f,'editText')}));
+</script>
+</body>
+</html>
