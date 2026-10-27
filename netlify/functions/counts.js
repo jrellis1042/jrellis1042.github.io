@@ -1,7 +1,10 @@
 // GET /.netlify/functions/counts  (also mapped to /counts at flip time)
 // Aggregate counts ONLY — no names, no emails, no token exposed.
 // Counts source (hard rule): pipeline-5 deals carrying an approval note
-// ("APPROVED by Muse"), split by Registrant Type 54 talent / 55 venue.
+// ("APPROVED by Muse" or "APPROVED by Rashad" — the two approvers on record;
+// matcher is "APPROVED by", fixed 2026-10-26 after Taylor Deal 34 was
+// approved by Rashad and the old Muse-only matcher undercounted 7 as 6),
+// split by Registrant Type 54 talent / 55 venue.
 // Raw form rows / deals without an approval note are NOT counted.
 const L = require('./lib');
 const { pd } = L;
@@ -23,7 +26,7 @@ async function listAllDeals() {
 async function hasApprovalNote(dealId) {
   const notes = await pd(`/deals/${dealId}/notes?limit=100`);
   const list = Array.isArray(notes) ? notes : [];
-  return list.some((n) => String(n.content || '').includes('APPROVED by Muse'));
+  return list.some((n) => String(n.content || '').includes('APPROVED by'));
 }
 
 exports.handler = async (event) => {
