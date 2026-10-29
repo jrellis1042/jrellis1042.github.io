@@ -300,7 +300,8 @@
       /* ---------- nocturnal ticker (ESPN-style scrolling bar) ---------- */
       .ticker{position:relative;overflow:hidden;background:linear-gradient(90deg,#160329,#0b0b14 38%,#24063f 62%,#0b0b14);border-bottom:1px solid rgba(255,110,220,.45);box-shadow:0 2px 18px rgba(150,60,255,.25)}
       .ticker::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.13) 48%,rgba(255,120,220,.10) 52%,transparent 68%);transform:translateX(-130%);animation:ticker-sheen 7s ease-in-out infinite;pointer-events:none}
-      .ticker-track{display:inline-flex;animation:tick-scroll 45s linear infinite;will-change:transform}
+      .tsep{font-style:normal;color:#ff4fd8;text-shadow:0 0 6px rgba(255,79,216,.95),0 0 14px rgba(176,38,255,.55)}
+.ticker-track{display:inline-flex;animation:tick-scroll 45s linear infinite;will-change:transform}
       .ticker:hover .ticker-track{animation-play-state:paused}
       .ticker-track span{display:inline-block;padding:.6em 0;font-size:14px;font-weight:700;letter-spacing:.02em;color:#f2f2f7;white-space:nowrap;text-shadow:0 0 12px rgba(190,120,255,.35)}
       .ticker-track b{color:#ffd75e;text-shadow:0 0 8px rgba(255,183,0,.85),0 0 20px rgba(255,110,220,.45)}
@@ -338,7 +339,7 @@
       </div>
     <!-- TICKER + BAR: both are filled from the live /counts feed by the script below (counts only, never names or emails). No counts are hardcoded on this page. -->
     <div class="ticker" aria-hidden="true">
-      <div class="ticker-track"><span><b>12 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING TALENT: <b>12 OF 50</b>&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;◆&nbsp;&nbsp;</span><span><b>12 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING TALENT: <b>12 OF 50</b>&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;◆&nbsp;&nbsp;</span></div>
+      <div class="ticker-track"><span><b>12 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>12 OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span><span><b>12 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>12 OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span></div>
     </div>
     </header>
 
@@ -970,7 +971,7 @@
           function render(c) {
             var combined = c.combined, talent = c.talent, venue = c.venue, gate = c.gate || 75;
             var claimText = c.claimingOpen ? 'CLAIMING IS OPEN' : 'CLAIMING OPENS AT ' + esc(gate);
-            var seg = '<b>' + esc(combined) + ' OF ' + esc(gate) + '</b> REGISTERED — ' + claimText + '&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING TALENT: <b>' + esc(talent) + ' OF 50</b>&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING VENUES: <b>' + esc(venue) + ' OF 10</b>&nbsp;&nbsp;◆&nbsp;&nbsp;';
+            var seg = '<b>' + esc(combined) + ' OF ' + esc(gate) + '</b> REGISTERED — ' + claimText + '&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>' + esc(talent) + ' OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>' + esc(venue) + ' OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;';
             document.querySelectorAll('.ticker-track span').forEach(function (sp) { sp.innerHTML = seg; });
             var hl = document.getElementById('bar-headline');
             if (hl) hl.textContent = c.claimingOpen ? (combined + ' of ' + gate + ' registered — claiming is open') : (combined + ' of ' + gate + ' registered — claiming opens at ' + gate);
