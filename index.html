@@ -307,6 +307,16 @@
       @keyframes tick-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
       @keyframes ticker-sheen{0%{transform:translateX(-130%)}55%,100%{transform:translateX(130%)}}
       @media (prefers-reduced-motion:reduce){.ticker-track{animation:none}.ticker::after{animation:none}}
+
+      .portal-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 0 10px;font-size:14px;font-weight:700;color:var(--ink-2)}
+      .portal-nav a{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
+      .portal-panel .portal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+      .portal-card{border:1px solid var(--line);border-radius:16px;padding:20px;background:var(--panel-2)}
+      .portal-card h3{margin:0 0 8px}
+      .portal-card p{margin:0 0 14px}
+      .portal-card .portal-note{margin:14px 0 0;font-size:14px}
+      .btn-secondary{display:inline-block;margin-left:12px;padding:12px 18px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:800;text-decoration:none}
+      @media (max-width:720px){.portal-panel .portal-grid{grid-template-columns:1fr}.btn-secondary{display:inline-block;margin:12px 0 0}}
 </style>
   </head>
   <body>
@@ -317,14 +327,18 @@
           <span class="bname">NOCTURNAL<span>STAFFING</span></span>
         </a>
         <div class="spacer"></div>
-        <a class="top-cta" href="/pages/talent-form.html">Register as Founding Talent</a>
+        <a class='top-cta' href='/pages/talent-form'>Register as Founding Talent</a>
       </div>
-    <!-- TICKER: counts must match the progress bar below; update both in the same pass (one-update rule). Static text for now — the live counts feed (idea #2) takes over when it ships. It rides inside the sticky header, so it stays pinned under the header while the page scrolls. -->
+      <div class="wrap portal-nav" aria-label="Portal sign-in">
+        <span>Member login — already registered and approved? Sign in:</span>
+        <a href='/pages/talent-portal'>Talent Portal</a>
+        <a href='/pages/venue-portal'>Venue Portal</a>
+        <a href='/pages/recruiter-portal-v2'>Recruiter Portal</a>
+      
+      </div>
+    <!-- TICKER + BAR: both are filled from the live /counts feed by the script below (counts only, never names or emails). No counts are hardcoded on this page. -->
     <div class="ticker" aria-hidden="true">
-      <div class="ticker-track">
-        <span><b>9 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING TALENT: <b>9 OF 50</b>&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;◆&nbsp;&nbsp;REGISTRATION IS FREE — TALENT &amp; VENUES&nbsp;&nbsp;◆&nbsp;&nbsp;I-4 CORRIDOR: TAMPA · LAKELAND · ORLANDO&nbsp;&nbsp;◆&nbsp;&nbsp;NOCTURNALSTAFFING.COM&nbsp;&nbsp;◆&nbsp;&nbsp;</span>
-        <span><b>9 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING TALENT: <b>9 OF 50</b>&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;◆&nbsp;&nbsp;REGISTRATION IS FREE — TALENT &amp; VENUES&nbsp;&nbsp;◆&nbsp;&nbsp;I-4 CORRIDOR: TAMPA · LAKELAND · ORLANDO&nbsp;&nbsp;◆&nbsp;&nbsp;NOCTURNALSTAFFING.COM&nbsp;&nbsp;◆&nbsp;&nbsp;</span>
-      </div>
+      <div class="ticker-track"><span><b>12 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING TALENT: <b>12 OF 50</b>&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;◆&nbsp;&nbsp;</span><span><b>12 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING TALENT: <b>12 OF 50</b>&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;◆&nbsp;&nbsp;</span></div>
     </div>
     </header>
 
@@ -338,15 +352,45 @@
         </div>
       </div>
 
-      <!-- BENCH PROGRESS: update the count, fill width %, and talent/venue split on each new registration, then redeploy. Counts are aggregate only — never names or emails. -->
+
+      <!-- PORTALS: sign-in is for people already registered and approved; registration itself is free, on the forms. -->
+      <section class="block portal-panel" aria-label="Portal sign-in">
+        <div class="wrap">
+          <p class="kicker">Member login</p>
+          <h2 class="title" style="font-size:28px;">Sign in to your portal</h2>
+          <p class="sub">Portal sign-in is for people who are already registered and approved. Registration is free and happens on the forms first — if you have not registered yet, start there.</p>
+          <div class="portal-grid">
+            <div class="portal-card">
+              <h3>Talent Portal</h3>
+              <p>Check your verification status, preview postings, and see your bench standing.</p>
+              <a class='btn-primary' href='/pages/talent-portal'>Sign in as Talent</a>
+              <p class="portal-note">New here? <a href='/pages/talent-form'>Register as Founding Talent — free</a></p>
+            </div>
+            <div class="portal-card">
+              <h3>Venue Portal</h3>
+              <p>Check your venue setup and payment status, and manage your staffing requests.</p>
+              <a class='btn-primary' href='/pages/venue-portal'>Sign in as a Venue</a>
+              <p class="portal-note">New here? <a href='/pages/venue-form'>Register as a Founding Venue — free</a></p>
+            </div>
+            <div class="portal-card">
+              <h3>Recruiter Portal</h3>
+              <p>Approved recruiters: referrals, credential reviews, and your recruiter record.</p>
+              <a class='btn-primary' href='/pages/recruiter-portal-v2'>Sign in as a Recruiter</a>
+              <p class="portal-note">New here? <a href='/pages/recruiter-portal'>Apply or refer through the recruiter portal</a></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BENCH PROGRESS: filled from /counts by the script below. Counts are aggregate only — never names or emails. -->
       <section class="block" aria-label="Registration progress toward 75">
         <div class="wrap">
           <p class="kicker">The bench is building</p>
-          <p style="font-size:24px;font-weight:800;margin:6px 0 12px">9 of 75 registered — claiming opens at 75</p>
-          <div style="height:16px;border:1px solid var(--line);border-radius:999px;background:var(--panel-2);overflow:hidden" role="progressbar" aria-valuenow="9" aria-valuemin="0" aria-valuemax="75" aria-label="Registrations toward 75">
-            <div style="height:100%;width:12%;background:var(--sunset);border-radius:999px"></div>
+          <p id="bar-headline" style="font-size:24px;font-weight:800;margin:6px 0 12px">The bench is building — registration counts loading</p>
+          <div style="height:16px;border:1px solid var(--line);border-radius:999px;background:var(--panel-2);overflow:hidden" id="bar-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="75" aria-label="Registrations toward 75">
+            <div id="bar-fill" style="height:100%;width:0%;background:var(--sunset);border-radius:999px"></div>
           </div>
-          <p class="sub" style="margin-top:10px">9 talent · 0 venues · Founding registration is open and free. Counts update as registrations land.</p>
+          <p id="bar-split" class="sub" style="margin-top:10px">Founding registration is open and free. Counts update as registrations land.</p>
         </div>
       </section>
 
@@ -360,7 +404,7 @@
               <h1>Nightlife Work You Can <span class="hot">Count On</span></h1>
               <p class="lede">Nocturnal isn't another way to fill shifts — it's changing how nightlife staffing works. Real shifts at real venues, matched to your rank, your city, and your craft — and registration is open in all 50 states, so the founding bench is being built by nightlife people all over the country. Every placement is verified, and every detail — role, date, time, place, dress code, pay — is confirmed before you leave the house. No group chats full of maybes. No showing up to a bar that forgot you were coming. And if a night goes sideways, the system has your back.</p>
               <div class="cta-row">
-                <a class="btn-primary" href="/pages/talent-form.html">Register as Founding Talent
+                <a class='btn-primary' href='/pages/talent-form'>Register as Founding Talent
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 </a>
                 <a class="btn-ghost" href="#how-worker">How it works</a>
@@ -395,7 +439,7 @@
         <section class="block">
           <div class="wrap">
             <p class="kicker teal">The Roles</p>
-            <h2 class="title">The floor runs on six roles. We place all six — and then some.</h2>
+            <h2 class="title">The floor runs on seven roles.</h2>
             <p class="sub">Nocturnal places the people who keep a venue running — the bar, the door, the floor, and the guests. These are the roles on the roster:</p>
             <div class="roles">
               <span class="role"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 3h14l-6.2 7.2a2 2 0 0 1-1.6 0L5 3Z"/><path d="M12 12v7M8 21h8"/></svg>Bartenders</span>
@@ -406,7 +450,7 @@
               <span class="role"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><path d="M16 5.4a3.2 3.2 0 0 1 0 5.9M18.5 15.4c1.1.8 1.8 2.1 2 4.1"/></svg>Venue Support Staff</span>
               <span class="role"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Other</span>
             </div>
-            <p class="sub" style="margin-top:18px;">Don't see your role? Choose <strong>Other</strong> when you register and tell us what you do — if a venue's night needs it, we place it.</p>
+            <p class="sub" style="margin-top:18px;">Don't see your role? Choose <strong>Other</strong> when you register and tell us what you do — if a venue's night needs it, we place it. Other entries are performer-screened: Nocturnal does not place DJs, musicians, performers, or promotional models.</p>
           </div>
         </section>
 
@@ -457,7 +501,7 @@
             <p class="kicker">Free To Register</p>
             <h2 class="title">Free to register. Verified before you claim.</h2>
             <p class="sub">Registration is free — forever. There is no cost to join the founding roster, and registering never obligates you to take a shift.</p>
-            <p class="sub">Verification is Nocturnal's own check of your identity and credentials, completed in the app before you can claim a shift. It is what lets a venue trust the match — and what makes your rank mean something.</p>
+            <p class="sub">Verification is Nocturnal's own check of your identity and credentials, completed before you can claim a shift. It is what lets a venue trust the match — and what makes your rank mean something.</p>
           </div>
         </section>
 
@@ -467,9 +511,9 @@
             <h2 class="title">Questions, answered straight</h2>
             <div class="qa">
               <h3>How does registration work?</h3>
-              <p>Fill out the Founding Talent form with your role, your state, and the nights you're available to work — registration is open in all 50 states. Then complete signup in the app to enter verification.</p>
+              <p>Fill out the Founding Talent form with your role, your state, and the nights you're available to work — registration is open in all 50 states. Then complete verification after registration.</p>
               <h3>What does verification mean, and why is it required before claiming?</h3>
-              <p>Verification is Nocturnal's own check of your identity and credentials, completed in the app. Nobody can claim a shift until they are verified — it is what lets a venue trust the match, and what makes your rank worth something.</p>
+              <p>Verification is Nocturnal's own check of your identity and credentials, completed before anyone can claim a shift until they are verified — it is what lets a venue trust the match, and what makes your rank worth something.</p>
               <h3>When can I claim a shift?</h3>
               <p>You can preview postings now. Claiming opens at 75 combined registrations across talent and venues. Founding Talent — the first 50 to complete full verification — claim early, once verified.</p>
               <h3>Is registration really free?</h3>
@@ -501,7 +545,7 @@
               <h1>Nightlife Talent You Can <span class="cool">Count On</span></h1>
               <p class="lede">Every venue has lived the same Friday: a no-show behind the bar, a door with nobody on it, a manager working a station instead of the room. Nocturnal is changing how this industry works — replacing the scramble with a bench of screened, ranked, verified talent whose record you can see before they walk in, whose arrivals are confirmed before the night starts, and with backup cover named for every placement. A partner invested in your busiest nights, not a hotline you call when they fall apart.</p>
               <div class="cta-row">
-                <a class="btn-primary" href="/pages/venue-form.html">Register as a Founding Venue
+                <a class='btn-primary' href='/pages/venue-form'>Register as a Founding Venue
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 </a>
                 <a class="btn-ghost" href="#how-venue">See how it works</a>
@@ -528,7 +572,7 @@
             <div class="steps">
               <div class="step"><div class="num">1</div><h3>Register</h3><p>Registering starts your venue's profile. Once your setup — including payment — is complete, your postings go live.</p></div>
               <div class="step"><div class="num">2</div><h3>Get verified</h3><p>Verification is required for everyone. Talent is verified before claiming, and your venue's setup is confirmed before postings go live — so the people on your floor are checked, not just claimed.</p></div>
-              <div class="step"><div class="num">3</div><h3>Post shifts</h3><p>Post the role, the night, and what the position needs. Verified talent claims your live posting — Founding Talent early, and general claiming once registrations reach 75 combined.</p></div>
+              <div class="step"><div class="num">3</div><h3>Post shifts</h3><p>Post the role, the night, and what the position needs. Screened candidates come back to you, interviews are set up on Zoom because your time is valuable, and you hire directly — verified talent claims your live posting, Founding Talent early, and general claiming once registrations reach 75 combined.</p></div>
               <div class="step"><div class="num">4</div><h3>Confirm payment</h3><p>Both sides confirm the same details up front: role, date, time, place, dress code, and agreed pay. Arrivals are confirmed, and payment is verified through two-party confirmation — you confirm payment was sent and the talent confirms it arrived. You hire and pay the worker directly; Nocturnal recruits, verifies, and confirms the record.</p></div>
             </div>
           </div>
@@ -548,7 +592,7 @@
               <div class="score-result" id="score-result" role="status">
                 <div class="level" id="score-level"></div>
                 <p id="score-text"></p>
-                <div style="margin-top:18px;"><a class="btn-primary" href="/pages/venue-form.html">Request a bench review
+                <div style="margin-top:18px;"><a class='btn-primary' href='/pages/venue-form'>Request a bench review
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 </a></div>
               </div>
@@ -567,7 +611,7 @@
                 <h3>Founding Venue</h3>
                 <p>Permanent numbered badges for the first 10 venues — a founding position that can't be claimed later, once the ten are gone. Register, get your venue set up, and your postings go live to the founding bench.</p>
                 <span class="tag">Registration open now</span>
-                <div style="margin-top:20px;"><a class="btn-primary" href="/pages/venue-form.html">Register as a Founding Venue
+                <div style="margin-top:20px;"><a class='btn-primary' href='/pages/venue-form'>Register as a Founding Venue
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 </a></div>
               </div>
@@ -601,29 +645,29 @@
             <p class="kicker">NOCTURNAL RESERVE</p>
             <h2 class="title">The night you're short stops being an emergency.</h2>
             <p class="scene">8:40 PM on a Friday. Your bartender just texted out. The bar is two deep, your second well is dark, and the group chat is silent.</p>
-            <p class="body">One short-staffed Friday quietly bleeds $400–$1,200 in lost sales — slower rounds, walkouts, and the review that lives online long after the night ends.</p>
+            <p class="body">One short-staffed Friday costs sales — slower rounds, walkouts, and the review that lives online long after the night ends.</p>
             <p class="body">Reserve members never make that call in a panic. Your bench is verified, ranked, and standing by before the emergency — credentials checked, transport confirmed, a named backup behind every placement.</p>
-            <h3 class="rates-title">Founding rates — locked for Founding Venues</h3>
+            <h3 class="rates-title">Founding advantage — for Founding Venues</h3>
             <div class="rates">
               <div class="rate">
-                <h3>Reserve membership — $99/month</h3>
-                <p>Priority rescue queue, first claim on top-ranked talent, and member placement rates from day one.</p>
+                <h3>Reserve membership</h3>
+                <p>Priority rescue queue and first claim on top-ranked talent from day one.</p>
               </div>
               <div class="rate">
-                <h3>Placements — $500 for members · $750 non-member</h3>
+                <h3>Placements</h3>
                 <p>One fixed fee when you hire — then you pay your hire directly. No hourly markup, no spread, ever.</p>
               </div>
               <div class="rate">
-                <h3>Premium placements — $1,250</h3>
+                <h3>Premium placements</h3>
                 <p>Top-ranked, Diamond-tier talent for the nights that define your room.</p>
               </div>
             </div>
             <p class="reserve-terms">Every placement carries a 30-day replacement guarantee — if the hire doesn't work out, we replace them at no additional fee. Introductions are covered for 12 months under the venue agreement.</p>
             <div class="reserve-cta">
-              <a class="btn-primary" href="/pages/venue-form.html">Register as a Founding Venue
+              <a class='btn-primary' href='/pages/venue-form'>Register as a Founding Venue
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               </a>
-              <p class="note">Founding registration reserves your rates — venue agreements open shortly.</p>
+              <p class="note">Founding registration reserves your place — venue agreements open shortly.</p>
             </div>
           </div>
         <section class="block" id="faq-venue">
@@ -632,7 +676,7 @@
             <h2 class="title">Questions, answered straight</h2>
             <div class="qa">
               <h3>How do I register and post a shift?</h3>
-              <p>Fill out the Founding Venue form to start your venue's profile, then complete your setup in the app. Once setup is complete, you can create postings with the role, the night, and what the position needs.</p>
+              <p>Fill out the Founding Venue form to start your venue's profile, then complete your venue setup. Once setup is complete and approved, sign in to your venue portal to create postings with the role, the night, and what the position needs.</p>
               <h3>When does my posting go live?</h3>
               <p>A posting goes live once your venue's setup — including payment — is complete.</p>
               <h3>How do claiming and confirmation work?</h3>
@@ -666,10 +710,10 @@
           <h3 class="stmt-h">Weekend Rescue — the standing rescue bench.</h3>
           <p class="stmt-body">Thursday through Sunday, verified Nocturnal talent opt in and stand ready — expecting the call, not dreading it. When a venue's night breaks, the call doesn't go out to a group chat. It goes to a bench that already answered. A named backup is moving while other rooms are still texting.</p>
           <div class="cta-row">
-            <a class="btn-primary" href="/pages/venue-form.html">Request Weekend Rescue
+            <a class='btn-primary' href='/pages/venue-form'>Request Weekend Rescue
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </a>
-            <a class="btn-ghost" href="/pages/talent-form.html">Stand on the rescue bench</a>
+            <a class='btn-ghost' href='/pages/talent-form'>Stand on the rescue bench</a>
           </div>
           <p class="stmt-note">Weekend Rescue requests open to registered venues — registration comes first, rescue cover follows your venue verification.</p>
 
@@ -684,7 +728,7 @@
               <div class="big">50</div>
               <h3>Founding Talent — the first 50.</h3>
               <p>The first 50 fully verified talent carry a permanent, numbered Founding Talent badge. Not a promotion — a founding record, kept forever.</p>
-              <div style="margin-top:20px;"><a class="btn-primary" href="/pages/talent-form.html">Register as Founding Talent
+              <div style="margin-top:20px;"><a class='btn-primary' href='/pages/talent-form'>Register as Founding Talent
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               </a></div>
             </div>
@@ -693,7 +737,7 @@
               <h3>Founding Venue — the first 10.</h3>
               <p>The first 10 venues earn permanent Founding Venue standing — and founding Reserve rates, locked for the venues that believed first.</p>
               <p style="margin-top:12px;"><a id="stmt-reserve-link" href="#reserve">See the founding rates your registration reserves →</a></p>
-              <div style="margin-top:20px;"><a class="btn-primary" href="/pages/venue-form.html">Register as a Founding Venue
+              <div style="margin-top:20px;"><a class='btn-primary' href='/pages/venue-form'>Register as a Founding Venue
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               </a></div>
             </div>
@@ -702,10 +746,10 @@
           <div class="stmt-close">
             <h3>The industry isn't going to get less fickle. Your Fridays don't have to care.</h3>
             <div class="cta-row">
-              <a class="btn-primary" href="/pages/talent-form.html">Register as Founding Talent
+              <a class='btn-primary' href='/pages/talent-form'>Register as Founding Talent
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               </a>
-              <a class="btn-ghost" href="/pages/venue-form.html">Register as Founding Venue</a>
+              <a class='btn-ghost' href='/pages/venue-form'>Register as Founding Venue</a>
             </div>
           </div>
         </div>
@@ -760,19 +804,20 @@
 
       <section class="block">
         <div class="wrap">
-          <p class="kicker teal">Recruiters &amp; Trainers</p>
+          <p class="kicker teal">Recruiters</p>
           <h2 class="title">Prove it first</h2>
           <div class="teaser">
             <div>
-              <h3>Nobody recruits or trains for Nocturnal on a claim.</h3>
-              <p>Recruiters and trainers are the people who set the standard for the whole roster — so they prove their expertise before they're approved. Certifications, real venue work history, and a professional reference are reviewed first; approval, referral codes, and trainer status switch on only after the proof checks out. Trainers prove expertise in the exact craft they'd teach.</p>
-              <p style="margin-top:12px;"><strong style="color:var(--gold);">Applications open soon.</strong></p>
+              <h3>Nobody recruits for Nocturnal on a claim.</h3>
+              <p>Recruiters are the people who set the standard for the whole roster — so they prove their expertise before they're approved. Certifications, real venue work history, and a professional reference are reviewed first; approval and referral codes switch on only after the proof checks out.</p>
+              <p style="margin-top:12px;"><a class='btn-primary' href='/pages/recruiter-portal-v2'>Sign in as a Recruiter</a></p>
+              <p style="margin-top:12px;">Already approved? Sign in above. New recruiter? <a href='/pages/recruiter-portal'>Apply or refer through the recruiter portal</a>.</p>
             </div>
             <ul class="proof-list">
               <li>Certifications or licenses, with issuer and expiry</li>
               <li>Verified venue work history</li>
               <li>A reachable professional reference</li>
-              <li>Trainers: proven expertise in the specific craft</li>
+              
             </ul>
           </div>
         </div>
@@ -782,9 +827,11 @@
         <div class="final-cta" id="final-cta">
           <h2 id="final-cta-title">Your first night starts with registration</h2>
           <p id="final-cta-text">Founding Talent registration is open in all 50 states. Register from wherever you are, get verified, and be standing on the founding roster when the first venues come calling.</p>
-          <a class="btn-primary" id="final-cta-btn" href="/pages/talent-form.html">Register as Founding Talent
+          <a class='btn-primary' href='/pages/talent-form' id='final-cta-btn'>Register as Founding Talent
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
+          <a class='btn-secondary' href='/pages/talent-portal' id='final-portal-btn'>Sign in to the Talent Portal</a>
+          <p class="note" style="margin-top:10px;">Portal sign-in is for people already registered and approved. New here? Register free above.</p>
         </div>
       </div>
     </main>
@@ -815,6 +862,7 @@
         <div class="legal">
           <span>© 2026 Nocturnal Staffing Agency. All rights reserved.</span>
           <span>Direct-hire recruiting: venues hire and pay talent directly.</span>
+          <span><a href='/pages/owner-portal'>Owner login</a></span>
         </div>
       </div>
     </footer>
@@ -836,6 +884,7 @@
         var ctaText = document.getElementById('final-cta-text');
         var ctaBtn = document.getElementById('final-cta-btn');
         var topCta = document.querySelector('.top-cta');
+        var portalBtn = document.getElementById('final-portal-btn');
 
         function setAudience(which, scroll) {
           var isWorker = which === 'worker';
@@ -854,6 +903,10 @@
               topCta.setAttribute('href', '/pages/talent-form.html');
               topCta.textContent = 'Register as Founding Talent';
             }
+            if (portalBtn) {
+              portalBtn.setAttribute('href', '/pages/talent-portal.html');
+              portalBtn.textContent = 'Sign in to the Talent Portal';
+            }
           } else {
             ctaTitle.textContent = 'Register as a Founding Venue';
             ctaText.textContent = 'Registering starts your venue profile today. Your postings go live once your setup — including payment — is complete, and the first 10 venues hold a permanent, numbered Founding Venue badge.';
@@ -862,6 +915,10 @@
             if (topCta) {
               topCta.setAttribute('href', '/pages/venue-form.html');
               topCta.textContent = 'Register as Founding Venue';
+            }
+            if (portalBtn) {
+              portalBtn.setAttribute('href', '/pages/venue-portal.html');
+              portalBtn.textContent = 'Sign in to the Venue Portal';
             }
           }
           if (scroll) { window.scrollTo({ top: 0, behavior: 'smooth' }); }
@@ -905,6 +962,37 @@
           card.scrollIntoView({ behavior: 'smooth', block: 'center' });
         })();
 
+
+        // ---- Live counts (bar + ticker), from /counts only ----
+        // /counts returns {talent, venue, combined, gate, claimingOpen} — counts only, never names or emails.
+        (function () {
+          function esc(n) { return String(n); }
+          function render(c) {
+            var combined = c.combined, talent = c.talent, venue = c.venue, gate = c.gate || 75;
+            var claimText = c.claimingOpen ? 'CLAIMING IS OPEN' : 'CLAIMING OPENS AT ' + esc(gate);
+            var seg = '<b>' + esc(combined) + ' OF ' + esc(gate) + '</b> REGISTERED — ' + claimText + '&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING TALENT: <b>' + esc(talent) + ' OF 50</b>&nbsp;&nbsp;◆&nbsp;&nbsp;FOUNDING VENUES: <b>' + esc(venue) + ' OF 10</b>&nbsp;&nbsp;◆&nbsp;&nbsp;';
+            document.querySelectorAll('.ticker-track span').forEach(function (sp) { sp.innerHTML = seg; });
+            var hl = document.getElementById('bar-headline');
+            if (hl) hl.textContent = c.claimingOpen ? (combined + ' of ' + gate + ' registered — claiming is open') : (combined + ' of ' + gate + ' registered — claiming opens at ' + gate);
+            var split = document.getElementById('bar-split');
+            if (split) split.textContent = talent + ' talent · ' + venue + ' venues · Founding registration is open and free. Counts update as registrations land.';
+            var fill = document.getElementById('bar-fill');
+            if (fill) fill.style.width = Math.min(100, Math.round(combined / gate * 100)) + '%';
+            var prog = document.getElementById('bar-progress');
+            if (prog) prog.setAttribute('aria-valuenow', String(combined));
+          }
+          function fail() {
+            var hl = document.getElementById('bar-headline');
+            if (hl) hl.textContent = 'The bench is building — registration counts unavailable right now';
+            var split = document.getElementById('bar-split');
+            if (split) split.textContent = 'Founding registration is open and free. Counts will show here as soon as the live feed responds.';
+          }
+          fetch('/counts').then(function (r) { if (!r.ok) throw new Error('counts'); return r.json(); }).then(function (c) {
+            if (typeof c.combined !== 'number' || typeof c.talent !== 'number' || typeof c.venue !== 'number') throw new Error('counts shape');
+            render(c);
+          }).catch(fail);
+        })();
+
         // ---- Staffing Scorecard (informational self-check) ----
         var answers = [null, null, null, null, null];
         var result = document.getElementById('score-result');
@@ -940,3 +1028,4 @@
     </script>
   </body>
 </html>
+<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="c132a19f-9db2-420a-9e24-515331739ab4" data-app-host="app.netlify.com" data-account-tier="personal"></script>
