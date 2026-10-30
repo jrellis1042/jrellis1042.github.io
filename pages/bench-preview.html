@@ -15,15 +15,15 @@ a{color:#ff9de2}
 .portal-nav{font-size:.9rem;color:#c9c9d4;margin:.25rem 0 1rem}
 .portal-nav a{margin-right:.9rem}
 .ticker{position:relative;border:1px solid rgba(255,110,220,.45);border-radius:8px;padding:.5rem 0;overflow:hidden;white-space:nowrap;background:linear-gradient(90deg,#160329,#0b0b14 38%,#24063f 62%,#0b0b14);box-shadow:0 2px 18px rgba(150,60,255,.25)}
-.ticker::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.13) 48%,rgba(255,120,220,.10) 52%,transparent 68%);transform:translateX(-130%);animation:ticker-sheen 7s ease-in-out infinite;pointer-events:none}
+.ticker::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.13) 48%,rgba(255,120,220,.10) 52%,transparent 68%);transform:translateX(-130%);animation:ticker-sheen 4.8s ease-in-out infinite;pointer-events:none}
 .tsep{font-size:8px;margin:0 14px;font-style:normal;color:#ff4fd8;text-shadow:0 0 6px rgba(255,79,216,.95),0 0 14px rgba(176,38,255,.55)}
-.ticker-track{display:inline-flex;animation:tick-scroll 45s linear infinite;will-change:transform}
+.ticker-track{display:inline-flex;animation:tick-scroll 32s linear infinite;will-change:transform}
 .ticker:hover .ticker-track{animation-play-state:paused}
 @keyframes tick-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @keyframes ticker-sheen{0%{transform:translateX(-130%)}55%,100%{transform:translateX(130%)}}
 @media (prefers-reduced-motion:reduce){.ticker-track{animation:none}.ticker::after{animation:none}}
-.ticker-track span{display:inline-block;padding:0 .25rem;font-size:11px;font-weight:700;letter-spacing:.18em;color:#f2f2f7;white-space:nowrap;text-shadow:0 0 12px rgba(190,120,255,.35)}
-.ticker-track b{font-weight:800;color:#ffd75e;text-shadow:0 0 8px rgba(255,183,0,.85),0 0 20px rgba(255,183,0,.45)}
+.ticker-track span{font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;display:inline-block;padding:0 .25rem;font-size:11px;font-weight:700;letter-spacing:.18em;color:#f2f2f7;white-space:nowrap;text-shadow:0 0 12px rgba(190,120,255,.35)}
+.ticker-track b{font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-weight:800;color:#ffd75e;text-shadow:0 0 8px rgba(255,183,0,.85),0 0 20px rgba(255,183,0,.45)}
 h1{color:#fff;font-size:2rem;margin:1.6rem 0 .4rem}
 .lede{color:#d7d7e0;font-size:1.05rem;line-height:1.55;max-width:44rem}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin:1.4rem 0}
@@ -37,6 +37,9 @@ h1{color:#fff;font-size:2rem;margin:1.6rem 0 .4rem}
 .cta.ghost{background:transparent;color:#ff9de2;border:1px solid rgba(255,110,220,.55)}
 footer{margin-top:2.2rem;color:#8a8a99;font-size:.88rem}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="topbar">
@@ -44,9 +47,9 @@ footer{margin-top:2.2rem;color:#8a8a99;font-size:.88rem}
   <a class="back" href="/">← Back to home</a>
 </div>
 <div class="portal-nav">Member login — already registered and approved? Sign in:
-  <a href="/pages/talent-portal.html">Talent Portal</a>
-  <a href="/pages/venue-portal.html">Venue Portal</a>
-  <a href="/pages/recruiter-portal-v2.html">Recruiter Portal</a>
+  <a href='/pages/talent-portal'>Talent Portal</a>
+  <a href='/pages/venue-portal'>Venue Portal</a>
+  <a href='/pages/recruiter-portal-v2'>Recruiter Portal</a>
 </div>
 
 <div class="ticker" id="ticker" aria-hidden="true"></div>
@@ -74,8 +77,8 @@ footer{margin-top:2.2rem;color:#8a8a99;font-size:.88rem}
 <div class="panel">
   <h2>See the full bench</h2>
   <p class="note" style="color:#d7d7e0">Full profiles — experience, credentials, availability — are visible inside the venue portal. Registration is free for venues, and it is how you get a sign-in.</p>
-  <a class="cta" href="/pages/venue-form.html">Register as a Founding Venue</a>
-  <a class="cta ghost" href="/pages/talent-form.html">Register as Founding Talent</a>
+  <a class='cta' href='/pages/venue-form'>Register as a Founding Venue</a>
+  <a class='cta ghost' href='/pages/talent-form'>Register as Founding Talent</a>
 </div>
 
 <footer>Nocturnal Staffing Agency · Winter Haven, FL · (863) 288-0341 · nocturnalstaffing.com</footer>
