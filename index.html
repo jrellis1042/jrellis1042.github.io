@@ -300,11 +300,11 @@
       /* ---------- nocturnal ticker (ESPN-style scrolling bar) ---------- */
       .ticker{position:relative;overflow:hidden;background:linear-gradient(90deg,#160329,#0b0b14 38%,#24063f 62%,#0b0b14);border-bottom:1px solid rgba(255,110,220,.45);box-shadow:0 2px 18px rgba(150,60,255,.25)}
       .ticker::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.13) 48%,rgba(255,120,220,.10) 52%,transparent 68%);transform:translateX(-130%);animation:ticker-sheen 7s ease-in-out infinite;pointer-events:none}
-      .tsep{font-style:normal;color:#ff4fd8;text-shadow:0 0 6px rgba(255,79,216,.95),0 0 14px rgba(176,38,255,.55)}
+      .tsep{font-size:8px;margin:0 14px;font-style:normal;color:#ff4fd8;text-shadow:0 0 6px rgba(255,79,216,.95),0 0 14px rgba(176,38,255,.55)}
 .ticker-track{display:inline-flex;animation:tick-scroll 45s linear infinite;will-change:transform}
       .ticker:hover .ticker-track{animation-play-state:paused}
-      .ticker-track span{display:inline-block;padding:.6em 0;font-size:14px;font-weight:700;letter-spacing:.02em;color:#f2f2f7;white-space:nowrap;text-shadow:0 0 12px rgba(190,120,255,.35)}
-      .ticker-track b{color:#ffd75e;text-shadow:0 0 8px rgba(255,183,0,.85),0 0 20px rgba(255,110,220,.45)}
+      .ticker-track span{display:inline-block;padding:.42rem 0;font-size:11px;font-weight:700;letter-spacing:.18em;color:#f2f2f7;white-space:nowrap;text-shadow:0 0 12px rgba(190,120,255,.35)}
+      .ticker-track b{font-weight:800;color:#ffd75e;text-shadow:0 0 8px rgba(255,183,0,.85),0 0 20px rgba(255,110,220,.45)}
       @keyframes tick-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
       @keyframes ticker-sheen{0%{transform:translateX(-130%)}55%,100%{transform:translateX(130%)}}
       @media (prefers-reduced-motion:reduce){.ticker-track{animation:none}.ticker::after{animation:none}}
