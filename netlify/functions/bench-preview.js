@@ -19,50 +19,12 @@ function normalizeRole(r) {
   return t;
 }
 
-// LEGACY ROLE BRIDGE (added 2026-10-31, fix pass 2). The eight founding
-// registrants who signed up through the Google Form on Oct 25–26, 2026 —
-// before the website intake existed — were approved from their form records
-// and their pipeline-5 deals carry NO INTAKE note and no structured role
-// field anywhere on the record (deal fields checked 2026-10-31: only
-// Registrant Type is set). Counting INTAKE notes alone therefore counted
-// ZERO roles for 8 of the 12 approved talent (the first deployed version
-// returned a 15-assignment mix covering only the four website-intake
-// registrants, and Bottle Service vanished entirely because the sole
-// Bottle Service registrant is a form registrant). The role sets below
-// are those eight registrants' actual form-record roles, as recorded when
-// their registrations were processed and approved. Rules of the bridge:
-//  - keyed by pipeline-5 deal id; used ONLY when the deal has no INTAKE
-//    note — a deal's own INTAKE note always wins;
-//  - the deal must still pass the live approval-note + Registrant Type
-//    checks at read time, so a bridged deal that is deleted, closed, or
-//    unapproved drops out of the mix automatically;
-//  - Taylor Priday-Key (Deal 34) is counted at her APPROVED scope only
-//    (VIP Host — her Venue Support listing was an unchosen alternative and
-//    her performer primary was held, never approved).
-// Long-term cleanup (registry step, outside this function): backfill
-// INTAKE-format notes on these eight deals, after which this table can be
-// deleted — the INTAKE path already covers every website registration.
-const LEGACY_FORM_ROLES = {
-  30: ['Bottle Service', 'Bartender', 'Barback', 'Door Staff', 'VIP Host'], // Emani Alvarado
-  31: ['Bartender', 'Barback', 'Door Staff'], // Melanie Peacock
-  32: ['Bartender', 'Barback', 'Door Staff', 'VIP Host', 'Venue Support'], // Tonja C Rienks
-  33: ['Bartender', 'Barback'], // Lariel Leal
-  34: ['VIP Host'], // Taylor Priday-Key (approved scope only)
-  43: ['Venue Support', 'Barback', 'Door Staff', 'VIP Host'], // Jordan Dewey Cech
-  44: ['Venue Support', 'Door Staff', 'VIP Host'], // Erika Black
-  47: ['Bartender', 'Barback', 'VIP Host'], // Olivia Scott
-};
-
 function rolesFromNotes(dealId, notes) {
-  const hasIntake = notes.some((n) => String(n.content || '').startsWith('INTAKE '));
   const roles = new Set();
-  if (hasIntake) {
-    const fields = P.parseIntakeFields(notes);
-    if (fields.primaryRole) roles.add(normalizeRole(fields.primaryRole));
-    for (const r of String(fields.otherRoles || '').split(/[;,]/)) { const n = normalizeRole(r); if (n) roles.add(n); }
-    return roles;
-  }
-  for (const r of LEGACY_FORM_ROLES[dealId] || []) { const n = normalizeRole(r); if (n) roles.add(n); }
+  if (!notes.some((n) => String(n.content || '').startsWith('INTAKE '))) return roles;
+  const fields = P.parseIntakeFields(notes);
+  if (fields.primaryRole) roles.add(normalizeRole(fields.primaryRole));
+  for (const r of String(fields.otherRoles || '').split(/[;,]/)) { const n = normalizeRole(r); if (n) roles.add(n); }
   return roles;
 }
 
@@ -104,4 +66,4 @@ exports.handler = async (event) => {
 };
 
 // Exported for the offline tests only; the deployed handler is unchanged.
-exports._test = { normalizeRole, rolesFromNotes, LEGACY_FORM_ROLES };
+exports._test = { normalizeRole, rolesFromNotes };
