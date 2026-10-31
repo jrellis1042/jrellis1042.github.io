@@ -33,12 +33,20 @@ exports.handler = async (event) => {
   try {
     if (event.httpMethod !== 'GET') return L.ok({ ok: false, error: 'Method not allowed.' }, 405);
     const deals = (await listAllDeals()).filter((d) => d.pipeline_id === L.PIPELINE_BENCH && !d.deleted);
-    let talent = 0, venue = 0;
-    for (const d of deals) {
+    // Approval checks run in parallel (fix pass 2, 2026-10-31): the old
+    // loop awaited one Pipedrive notes call per deal in sequence, which
+    // made /counts take ~1.5s and left the portal pages sitting on their
+    // "loading…" placeholder. Semantics unchanged — same matcher, same
+    // type split, raw rows still never counted.
+    const typed = deals.filter((d) => {
       const type = String(d[L.REGISTRANT_TYPE_KEY] || '');
-      if (type !== String(L.TYPE_TALENT) && type !== String(L.TYPE_VENUE)) continue;
-      if (!(await hasApprovalNote(d.id))) continue; // raw rows never counted
-      if (type === String(L.TYPE_TALENT)) talent += 1; else venue += 1;
+      return type === String(L.TYPE_TALENT) || type === String(L.TYPE_VENUE);
+    });
+    const approved = await Promise.all(typed.map(async (d) => ((await hasApprovalNote(d.id)) ? d : null)));
+    let talent = 0, venue = 0;
+    for (const d of approved) {
+      if (!d) continue;
+      if (String(d[L.REGISTRANT_TYPE_KEY] || '') === String(L.TYPE_TALENT)) talent += 1; else venue += 1;
     }
     const combined = talent + venue;
     return L.ok({ ok: true, talent, venue, combined, gate: L.GATE, foundingTalent: `${talent} of ${L.FOUNDING_TALENT_CAP}`, foundingVenues: `${venue} of ${L.FOUNDING_VENUE_CAP}`, claimingOpen: combined >= L.GATE });
