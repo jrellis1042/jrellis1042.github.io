@@ -7,6 +7,29 @@
 const L = require('./lib');
 const { pd, findPersonByEmail, findOrgByName, findOrgNearName } = L;
 
+// Founding Talent referral capture (decided by Rashad 2026-10-31): a venue
+// that names a referrer gets the value stored verbatim on the INTAKE note,
+// and a value matching a known referral code — or a registrant's exact
+// full name — sets the deal's Source Type to "Venue Referral". Anything
+// ambiguous is noted only; attribution is never guessed.
+const SOURCE_TYPE_KEY = 'a06cd9d1f8c43770b3dea231738ffac205729b58';
+const SOURCE_VENUE_REFERRAL = '53';
+const REFERRAL_CODES = ['EMANI-01', 'MELANIE-02', 'LARIEL-03', 'TONJA-04', 'TAYLOR-05', 'JORDAN-06', 'ERIKA-07', 'OLIVIA-08', 'SHANEL-09', 'MICHELLE-10', 'ALECZANDRA-11', 'MARK-12', 'CRYSTAL-01'];
+const REFERRAL_NAMES = {
+  'emani alvarado': 'EMANI-01', 'melanie peacock': 'MELANIE-02', 'lariel leal': 'LARIEL-03',
+  'tonja rienks': 'TONJA-04', 'tonja c. rienks': 'TONJA-04', 'taylor priday-key': 'TAYLOR-05',
+  'jordan dewey cech': 'JORDAN-06', 'erika black': 'ERIKA-07', 'olivia scott': 'OLIVIA-08',
+  'shanel davidson': 'SHANEL-09', 'michelle chrisomalis': 'MICHELLE-10',
+  'aleczandra fitzgerald': 'ALECZANDRA-11', 'mark levitt': 'MARK-12', 'crystal gayle': 'CRYSTAL-01',
+};
+function referralMatch(v) {
+  if (typeof v !== 'string') return null;
+  const t = v.trim().toLowerCase().replace(/\s+/g, ' ');
+  if (!t) return null;
+  if (REFERRAL_CODES.some((c) => c.toLowerCase() === t)) return t.toUpperCase();
+  return REFERRAL_NAMES[t] || null;
+}
+
 function validateTalent(b) {
   const req = ['fullName', 'email', 'phone', 'dob', 'primaryRole', 'state', 'city', 'experience', 'transportation', 'confirmation'];
   for (const f of req) if (b[f] === undefined || b[f] === '' || b[f] === false) return `Missing required field: ${f}`;
@@ -69,19 +92,23 @@ exports.handler = async (event) => {
       }
     }
     const zone = L.zoneFor(b.city, b.state);
+    const referredBy = kind === 'venue' && typeof b.referredBy === 'string' ? b.referredBy : '';
+    const referralCode = referralMatch(referredBy);
     const dealBody = {
       title: kind === 'talent' ? `${b.fullName} — Founding Talent registration` : `${b.venueName} — Founding Venue registration`,
       person_id: person.id, org_id: orgId, pipeline_id: L.PIPELINE_BENCH, stage_id: L.STAGE_NEW_REGISTRATION,
       [L.REGISTRANT_TYPE_KEY]: kind === 'talent' ? String(L.TYPE_TALENT) : String(L.TYPE_VENUE),
     };
     if (zone) dealBody[L.ZONE_KEY] = zone;
+    if (referralCode) dealBody[SOURCE_TYPE_KEY] = SOURCE_VENUE_REFERRAL;
     const deal = await pd('/deals', 'POST', dealBody);
     // Store the full submission on the deal as a note (audit trail for
     // watcher v2 approval; never a substitute for an approval note).
     const fields = kind === 'talent'
       ? `Talent intake: name=${b.fullName}; email=${b.email}; phone=${b.phone}; dob=${b.dob}; primaryRole=${b.primaryRole}; otherSpecify=${b.otherSpecify || ''}; otherRoles=${(b.otherRoles || []).join(', ')}; state=${b.state}; city=${b.city}; experience=${b.experience}; certifications=${(b.certifications || []).join(', ')}; transportation=${b.transportation}; availability=${(b.availability || []).join(', ')}; notes=${b.notes || ''}`
       : `Venue intake: venue=${b.venueName}; contact=${b.contactName} (${b.contactRole}); email=${b.email}; phone=${b.phone}; type=${b.venueType}; state=${b.state}; city=${b.city}; address=${b.address || ''}; rolesNeeded=${(b.rolesNeeded || []).join(', ')}; busiestNights=${(b.busiestNights || []).join(', ')}; calloutFrequency=${b.calloutFrequency}; notes=${b.notes || ''}`;
-    await pd('/notes', 'POST', { deal_id: deal.id, content: `INTAKE ${new Date().toISOString()}: ${fields}` });
+    const referralLine = referredBy.trim() ? `\nReferred by: ${referredBy}` : '';
+    await pd('/notes', 'POST', { deal_id: deal.id, content: `INTAKE ${new Date().toISOString()}: ${fields}${referralLine}` });
     if (flags.length) await pd('/notes', 'POST', { deal_id: deal.id, content: `FLAGGED — intake: ${flags.join('; ')}. Do NOT auto-approve; needs Rashad's decision.` });
     return L.ok({ ok: true, dealId: deal.id, personId: person.id, orgId, flagged: flags.length > 0, flags, nearMatch }, 201);
   } catch (e) {

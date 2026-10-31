@@ -39,6 +39,7 @@
 <label><input type="radio" name="calloutFrequency" value="Rarely — but it burns when it happens" required> Rarely — but it burns when it happens</label>
 <label><input type="radio" name="calloutFrequency" value="Almost never" required> Almost never</label></fieldset>
 <label>Anything we should know about your venue? <textarea name="notes"></textarea></label>
+<label>Who referred you? (name or referral code — optional) <input name="referredBy" type="text"></label>
 <label><input type="checkbox" name="confirmation" required> Confirmation * — I confirm the information above is true and I am authorized to register this venue, I understand review happens and postings go live once setup including payment is complete, and I agree to be contacted.</label>
 
 <button type="submit">Submit registration</button>
@@ -59,7 +60,7 @@ function validate(){
   return null;
 }
 function build(){
-  return {kind:'venue', website: form.elements.website.value, venueName: form.elements.venueName.value.trim(), contactName: form.elements.contactName.value.trim(), contactRole: form.elements.contactRole.value, email: form.elements.email.value.trim(), phone: form.elements.phone.value.trim(), venueType: form.elements.venueType.value, state: form.elements.state.value, city: form.elements.city.value.trim(), address: form.elements.address.value.trim(), rolesNeeded: vals('rolesNeeded'), busiestNights: vals('busiestNights'), calloutFrequency: form.querySelector('input[name="calloutFrequency"]:checked').value, notes: form.elements.notes.value.trim(), confirmation: form.elements.confirmation.checked};
+  return {kind:'venue', website: form.elements.website.value, venueName: form.elements.venueName.value.trim(), contactName: form.elements.contactName.value.trim(), contactRole: form.elements.contactRole.value, email: form.elements.email.value.trim(), phone: form.elements.phone.value.trim(), venueType: form.elements.venueType.value, state: form.elements.state.value, city: form.elements.city.value.trim(), address: form.elements.address.value.trim(), rolesNeeded: vals('rolesNeeded'), busiestNights: vals('busiestNights'), calloutFrequency: form.querySelector('input[name="calloutFrequency"]:checked').value, notes: form.elements.notes.value.trim(), referredBy: form.elements.referredBy.value.trim(), confirmation: form.elements.confirmation.checked};
 }
 
 form.addEventListener('submit', async (e)=>{
