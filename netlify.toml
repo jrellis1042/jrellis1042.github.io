@@ -55,3 +55,12 @@
   from = "/bench"
   to = "/.netlify/functions/bench-preview"
   status = 200
+[[redirects]]
+from = "/pages/bench-preview.html"
+to = "/#bench"
+status = 301
+
+[[redirects]]
+from = "/pages/bench-preview"
+to = "/#bench"
+status = 301
