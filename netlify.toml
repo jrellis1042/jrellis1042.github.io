@@ -50,3 +50,8 @@
   from = "/owner-portal"
   to = "/pages/owner-portal.html"
   status = 200
+
+[[redirects]]
+  from = "/bench"
+  to = "/.netlify/functions/bench-preview"
+  status = 200
