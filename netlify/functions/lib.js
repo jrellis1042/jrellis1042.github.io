@@ -60,6 +60,11 @@ async function pd(path, method = 'GET', body) {
   });
   const json = await res.json().catch(() => ({}));
   if (!json.success) throw new Error(`Pipedrive ${method} ${path} failed: ${JSON.stringify(json.error || json).slice(0, 300)}`);
+  // Carry pagination metadata through on array payloads: portal-lib's
+  // listAllDeals pages via data.additional_data.pagination, and Pipedrive
+  // sends additional_data as a SIBLING of data — dropping it here silently
+  // truncated every list read at the first 100 records.
+  if (Array.isArray(json.data) && json.additional_data) json.data.additional_data = json.additional_data;
   return json.data;
 }
 async function findPersonByEmail(email) {

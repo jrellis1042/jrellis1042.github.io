@@ -85,10 +85,17 @@ async function buildOwnerOverview(session) {
   }
   const pipelineCounts = {};
   for (const d of deals.filter((x) => !x.deleted)) pipelineCounts[String(d.pipeline_id)] = (pipelineCounts[String(d.pipeline_id)] || 0) + 1;
+  // Bench stage breakdown (approved records only) + who is sitting in
+  // verification right now — read-only, name + type only, no contact PII.
+  const benchStageCounts = {};
+  for (const e of [...talentRoster, ...venueRoster]) benchStageCounts[e.stage] = (benchStageCounts[e.stage] || 0) + 1;
+  const verificationQueue = [...talentRoster.map((r) => ({ ...r, type: 'Talent' })), ...venueRoster.map((r) => ({ ...r, type: 'Venue' }))]
+    .filter((r) => r.verification === 'in_verification')
+    .map((r) => ({ name: r.name, type: r.type }));
   return {
     ok: true, role: 'owner', email: session.email, readOnly: true,
     counts: { talent, venue, combined: talent + venue, gate: GATE, claimingOpen: (talent + venue) >= GATE },
-    pipelineCounts, talentRoster, venueRoster,
+    pipelineCounts, talentRoster, venueRoster, benchStageCounts, verificationQueue,
     note: 'Read-only overview (v1). No toggles, payment changes, deal moves, or approvals are available here.',
   };
 }
