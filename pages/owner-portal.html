@@ -45,9 +45,21 @@ const AUTH='/portal-auth';
 const msg=document.getElementById('msg');
 function show(t,err){msg.textContent=t;msg.className=err?'err':'';msg.style.display='block';}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+async function fetchCounts(){
+  // /counts is backed by live registry reads and can take a moment (or a
+  // cold start) — retry before ever showing "unavailable" (fix pass 2).
+  for(var i=0;i<3;i++){
+    try{const r=await fetch('/counts');if(!r.ok)throw new Error('counts');
+      const c=await r.json();
+      if(typeof c.combined!=='number'||typeof c.talent!=='number'||typeof c.venue!=='number')throw new Error('counts shape');
+      return c;
+    }catch(e){ if(i===2) throw e; await new Promise(function(res){setTimeout(res,1500);}); }
+  }
+}
 async function ticker(){
-  try{const r=await fetch('/counts');const c=await r.json();
-    var seg='<b>'+c.combined+' OF '+c.gate+'</b> REGISTERED \u2014 '+(c.claimingOpen?'CLAIMING IS OPEN':'CLAIMING OPENS AT '+c.gate)+'&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>'+c.talent+' OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>'+c.venue+' OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;';document.getElementById('ticker').innerHTML='<div class="ticker-track"><span>'+seg+'</span><span>'+seg+'</span></div>';
+  try{const c=await fetchCounts();
+    var seg='<b>'+c.combined+' OF '+c.gate+'</b> REGISTERED \u2014 '+(c.claimingOpen?'CLAIMING IS OPEN':'CLAIMING OPENS AT '+c.gate)+'&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>'+c.talent+' OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>'+c.venue+' OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;';
+    document.getElementById('ticker').innerHTML='<div class="ticker-track"><span>'+seg+'</span><span>'+seg+'</span></div>';
   }catch{document.getElementById('ticker').textContent='Registration counts unavailable right now.';}
 }
 ticker(); setInterval(ticker,60000);
