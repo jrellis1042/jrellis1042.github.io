@@ -19,8 +19,8 @@
 <label>Email address <input id="email" type="email" autocomplete="email"></label>
 <label>Password <input id="pw" type="password" autocomplete="current-password"></label>
 <p><label><input id="mode" type="checkbox"> First time here — create my password</label></p>
+<p class="muted" id="pwhint">First time? Your new password must be at least 10 characters.</p>
 <button id="go" type="button">Continue</button>
-<button id="out" type="button" class="hidden">Sign out</button>
 <div id="msg" role="status"></div>
 </section>
 <section id="dash" class="card hidden">
@@ -49,11 +49,13 @@
 <p id="placeNote" class="muted"></p>
 <h2>Membership and placement terms</h2>
 <p id="pricing" class="muted"></p>
+<p><button id="out" type="button" class="hidden">Sign out</button></p>
 </section>
 <p class="muted"><a href='/pages/venue-form'>Register as a venue</a> · <a href="/">Back to the front door</a></p>
 <script>
 const AUTH='/portal-auth', REQ='/portal-request';
 const msg=document.getElementById('msg');
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function show(t,err){msg.textContent=t;msg.className=err?'err':'';msg.style.display='block';}
 async function ticker(){
   try{const r=await fetch('/counts');const c=await r.json();
@@ -68,7 +70,7 @@ async function call(url,body){
 let postAllowed=false;
 async function me(){
   const m=await call(AUTH,{action:'me'});
-  if(!m.ok){show(m.error||'Sign-in is not available for that email.',true);return;}
+  if(!m.ok){if(!quiet)show(m.error||'Sign-in is not available for that email.',true);return;}
   document.getElementById('login').classList.add('hidden');
   document.getElementById('dash').classList.remove('hidden');
   document.getElementById('banner').textContent = m.verified ? 'Your venue is verified.' : 'Registration approved — your venue is in the verification queue. Verification and payment both come before a posting goes live.';
@@ -76,8 +78,8 @@ async function me(){
   document.getElementById('payBanner').textContent=m.paymentBanner;
   document.getElementById('postGate').textContent=m.postGateMessage;
   postAllowed=!m.postDisabled; document.getElementById('postBtn').disabled=!postAllowed;
-  document.getElementById('requests').innerHTML = m.requests.length ? m.requests.map(r=>'<li>'+r.role+' — '+r.date+' '+r.window+'</li>').join('') : '<li>None yet.</li>';
-  document.getElementById('placements').innerHTML = m.placements.length ? m.placements.map(p=>'<li>'+p+'</li>').join('') : '<li>None yet.</li>';
+  document.getElementById('requests').innerHTML = m.requests.length ? m.requests.map(r=>'<li>'+esc(r.role)+' — '+esc(r.date)+' '+esc(r.window)+'</li>').join('') : '<li>None yet.</li>';
+  document.getElementById('placements').innerHTML = m.placements.length ? m.placements.map(p=>'<li>'+esc(p)+'</li>').join('') : '<li>None yet.</li>';
   document.getElementById('placeNote').textContent=m.placementsNote;
   document.getElementById('pricing').textContent=m.pricingModel.model+' — replacement guarantee and introduction coverage terms apply. Full terms are shared in a private conversation.';
   document.getElementById('out').classList.remove('hidden');
@@ -95,13 +97,14 @@ document.getElementById('postForm').addEventListener('submit',async e=>{
 document.getElementById('go').addEventListener('click',async()=>{
   const email=document.getElementById('email').value.trim(), pw=document.getElementById('pw').value;
   if(!email||!pw){show('Email and password are required.',true);return;}
+  if(document.getElementById('mode').checked&&pw.length<10){show('For a first-time password, choose at least 10 characters.',true);return;}
   const action=document.getElementById('mode').checked?'create-password':'signin';
   const res=await call(AUTH,{action,email,role:'venue',password:pw});
   if(!res.ok){show(res.error||'Sign-in is not available for that email.',true);return;}
   show('Signed in.'); me();
 });
 document.getElementById('out').addEventListener('click',async()=>{await call(AUTH,{action:'signout'});location.reload();});
-me();
+me(true);
 </script>
 </body>
 </html>

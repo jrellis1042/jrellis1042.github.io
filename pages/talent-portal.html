@@ -19,8 +19,8 @@
 <label>Email address <input id="email" type="email" autocomplete="email"></label>
 <label>Password <input id="pw" type="password" autocomplete="current-password"></label>
 <p><label><input id="mode" type="checkbox"> First time here — create my password</label></p>
+<p class="muted" id="pwhint">First time? Your new password must be at least 10 characters.</p>
 <button id="go" type="button">Continue</button>
-<button id="out" type="button" class="hidden">Sign out</button>
 <div id="msg" role="status"></div>
 </section>
 <section id="dash" class="card hidden">
@@ -41,11 +41,13 @@
 <p id="points"></p>
 <h2>Ready This Weekend</h2>
 <p id="weekend"></p>
+<p><button id="out" type="button" class="hidden">Sign out</button></p>
 </section>
 <p class="muted"><a href='/pages/talent-form'>Register as talent</a> · <a href="/">Back to the front door</a></p>
 <script>
 const AUTH='/portal-auth';
 const msg=document.getElementById('msg');
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function show(t,err){msg.textContent=t;msg.className=err?'err':'';msg.style.display='block';}
 async function ticker(){
   try{const r=await fetch('/counts');const c=await r.json();
@@ -57,18 +59,18 @@ async function call(body){
   const r=await fetch(AUTH,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(body)});
   return r.json();
 }
-async function me(){
+async function me(quiet){
   const m=await call({action:'me'});
-  if(!m.ok){show(m.error||'Sign-in is not available for that email.',true);return;}
+  if(!m.ok){if(!quiet)show(m.error||'Sign-in is not available for that email.',true);return;}
   document.getElementById('login').classList.add('hidden');
   const d=document.getElementById('dash'); d.classList.remove('hidden');
   document.getElementById('banner').textContent = m.verified ? 'You are on the bench.' : 'Registration approved — you are in the verification queue. Verification comes before your first placement.';
   document.getElementById('stage').textContent=m.stage; document.getElementById('verif').textContent=m.verification; document.getElementById('agree').textContent=m.agreement;
   document.getElementById('role').textContent=(m.primaryRole||'')+(m.otherSpecify?' — '+m.otherSpecify:''); document.getElementById('zone').textContent=m.zone||'Nationwide';
   document.getElementById('gateMsg').textContent=m.claimGate.message;
-  document.getElementById('shifts').innerHTML = m.shiftsPreview.length ? m.shiftsPreview.map(s=>'<li>'+s.venue+' — '+s.role+' — '+s.date+' '+s.window+' <button disabled>Claim (preview only)</button></li>').join('') : '<li>No postings in preview yet.</li>';
+  document.getElementById('shifts').innerHTML = m.shiftsPreview.length ? m.shiftsPreview.map(s=>'<li>'+esc(s.venue)+' — '+esc(s.role)+' — '+esc(s.date)+' '+esc(s.window)+' <button disabled>Claim (preview only)</button></li>').join('') : '<li>No postings in preview yet.</li>';
   document.getElementById('shiftsNote').textContent=m.shiftsPreviewNote;
-  document.getElementById('placements').innerHTML = m.placements.length ? m.placements.map(p=>'<li>'+p+'</li>').join('') : '<li>None yet.</li>';
+  document.getElementById('placements').innerHTML = m.placements.length ? m.placements.map(p=>'<li>'+esc(p)+'</li>').join('') : '<li>None yet.</li>';
   document.getElementById('placeNote').textContent=m.placementsNote;
   document.getElementById('creds').textContent=m.credentialsStatus;
   document.getElementById('points').textContent=m.pointsNote;
@@ -78,13 +80,14 @@ async function me(){
 document.getElementById('go').addEventListener('click',async()=>{
   const email=document.getElementById('email').value.trim(), pw=document.getElementById('pw').value;
   if(!email||!pw){show('Email and password are required.',true);return;}
+  if(document.getElementById('mode').checked&&pw.length<10){show('For a first-time password, choose at least 10 characters.',true);return;}
   const action=document.getElementById('mode').checked?'create-password':'signin';
   const res=await call({action,email,role:'talent',password:pw});
   if(!res.ok){show(res.error||'Sign-in is not available for that email.',true);return;}
   show('Signed in.'); me();
 });
 document.getElementById('out').addEventListener('click',async()=>{await call({action:'signout'});location.reload();});
-me();
+me(true);
 </script>
 </body>
 </html>

@@ -52,12 +52,12 @@ footer{margin-top:2.2rem;color:#8a8a99;font-size:.88rem}
   <a href='/pages/recruiter-portal-v2'>Recruiter Portal</a>
 </div>
 
-<div class="ticker" id="ticker" aria-hidden="true"></div>
+<div class="ticker" id="ticker" role="status">Registration counts loading…</div>
 
 <h1>The bench, at a glance.</h1>
 <p class="lede">This is the limited public preview for venue owners: the shape of the bench — roles and coverage — with <strong id="benchTotal">the founding bench</strong> registered so far. Every person on it is verified individually before they can ever be claimed. Names, photos, and full profiles are not public; they live inside the venue portal.</p>
 
-<div class="grid" aria-label="Bench role mix">
+<div class="grid" id="roleGrid" aria-label="Bench role mix">
   <div class="card"><div class="n">8</div><div class="r">Bartenders</div></div>
   <div class="card"><div class="n">5</div><div class="r">Venue Support</div></div>
   <div class="card"><div class="n">4</div><div class="r">VIP Hosts</div></div>
@@ -65,7 +65,7 @@ footer{margin-top:2.2rem;color:#8a8a99;font-size:.88rem}
   <div class="card"><div class="n">3</div><div class="r">Door Staff</div></div>
   <div class="card"><div class="n">1</div><div class="r">Bottle Service</div></div>
 </div>
-<p class="note">Role mix as of October 29, 2026. Many bench members cover more than one role — that is the point of a bench. The founding bench is in verification now.</p>
+<p class="note" id="mixNote">Role mix as of October 29, 2026. Many bench members cover more than one role — that is the point of a bench. The founding bench is in verification now.</p>
 
 <div class="panel">
   <h2>Coverage</h2>
@@ -92,6 +92,18 @@ async function ticker(){
   }catch{document.getElementById('ticker').textContent='Registration counts unavailable right now.';}
 }
 ticker(); setInterval(ticker,60000);
+async function benchMix(){
+  try{const r=await fetch('/.netlify/functions/bench-preview');const b=await r.json();
+    if(!b.ok||!b.roleMix) return; // keep the dated static snapshot on any failure
+    var labels={'Bartender':'Bartenders','Venue Support':'Venue Support','VIP Host':'VIP Hosts','Barback':'Barbacks','Door Staff':'Door Staff','Bottle Service':'Bottle Service','Other':'Other'};
+    var order=['Bartender','Venue Support','VIP Host','Barback','Door Staff','Bottle Service','Other'];
+    var html='';
+    order.forEach(function(k){ if(b.roleMix[k]) html+='<div class="card"><div class="n">'+b.roleMix[k]+'</div><div class="r">'+labels[k]+'</div></div>'; });
+    if(html) document.getElementById('roleGrid').innerHTML=html;
+    document.getElementById('mixNote').textContent='Role mix updated from the live registry. Many bench members cover more than one role — that is the point of a bench. The founding bench is in verification now.';
+  }catch(e){ /* static snapshot stays */ }
+}
+benchMix();
 </script>
 </body>
 </html>

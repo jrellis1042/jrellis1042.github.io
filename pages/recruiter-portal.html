@@ -78,14 +78,16 @@ async function submit(formId, msgId, kind, build){
   const form=document.getElementById(formId), msg=document.getElementById(msgId);
   form.addEventListener('submit', async (e)=>{
     e.preventDefault();
+    const missing=[...form.querySelectorAll('[required]')].filter(el=>!el.value.trim());
+    if(missing.length){msg.textContent='Please complete the required fields marked * before submitting.'; msg.className='msg err'; msg.style.display='block'; missing[0].focus(); return;}
     const body=Object.assign({kind, website: form.elements.website.value}, build(form));
     for(const k in body){ if(body[k]===undefined) body[k]=''; }
     try{
       const r=await fetch('/recruiter', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
       const j=await r.json().catch(()=>({}));
-      if(r.ok && j.ok){msg.innerHTML='Saved. Thank you.'; msg.className='msg'; msg.style.display='block'; form.reset();}
-      else {msg.innerHTML='Could not be saved — please try again.' + (j.error ? ' ('+j.error+')' : ''); msg.className='msg err'; msg.style.display='block';}
-    }catch(_e){msg.innerHTML='Could not be saved — please try again.'; msg.className='msg err'; msg.style.display='block';}
+      if(r.ok && j.ok){msg.textContent='Saved. Thank you.'; msg.className='msg'; msg.style.display='block'; form.reset();}
+      else {msg.textContent='Could not be saved — please try again.' + (j.error ? ' ('+j.error+')' : ''); msg.className='msg err'; msg.style.display='block';}
+    }catch(_e){msg.textContent='Could not be saved — please try again.'; msg.className='msg err'; msg.style.display='block';}
   });
 }
 function v(f,n){return f.elements[n] ? f.elements[n].value.trim() : '';}
@@ -96,3 +98,4 @@ submit('edit','msg-edit','edit-request',f=>({recruiterName:v(f,'recruiterName'),
 </script>
 </body>
 </html>
+<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="c132a19f-9db2-420a-9e24-515331739ab4" data-app-host="app.netlify.com" data-account-tier="personal"></script>

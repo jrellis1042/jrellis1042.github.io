@@ -20,8 +20,8 @@
 <label>Email address <input id="email" type="email" autocomplete="email"></label>
 <label>Password <input id="pw" type="password" autocomplete="current-password"></label>
 <p><label><input id="mode" type="checkbox"> First time here — create my password</label></p>
+<p class="muted" id="pwhint">First time? Your new password must be at least 10 characters.</p>
 <button id="go" type="button">Continue</button>
-<button id="out" type="button" class="hidden">Sign out</button>
 <div id="msg" role="status"></div>
 </section>
 <section id="dash" class="card hidden">
@@ -38,11 +38,13 @@
 <h2>Pilot pay</h2>
 <div id="pay"></div>
 <p class="muted">No payout date is promised in the pilot. Pay follows revenue actually received, monthly in arrears.</p>
+<p><button id="out" type="button" class="hidden">Sign out</button></p>
 </section>
 <p class="muted"><a href='/pages/recruiter-portal'>Recruiter forms (application, referral report, edit request)</a> · <a href="/">Back to the front door</a></p>
 <script>
 const AUTH='/portal-auth';
 const msg=document.getElementById('msg');
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function show(t,err){msg.textContent=t;msg.className=err?'err':'';msg.style.display='block';}
 async function ticker(){
   try{const r=await fetch('/counts');const c=await r.json();
@@ -54,14 +56,14 @@ async function call(body){
   const r=await fetch(AUTH,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(body)});
   return r.json();
 }
-async function me(){
+async function me(quiet){
   const m=await call({action:'me'});
-  if(!m.ok){show(m.error||'Sign-in is not available for that email.',true);return;}
+  if(!m.ok){if(!quiet)show(m.error||'Sign-in is not available for that email.',true);return;}
   document.getElementById('login').classList.add('hidden');
   document.getElementById('dash').classList.remove('hidden');
   document.getElementById('code').textContent=m.referralCode||'Not assigned yet — assigned at approval.';
-  document.getElementById('refs').innerHTML = m.referrals.length ? m.referrals.map(r=>'<li>'+r.kind+': '+r.name+(r.role?' — '+r.role:'')+(r.city?' — '+r.city:'')+'</li>').join('') : '<li>None yet.</li>';
-  document.getElementById('reviews').innerHTML = m.reviews.length ? m.reviews.map(r=>'<li>'+r.talent+' — '+r.outcome+'</li>').join('') : '<li>None yet.</li>';
+  document.getElementById('refs').innerHTML = m.referrals.length ? m.referrals.map(r=>'<li>'+esc(r.kind)+': '+esc(r.name)+(r.role?' — '+esc(r.role):'')+(r.city?' — '+esc(r.city):'')+'</li>').join('') : '<li>None yet.</li>';
+  document.getElementById('reviews').innerHTML = m.reviews.length ? m.reviews.map(r=>'<li>'+esc(r.talent)+' — '+esc(r.outcome)+'</li>').join('') : '<li>None yet.</li>';
   // Private terms render ONLY from the signed-in session response, never
   // from this page's static markup.
   const p=m.privatePricing;
@@ -73,13 +75,14 @@ async function me(){
 document.getElementById('go').addEventListener('click',async()=>{
   const email=document.getElementById('email').value.trim(), pw=document.getElementById('pw').value;
   if(!email||!pw){show('Email and password are required.',true);return;}
+  if(document.getElementById('mode').checked&&pw.length<10){show('For a first-time password, choose at least 10 characters.',true);return;}
   const action=document.getElementById('mode').checked?'create-password':'signin';
   const res=await call({action,email,role:'recruiter',password:pw});
   if(!res.ok){show(res.error||'Sign-in is not available for that email.',true);return;}
   show('Signed in.'); me();
 });
 document.getElementById('out').addEventListener('click',async()=>{await call({action:'signout'});location.reload();});
-me();
+me(true);
 </script>
 </body>
 </html>

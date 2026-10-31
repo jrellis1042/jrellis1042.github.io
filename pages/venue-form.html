@@ -70,10 +70,11 @@ form.addEventListener('submit', async (e)=>{
   try{
     const r=await fetch('/intake', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
     const j=await r.json().catch(()=>({}));
-    if(r.ok && j.ok){form.style.display='none'; show('You\'re in — your Founding Venue registration is confirmed. 🌙<br>Your registration just reserved something: Nocturnal Reserve founding rates, locked for Founding Venues only. See what your registration unlocked: <a href="https://nocturnalstaffing.com/?audience=venue#reserve">https://nocturnalstaffing.com/?audience=venue#reserve</a><br>Next step: complete your venue signup at nocturnalstaffing.com so your venue enters verification. Founding spots are limited — the first 10 venues lock founding standing.');}
+    if(r.ok && j.ok){form.style.display='none'; show('You\'re in — your Founding Venue registration is confirmed. 🌙<br>Your registration just reserved something: Nocturnal Reserve founding rates, locked for Founding Venues only. See what your registration unlocked: <a href="https://nocturnalstaffing.com/?audience=venue#reserve">https://nocturnalstaffing.com/?audience=venue#reserve</a><br>This registration is your signup — there is no second step. Verification starts from this record: watch your email for your next steps. Founding spots are limited — the first 10 venues lock founding standing.');}
     else show('Registration could not be saved — please try again.' + (j.error ? ' ('+j.error+')' : ''), true);
   }catch(_e){show('Registration could not be saved — please try again.', true);}
 });
 </script>
 </body>
 </html>
+<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="c132a19f-9db2-420a-9e24-515331739ab4" data-app-host="app.netlify.com" data-account-tier="personal"></script>
