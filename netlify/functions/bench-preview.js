@@ -71,6 +71,11 @@ exports.handler = async (event) => {
       talent += 1;
       for (const r of rolesFromNotes(d.id, notes)) roleMix[r] = (roleMix[r] || 0) + 1;
     }
+    if (talent + venue === 0) {
+      // Same zero-guard as counts.js: never present a false empty registry.
+      const meta = await C.getMeta(store).catch(() => null);
+      return L.ok(fallbackBody(meta));
+    }
     const ordered = {};
     for (const r of ROLE_ORDER) if (roleMix[r]) ordered[r] = roleMix[r];
     for (const r of Object.keys(roleMix)) if (!(r in ordered)) ordered[r] = roleMix[r];
