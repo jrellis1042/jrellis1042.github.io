@@ -69,3 +69,13 @@ status = 301
 from = "/pages/bench-preview"
 to = "/#bench"
 status = 301
+
+[[redirects]]
+  from = "/board-data"
+  to = "/.netlify/functions/board-data"
+  status = 200
+
+[[redirects]]
+  from = "/crm-board"
+  to = "/pages/crm-board.html"
+  status = 200
