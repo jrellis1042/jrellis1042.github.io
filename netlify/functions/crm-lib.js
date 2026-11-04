@@ -56,9 +56,11 @@ function getStore(event) {
   if (event && typeof blobs.connectLambda === 'function') {
     try { blobs.connectLambda(event); } catch {}
   }
-  let store;
-  try { store = blobs.getStore({ name: STORE_NAME, consistency: 'strong' }); }
-  catch { store = blobs.getStore(STORE_NAME); }
+  // String form ONLY — proven in production with connectLambda above. The
+  // options-object form ({ name, consistency }) constructs a store that
+  // fails at first get() in this Lambda context (2026-11-03 redeploy
+  // incident: every CRM call 502'd until this was reverted).
+  const store = blobs.getStore(STORE_NAME);
   return {
     kind: 'blobs',
     async get(key) { const v = await store.get(key, { type: 'json' }); return v ?? null; },
@@ -70,16 +72,22 @@ function getStore(event) {
     // ids while every record key survived). Listings therefore derive from
     // the record keys themselves; idx is kept only as a legacy fallback.
     async list(prefix) {
-      const keys = [];
-      let cursor;
-      for (;;) {
-        const res = await store.list({ prefix, cursor });
-        const blobsList = (res && res.blobs) || [];
-        for (const b of blobsList) keys.push(b.key);
-        cursor = res && res.cursor;
-        if (!cursor || !blobsList.length) break;
-      }
-      return keys;
+      // @netlify/blobs list() returns a single result page when called with
+      // { paginate: false }, and an async iterator of pages by default.
+      // Support both shapes; never throw (callers fall back to the index).
+      try {
+        const keys = [];
+        const collect = (page) => {
+          for (const b of (page && page.blobs) || []) keys.push(b.key);
+        };
+        const res = await store.list({ prefix, paginate: false });
+        if (res && Array.isArray(res.blobs)) { collect(res); return keys; }
+        if (res && typeof res[Symbol.asyncIterator] === 'function') {
+          for await (const page of res) collect(page);
+          return keys;
+        }
+        return keys;
+      } catch { return []; }
     },
   };
 }
