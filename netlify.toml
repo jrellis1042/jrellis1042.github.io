@@ -17,6 +17,11 @@
   status = 200
 
 [[redirects]]
+  from = "/crm/*"
+  to = "/.netlify/functions/crm/:splat"
+  status = 200
+
+[[redirects]]
   from = "/recruiter"
   to = "/.netlify/functions/recruiter"
   status = 200
