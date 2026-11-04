@@ -1,5 +1,8 @@
 // POST /.netlify/functions/recruiter (also mapped to /recruiter)
 // Recruiter portal backend — production, no demo data.
+// PHASE 3 (2026-11-03): person lookup/creation and note writes now go to
+// the in-house CRM (crm-lib.js) instead of Pipedrive. Kinds, validation,
+// note text, and response shapes are unchanged.
 // Kinds:
 //   application — a person applies to be a recruiter (future recruiters;
 //     Crystal Gayle's application is by email reply, not this form, but
@@ -22,7 +25,7 @@
 // NEVER writes "verified" in a recruiter note — recruiter approval is an
 // endorsement, verification is a separate step through the verifier.
 const L = require('./lib');
-const { pd, findPersonByEmail } = L;
+const C = require('./crm-lib');
 
 exports.handler = async (event) => {
   try {
@@ -48,9 +51,10 @@ exports.handler = async (event) => {
       if (!b.editText || !b.editText.trim()) return L.bad('Edit request text is required.');
     }
 
-    let person = await findPersonByEmail(b.recruiterEmail);
+    const store = C.getStore(event);
+    let person = await C.findPersonByEmail(store, b.recruiterEmail);
     if (!person) {
-      person = await pd('/persons', 'POST', { name: b.recruiterName, email: [{ value: b.recruiterEmail, primary: true }], phone: b.phone ? [{ value: b.phone, primary: true }] : [] });
+      person = await C.create(store, 'persons', { name: b.recruiterName, email: [{ value: b.recruiterEmail, primary: true }], phone: b.phone ? [{ value: b.phone, primary: true }] : [] });
     }
     const code = (b.recruiterCode || '').trim().toUpperCase();
     let content = '';
@@ -65,7 +69,7 @@ exports.handler = async (event) => {
       const flag = /price|\$|owner|verif|guarantee|placement.*fee/i.test(b.editText) ? ' FLAGGED for Rashad review — edit text touches pricing, owner, verification, or a guarantee. Do NOT apply without Rashad.' : '';
       content = `RECRUITER PORTAL EDIT REQUEST ${new Date().toISOString()}: recruiter=${b.recruiterName} (${b.recruiterEmail}, code=${code || 'none'}); request=${b.editText}.${flag}`;
     }
-    const note = await pd('/notes', 'POST', { person_id: person.id, content });
+    const note = await C.create(store, 'notes', { person_id: person.id, content });
     return L.ok({ ok: true, kind, personId: person.id, noteId: note.id }, 201);
   } catch (e) {
     console.error('recruiter error:', e.message);
