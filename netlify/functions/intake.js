@@ -114,8 +114,14 @@ exports.handler = async (event) => {
       ? `Talent intake: name=${b.fullName}; email=${b.email}; phone=${b.phone}; dob=${b.dob}; primaryRole=${b.primaryRole}; otherSpecify=${b.otherSpecify || ''}; otherRoles=${(b.otherRoles || []).join(', ')}; state=${b.state}; city=${b.city}; experience=${b.experience}; certifications=${(b.certifications || []).join(', ')}; transportation=${b.transportation}; availability=${(b.availability || []).join(', ')}; notes=${b.notes || ''}`
       : `Venue intake: venue=${b.venueName}; contact=${b.contactName} (${b.contactRole}); email=${b.email}; phone=${b.phone}; type=${b.venueType}; state=${b.state}; city=${b.city}; address=${b.address || ''}; rolesNeeded=${(b.rolesNeeded || []).join(', ')}; busiestNights=${(b.busiestNights || []).join(', ')}; calloutFrequency=${b.calloutFrequency}; notes=${b.notes || ''}`;
     const referralLine = referredBy.trim() ? `\nReferred by: ${referredBy}` : '';
-    await C.create(store, 'notes', { deal_id: deal.id, person_id: person.id, org_id: orgId, content: `INTAKE ${new Date().toISOString()}: ${fields}${referralLine}` });
-    if (flags.length) await C.create(store, 'notes', { deal_id: deal.id, person_id: person.id, org_id: orgId, content: `FLAGGED — intake: ${flags.join('; ')}. Do NOT auto-approve; needs Rashad's decision.` });
+    // ONE note per intake, deliberately: the store's read lag let a second
+    // note created a fraction of a second later land on the first note's id
+    // and overwrite it (2026-11-03 live tests: a FLAGGED note ate the INTAKE
+    // note twice, even with write read-back verification in crm-lib). The
+    // flag rides inside the INTAKE note instead — every consumer finds this
+    // note by its "INTAKE " prefix, and flag detection is content-based.
+    const flagLine = flags.length ? `\nFLAGGED — intake: ${flags.join('; ')}. Do NOT auto-approve; needs Rashad's decision.` : '';
+    await C.create(store, 'notes', { deal_id: deal.id, person_id: person.id, org_id: orgId, content: `INTAKE ${new Date().toISOString()}: ${fields}${referralLine}${flagLine}` });
     return L.ok({ ok: true, dealId: deal.id, personId: person.id, orgId, flagged: flags.length > 0, flags, nearMatch }, 201);
   } catch (e) {
     // A failed CRM write returns an error to the visitor ("try again") and
