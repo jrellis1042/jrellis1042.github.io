@@ -133,20 +133,66 @@ async function listAll(store, collection) {
 async function getOne(store, collection, id) {
   return store.get(PREFIX[collection] + Number(id));
 }
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function create(store, collection, fields) {
+  const explicitId = fields && fields.id != null ? Number(fields.id) : null;
   const meta = await getMeta(store);
-  let id = fields && fields.id != null ? Number(fields.id) : null;
+  let id = explicitId;
   if (id == null) {
-    // Allocate from the meta counter (single key, strong-read above), then
-    // verify the candidate key is actually free before using it. Key scans
-    // lag too much to allocate from (production collision, 2026-11-03).
+    // Allocate from the meta counter, raised past every id the key scan can
+    // currently see. Both signals can lag in production — on 2026-11-03 a
+    // FLAGGED note overwrote the INTAKE note written 0.2s earlier in the
+    // same intake, because the second create read a stale counter AND its
+    // existence check missed the not-yet-visible first record. The write
+    // below is therefore verified by read-back (blobs path) and retried on
+    // the next id when a collision is detected.
     id = meta.nextId[collection] || 1;
+    try {
+      const seen = await listIds(store, collection);
+      if (seen.length) id = Math.max(id, Math.max(...seen) + 1);
+    } catch { /* the scan is advisory only */ }
     while (await getOne(store, collection, id)) id += 1;
   }
-  if (id >= (meta.nextId[collection] || 1)) meta.nextId[collection] = id + 1;
   const now = new Date().toISOString();
   const rec = { ...fields, id, add_time: fields.add_time || now, update_time: now };
   await store.set(PREFIX[collection] + id, rec);
+  if (explicitId == null && store.kind === 'blobs') {
+    // Read-back verification. If a racing create owns the key now (its
+    // record reads back instead of ours), move ours to the next free id.
+    // A null read-back is propagation lag, not a collision — wait briefly,
+    // then accept the write (setJSON completed; the record will surface).
+    // A record that reads back as ours is re-read after a beat, because a
+    // racing write can still land just after the first read.
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      let back = await getOne(store, collection, id);
+      if (!back) { await sleep(300); back = await getOne(store, collection, id); }
+      if (!back) break;
+      if (back.update_time === rec.update_time) {
+        await sleep(400);
+        const again = await getOne(store, collection, id);
+        if (!again || again.update_time === rec.update_time) break;
+      }
+      id += 1;
+      while (await getOne(store, collection, id)) id += 1;
+      rec.id = id;
+      rec.update_time = new Date().toISOString();
+      await store.set(PREFIX[collection] + id, rec);
+    }
+  }
+  // Persist the counter merged against a FRESH meta read, per collection
+  // max — a stale snapshot must never regress another collection's counter
+  // (the regression half of the 2026-11-03 note collision).
+  try {
+    const fresh = await getMeta(store);
+    for (const c of Object.keys(meta.nextId)) {
+      meta.nextId[c] = Math.max(meta.nextId[c] || 1, (fresh.nextId && fresh.nextId[c]) || 1);
+    }
+    if (fresh.seededAt && !meta.seededAt) meta.seededAt = fresh.seededAt;
+    if (fresh.seedCounts && !meta.seedCounts) meta.seedCounts = fresh.seedCounts;
+    if (fresh.seedRoleMix && !meta.seedRoleMix) meta.seedRoleMix = fresh.seedRoleMix;
+  } catch { /* keep the local snapshot */ }
+  if (id >= (meta.nextId[collection] || 1)) meta.nextId[collection] = id + 1;
   const ids = await listIds(store, collection);
   if (!ids.includes(id)) { ids.push(id); await store.set(`idx:${collection}`, ids); }
   await setMeta(store, meta);
