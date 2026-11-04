@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nocturnal CRM — Board</title>
+<style>
+  :root { --bg:#0d0f14; --panel:#161a22; --card:#1e242f; --line:#2a303d; --txt:#e8eaf0; --dim:#9aa3b2; --accent:#e2543e; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--bg); color:var(--txt); }
+  header { display:flex; align-items:center; gap:16px; padding:14px 20px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  header h1 { font-size:20px; margin:0; letter-spacing:.4px; }
+  header h1 span { color:var(--accent); }
+  .tally { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:13px; color:var(--dim); }
+  .tally b { color:var(--txt); font-size:15px; }
+  button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:8px 14px; font-size:14px; cursor:pointer; }
+  button.ghost { background:transparent; border:1px solid var(--line); color:var(--dim); }
+  #gate { max-width:420px; margin:60px auto; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:24px; }
+  #gate input { width:100%; padding:10px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--txt); font-size:15px; margin:10px 0 14px; }
+  #gate p { color:var(--dim); font-size:13px; line-height:1.5; }
+  .err { color:#ff8a75; font-size:13px; min-height:18px; }
+  #board { display:flex; gap:12px; overflow-x:auto; padding:16px 20px; align-items:flex-start; }
+  .col { min-width:250px; width:250px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px; }
+  .col h2 { font-size:14px; margin:2px 4px 10px; display:flex; justify-content:space-between; }
+  .col h2 .n { color:var(--dim); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:8px; cursor:pointer; }
+  .card:hover { border-color:var(--accent); }
+  .card .t { font-weight:600; font-size:14px; line-height:1.35; }
+  .card .m { color:var(--dim); font-size:12px; margin-top:4px; line-height:1.5; }
+  #detail { position:fixed; top:0; right:0; width:min(460px, 92vw); height:100%; background:var(--panel); border-left:1px solid var(--line); padding:20px; overflow-y:auto; transform:translateX(105%); transition:transform .18s ease; z-index:5; }
+  #detail.open { transform:translateX(0); }
+  #detail h2 { font-size:17px; margin:0 30px 4px 0; line-height:1.4; }
+  #detail h3 { font-size:13px; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin:20px 0 8px; }
+  #detail .note, #detail .act { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:9px 11px; font-size:13px; line-height:1.5; margin-bottom:8px; white-space:pre-wrap; word-break:break-word; }
+  #detail .meta { color:var(--dim); font-size:12px; }
+  #closeDetail { position:absolute; top:14px; right:14px; }
+  .hidden { display:none !important; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Nocturnal <span>CRM</span></h1>
+  <div id="tallies" class="hidden"></div>
+  <button id="refresh" class="ghost hidden">Refresh</button>
+  <button id="lock" class="ghost hidden">Lock</button>
+</header>
+
+<section id="gate">
+  <h2 style="margin:0 0 4px;font-size:17px;">Board Access</h2>
+  <p>Enter the CRM access key to load the board. The key stays in this tab's session storage only and is never saved to disk.</p>
+  <input id="keyInput" type="password" autocomplete="off" placeholder="CRM access key">
+  <div class="err" id="gateErr"></div>
+  <button id="unlock">Open Board</button>
+  <p>Read-only view. Nothing on this board can be changed from here.</p>
+</section>
+
+<main id="board" class="hidden"></main>
+
+<aside id="detail">
+  <button id="closeDetail" class="ghost">Close</button>
+  <h2 id="dTitle"></h2>
+  <div class="meta" id="dMeta"></div>
+  <h3>Notes</h3>
+  <div id="dNotes"></div>
+  <h3>Open Activities</h3>
+  <div id="dActs"></div>
+</aside>
+
+<script>
+(function () {
+  var KEY_STORE = 'nocturnal-crm-key';
+  var DATA = null;
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function key() { return sessionStorage.getItem(KEY_STORE) || ''; }
+
+  function load() {
+    document.getElementById('gateErr').textContent = '';
+    fetch('/.netlify/functions/board-data', { headers: { 'x-crm-key': key() } })
+      .then(function (r) { return r.json().then(function (j) { return { status: r.status, j: j }; }); })
+      .then(function (res) {
+        if (res.status === 401) throw new Error('That key was not accepted.');
+        if (!res.j || !res.j.success) throw new Error('The board data could not be loaded.');
+        DATA = res.j.data;
+        render();
+      })
+      .catch(function (e) {
+        document.getElementById('gate').classList.remove('hidden');
+        document.getElementById('board').classList.add('hidden');
+        document.getElementById('gateErr').textContent = e.message;
+      });
+  }
+
+  function render() {
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('board').classList.remove('hidden');
+    ['tallies', 'refresh', 'lock'].forEach(function (id) { document.getElementById(id).classList.remove('hidden'); });
+    var t = DATA.pipelineTallies || {};
+    var names = { '1': 'NSA Pipeline', '3': 'NSA Marketing', '4': 'NSA Rotation Sources', '5': 'NSA Rotation Building' };
+    document.getElementById('tallies').innerHTML = ['5', '1', '3', '4'].map(function (id) {
+      return '<span class="tally">' + esc(names[id]) + ': <b>' + (t[id] || 0) + '</b></span>';
+    }).join(' ') + ' <span class="tally">Open Total: <b>' + DATA.totalOpen + '</b></span>';
+
+    var p5 = (DATA.pipelines || []).filter(function (p) { return p.id === 5; })[0];
+    var board = document.getElementById('board');
+    board.innerHTML = '';
+    if (!p5) { board.innerHTML = '<p>No Rotation Building pipeline found.</p>'; return; }
+    p5.stages.forEach(function (stage) {
+      var col = document.createElement('div');
+      col.className = 'col';
+      col.innerHTML = '<h2>' + esc(stage.name) + ' <span class="n">' + stage.deals.length + '</span></h2>';
+      stage.deals.forEach(function (card) {
+        var el = document.createElement('div');
+        el.className = 'card';
+        var meta = [card.orgName || card.personName || '', card.city || card.zone || ''].filter(Boolean).join(' · ');
+        el.innerHTML = '<div class="t">' + esc(card.title) + '</div>' + (meta ? '<div class="m">' + esc(meta) + '</div>' : '');
+        el.addEventListener('click', function () { showDetail(card); });
+        col.appendChild(el);
+      });
+      board.appendChild(col);
+    });
+  }
+
+  function showDetail(card) {
+    document.getElementById('dTitle').textContent = card.title;
+    document.getElementById('dMeta').textContent = [card.orgName || card.personName || '', card.city || '', card.zone || ''].filter(Boolean).join(' · ');
+    var det = (DATA.dealDetails || {})[String(card.id)] || { notes: [], activities: [] };
+    document.getElementById('dNotes').innerHTML = det.notes.length
+      ? det.notes.map(function (n) { return '<div class="note">' + esc(n.content) + '</div>'; }).join('')
+      : '<div class="meta">No notes on this record.</div>';
+    document.getElementById('dActs').innerHTML = det.activities.length
+      ? det.activities.map(function (a) { return '<div class="act"><b>' + esc(a.subject) + '</b>' + (a.dueDate ? '<div class="meta">Due ' + esc(a.dueDate) + '</div>' : '') + (a.note ? '<div>' + esc(a.note) + '</div>' : '') + '</div>'; }).join('')
+      : '<div class="meta">No open activities.</div>';
+    document.getElementById('detail').classList.add('open');
+  }
+
+  document.getElementById('unlock').addEventListener('click', function () {
+    var v = document.getElementById('keyInput').value.trim();
+    if (!v) { document.getElementById('gateErr').textContent = 'Enter the access key first.'; return; }
+    sessionStorage.setItem(KEY_STORE, v);
+    load();
+  });
+  document.getElementById('keyInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') document.getElementById('unlock').click(); });
+  document.getElementById('refresh').addEventListener('click', load);
+  document.getElementById('lock').addEventListener('click', function () {
+    sessionStorage.removeItem(KEY_STORE);
+    document.getElementById('detail').classList.remove('open');
+    document.getElementById('board').classList.add('hidden');
+    ['tallies', 'refresh', 'lock'].forEach(function (id) { document.getElementById(id).classList.add('hidden'); });
+    document.getElementById('gate').classList.remove('hidden');
+  });
+  document.getElementById('closeDetail').addEventListener('click', function () { document.getElementById('detail').classList.remove('open'); });
+
+  if (key()) load();
+})();
+</script>
+</body>
+</html>
