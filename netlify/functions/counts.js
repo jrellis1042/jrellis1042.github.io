@@ -48,6 +48,14 @@ exports.handler = async (event) => {
       if (!C.hasApprovalNote(notes)) continue;
       if (String(d[L.REGISTRANT_TYPE_KEY]) === String(L.TYPE_TALENT)) talent += 1; else venue += 1;
     }
+    if (talent + venue === 0) {
+      // A readable store that tallies zero approved registrations cannot be
+      // right while the registry exists (15 approved at seed) — serve the
+      // snapshot rather than a false zero.
+      const meta = await C.getMeta(store).catch(() => null);
+      const snap = (meta && meta.seedCounts) || C.FALLBACK_COUNTS;
+      return L.ok(countsBody(snap.talent, snap.venue, 'seed-snapshot'));
+    }
     return L.ok(countsBody(talent, venue, 'crm'));
   } catch (e) {
     console.error('counts error:', e.message);
