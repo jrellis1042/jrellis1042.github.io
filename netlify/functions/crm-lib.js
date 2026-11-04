@@ -63,7 +63,13 @@ function getStore(event) {
   const store = blobs.getStore(STORE_NAME);
   return {
     kind: 'blobs',
-    async get(key) { const v = await store.get(key, { type: 'json' }); return v ?? null; },
+    async get(key) {
+      // Strong-consistency reads: the default eventual reads lagged behind
+      // writes by seconds in production, which collided id allocation when
+      // two intakes landed back-to-back (2026-11-03 test incident).
+      try { const v = await store.get(key, { type: 'json', consistency: 'strong' }); return v ?? null; }
+      catch { const v = await store.get(key, { type: 'json' }); return v ?? null; }
+    },
     async set(key, value) { await store.setJSON(key, value); },
     async delete(key) { await store.delete(key); },
     // Prefix key scan — the AUTHORITATIVE listing. The idx:<collection>
@@ -75,19 +81,21 @@ function getStore(event) {
       // @netlify/blobs list() returns a single result page when called with
       // { paginate: false }, and an async iterator of pages by default.
       // Support both shapes; never throw (callers fall back to the index).
-      try {
+      const collectFrom = async (opts) => {
         const keys = [];
         const collect = (page) => {
           for (const b of (page && page.blobs) || []) keys.push(b.key);
         };
-        const res = await store.list({ prefix, paginate: false });
+        const res = await store.list(opts);
         if (res && Array.isArray(res.blobs)) { collect(res); return keys; }
         if (res && typeof res[Symbol.asyncIterator] === 'function') {
           for await (const page of res) collect(page);
           return keys;
         }
         return keys;
-      } catch { return []; }
+      };
+      try { return await collectFrom({ prefix, paginate: false, consistency: 'strong' }); }
+      catch { try { return await collectFrom({ prefix, paginate: false }); } catch { return []; } }
     },
   };
 }
@@ -129,10 +137,11 @@ async function create(store, collection, fields) {
   const meta = await getMeta(store);
   let id = fields && fields.id != null ? Number(fields.id) : null;
   if (id == null) {
-    // Allocate from the authoritative key scan, not the read-modify-write
-    // meta counter (eventual consistency can hand out a duplicate id).
-    const existing = await listIds(store, collection);
-    id = existing.length ? Math.max(...existing) + 1 : (meta.nextId[collection] || 1);
+    // Allocate from the meta counter (single key, strong-read above), then
+    // verify the candidate key is actually free before using it. Key scans
+    // lag too much to allocate from (production collision, 2026-11-03).
+    id = meta.nextId[collection] || 1;
+    while (await getOne(store, collection, id)) id += 1;
   }
   if (id >= (meta.nextId[collection] || 1)) meta.nextId[collection] = id + 1;
   const now = new Date().toISOString();
