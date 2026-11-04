@@ -2,13 +2,26 @@
 // PHASE 3 (2026-11-03): eligibility/overview reads now come from the
 // in-house CRM via portal-lib.js (was Pipedrive; trial expired). Routes,
 // request/response shapes, session behavior, and validation are unchanged.
-// Website portal auth — one function, four actions:
+// Website portal auth — one function, seven actions:
 //   create-password {email, role, password}  — first-time password for an
 //     ELIGIBLE email only (approved pipeline-5 deal for talent/venue, or an
 //     approved recruiter record). Eligibility is checked server-side here.
 //   signin {email, password}
 //   signout {}
 //   me {} — role-scoped portal state; also served on GET with a session.
+//   forgot-password {email} — PHASE 4 (2026-11-03): ALWAYS returns the same
+//     generic 200 (never reveals whether an account exists). When an
+//     account does exist for the email, a PORTAL PASSWORD RESET REQUEST
+//     note is logged on the person's CRM record (max one per day) for the
+//     portal watch. The web request alone NEVER changes a password.
+//   reset-password {email, code, password} — completes a reset with the
+//     one-hour code the team emailed after confirming the request from
+//     the account's own inbox (see admin-set-reset-code). The code is
+//     stored scrypt-hashed only, single-use, and cleared on success.
+//   admin-set-reset-code {email, role, code} — key-guarded (x-crm-key vs
+//     CRM_API_KEY, same pattern as board-data/crm). Juju runs this ONLY
+//     after the account holder confirms the reset by replying from the
+//     account email, then emails them the code from the business inbox.
 // Sessions are server-side, role-bound, fixed 7-day expiry (never sliding).
 // Passwords: scrypt hashes only, stored in the auth store — never plaintext,
 // never logged, never written to the CRM, never in any repo file.
@@ -33,13 +46,28 @@
 //     NO toggles, NO payment-status changes, NO deal/stage moves,
 //     NO approvals, NO Command Center tabs in v1. Full Command Center is
 //     a later phase. The owner dashboard page is pages/owner-portal.html.
+const crypto = require('crypto');
 const L = require('./lib');
+const C = require('./crm-lib');
 const P = require('./portal-lib');
 
 const GATE = L.GATE;
 // The eligible owner email comes ONLY from this env var. It is never
 // hardcoded in any page or function code. Missing = owner auth fails closed.
 function ownerEmail() { return String(process.env.OWNER_LOGIN_EMAIL || '').trim().toLowerCase(); }
+
+// CRM key guard (same pattern as board-data.js / crm.js): the admin reset
+// action is callable ONLY with the CRM key. Missing env = fail closed.
+function crmKeyOk(event) {
+  const expected = process.env.CRM_API_KEY || '';
+  if (!expected) return 'unconfigured';
+  const headers = event.headers || {};
+  const given = String(headers['x-crm-key'] || headers['X-Crm-Key'] || '');
+  if (!given || given.length !== expected.length) return false;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(given), Buffer.from(expected)) ? true : false;
+  } catch { return false; }
+}
 
 // Amounts below are served ONLY to a signed-in recruiter session, per the
 // recruiter pack (private sales conversations). They are NOT in any page,
@@ -291,7 +319,78 @@ exports.handler = async (event) => {
       return json(200, { ok: true, role: account.role }, { 'Set-Cookie': P.sessionCookie(raw) });
     }
 
-    return L.bad('Unknown action. Use create-password, signin, signout, or me.');
+    if (action === 'forgot-password') {
+      // Generic in EVERY case — never reveal whether an account exists.
+      const generic = { ok: true, message: 'If an account matches that email, a reset request has been logged and our team will email you a reset code.' };
+      const email = String(body.email || '').trim().toLowerCase();
+      if (!L.isEmail(email)) return json(200, generic);
+      let found = null;
+      for (const role of ['talent', 'venue', 'recruiter', 'owner']) {
+        const cand = await store.get(`account:${email}:${role}`);
+        if (cand) { found = { role, account: cand }; break; }
+      }
+      if (found && found.account.personId) {
+        // Log the request on the person's CRM record for the portal watch
+        // (Portia) — at most one note per day per account.
+        const notes = await P.personNotes(found.account.personId);
+        const today = new Date().toISOString().slice(0, 10);
+        const already = notes.some((n) => {
+          const c = String(n.content || '');
+          return c.startsWith('PORTAL PASSWORD RESET REQUEST') && c.includes(today);
+        });
+        if (!already) {
+          const crm = C.getStore(event);
+          await C.create(crm, 'notes', {
+            person_id: found.account.personId,
+            deal_id: found.account.dealId || null,
+            content: `PORTAL PASSWORD RESET REQUEST ${new Date().toISOString()}: ${found.role} portal password reset requested for the account email on file. Runbook: (1) email the account address from the business inbox asking them to reply to confirm; (2) on their reply, set a one-hour reset code with the key-guarded admin-set-reset-code action and email them the code; (3) the member finishes in the portal's Forgot password panel. Do NOT clear or change the password on the web request alone.`,
+          });
+        }
+      }
+      return json(200, generic);
+    }
+
+    if (action === 'admin-set-reset-code') {
+      const guard = crmKeyOk(event);
+      if (guard === 'unconfigured') return unavailable();
+      if (!guard) return json(401, { ok: false, error: 'Unauthorized.' });
+      const email = String(body.email || '').trim().toLowerCase();
+      const role = body.role;
+      const code = String(body.code || '').trim();
+      if (!L.isEmail(email) || !['talent', 'venue', 'recruiter', 'owner'].includes(role) || code.length < 6) {
+        return L.bad('email, role, and a reset code of at least 6 characters are required.');
+      }
+      const account = await store.get(`account:${email}:${role}`);
+      if (!account) return json(404, { ok: false, error: 'No account for that email and role.' });
+      account.resetCodeHash = P.hashPassword(code);
+      account.resetExpires = Date.now() + 60 * 60 * 1000; // one hour
+      await store.set(`account:${email}:${role}`, account);
+      return json(200, { ok: true, expiresInMinutes: 60 });
+    }
+
+    if (action === 'reset-password') {
+      const email = String(body.email || '').trim().toLowerCase();
+      const code = String(body.code || '').trim();
+      const password = body.password;
+      if (!L.isEmail(email) || code.length < 6 || !P.validPassword(password)) return refused();
+      let target = null;
+      for (const role of ['talent', 'venue', 'recruiter', 'owner']) {
+        const cand = await store.get(`account:${email}:${role}`);
+        if (cand && cand.resetCodeHash) { target = { role, account: cand }; break; }
+      }
+      if (!target) return refused();
+      const { account } = target;
+      if (!account.resetExpires || Date.now() > account.resetExpires) return refused(); // expired: generic
+      if (!P.checkPassword(code, account.resetCodeHash)) return refused(); // wrong code: generic
+      account.passwordHash = P.hashPassword(password);
+      delete account.resetCodeHash;
+      delete account.resetExpires;
+      account.passwordResetAt = Date.now();
+      await store.set(`account:${email}:${target.role}`, account);
+      return json(200, { ok: true });
+    }
+
+    return L.bad('Unknown action. Use create-password, signin, signout, me, forgot-password, or reset-password.');
   } catch (e) {
     // Never leak store/key detail to the caller.
     console.error('portal-auth error:', e.message);
