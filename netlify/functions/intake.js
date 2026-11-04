@@ -1,11 +1,16 @@
 // POST /.netlify/functions/intake  (also mapped to /intake at flip time)
-// Creates a Pipedrive Person (+ Organization for venues) and a pipeline-5
-// Bench Building deal at stage 24 New Registration. NEVER creates an app
-// account. Approval is NOT done here — watcher v2 applies the existing
-// policy to the new deal (approval note = approved). Flagged items get a
-// flag note and must never be auto-approved.
+// Creates a Nocturnal CRM Person (+ Organization for venues) and a
+// pipeline-5 Rotation Building deal at stage 24 New Registration, stored in
+// the in-house CRM (Netlify Blobs, store "nocturnal-crm" — see crm-lib.js).
+// NEVER creates an app account. Approval is NOT done here — the watcher
+// applies the existing policy to the new deal (approval note = approved).
+// Flagged items get a flag note and must never be auto-approved.
+// HISTORY: this wrote to Pipedrive until 2026-11-03, when the Pipedrive
+// trial expired and every write began failing (registrations were lost).
+// The CRM store is now the FIRST and ONLY write — a submission that
+// validates is always saved here.
 const L = require('./lib');
-const { pd, findPersonByEmail, findOrgByName, findOrgNearName } = L;
+const C = require('./crm-lib');
 
 // Founding Talent referral capture (decided by Rashad 2026-10-31): a venue
 // that names a referrer gets the value stored verbatim on the INTAKE note,
@@ -63,7 +68,7 @@ exports.handler = async (event) => {
     let b = {};
     try { b = JSON.parse(event.body || '{}'); } catch { return L.bad('Invalid JSON body.'); }
     // Honeypot: bots that fill it are silently dropped (200, ignored) so the
-    // form never tips them off, and nothing is written to Pipedrive.
+    // form never tips them off, and nothing is written to the CRM.
     if (b.website) return L.ok({ ok: true, ignored: true });
     // Basic rate limiting is handled at the Netlify/edge layer at flip time;
     // v1 deliberately has no CAPTCHA (friction cost — see design §4).
@@ -76,18 +81,19 @@ exports.handler = async (event) => {
     if (kind === 'talent' && b.primaryRole === 'Other' && L.performerHit(b.otherSpecify)) flags.push('performer term in Other specify');
     if (kind === 'talent' && b.primaryRole === 'Other' && L.performerHit(b.notes)) flags.push('performer term in notes');
 
-    let person = await findPersonByEmail(b.email);
+    const store = C.getStore(event);
+    let person = await C.findPersonByEmail(store, b.email);
     if (!person) {
-      person = await pd('/persons', 'POST', { name: kind === 'talent' ? b.fullName : b.contactName, email: [{ value: b.email, primary: true }], phone: [{ value: b.phone, primary: true }] });
+      person = await C.create(store, 'persons', { name: kind === 'talent' ? b.fullName : b.contactName, email: [{ value: b.email, primary: true }], phone: [{ value: b.phone, primary: true }] });
     }
     let orgId = null, nearMatch = null;
     if (kind === 'venue') {
-      const org = await findOrgByName(b.venueName);
+      const org = await C.findOrgByName(store, b.venueName);
       if (org) orgId = org.id;
       else {
-        const near = await findOrgNearName(b.venueName);
+        const near = await C.findOrgNearName(store, b.venueName);
         if (near.length) { nearMatch = near.map((o) => o.name); flags.push('near-identical org name exists — flagged, never merged'); }
-        const created = await pd('/organizations', 'POST', { name: b.venueName });
+        const created = await C.create(store, 'organizations', { name: b.venueName });
         orgId = created.id;
       }
     }
@@ -96,25 +102,25 @@ exports.handler = async (event) => {
     const referralCode = referralMatch(referredBy);
     const dealBody = {
       title: kind === 'talent' ? `${b.fullName} — Founding Talent registration` : `${b.venueName} — Founding Venue registration`,
-      person_id: person.id, org_id: orgId, pipeline_id: L.PIPELINE_BENCH, stage_id: L.STAGE_NEW_REGISTRATION,
+      person_id: person.id, org_id: orgId, pipeline_id: L.PIPELINE_BENCH, stage_id: L.STAGE_NEW_REGISTRATION, status: 'open',
       [L.REGISTRANT_TYPE_KEY]: kind === 'talent' ? String(L.TYPE_TALENT) : String(L.TYPE_VENUE),
     };
     if (zone) dealBody[L.ZONE_KEY] = zone;
     if (referralCode) dealBody[SOURCE_TYPE_KEY] = SOURCE_VENUE_REFERRAL;
-    const deal = await pd('/deals', 'POST', dealBody);
+    const deal = await C.create(store, 'deals', dealBody);
     // Store the full submission on the deal as a note (audit trail for
-    // watcher v2 approval; never a substitute for an approval note).
+    // watcher approval; never a substitute for an approval note).
     const fields = kind === 'talent'
       ? `Talent intake: name=${b.fullName}; email=${b.email}; phone=${b.phone}; dob=${b.dob}; primaryRole=${b.primaryRole}; otherSpecify=${b.otherSpecify || ''}; otherRoles=${(b.otherRoles || []).join(', ')}; state=${b.state}; city=${b.city}; experience=${b.experience}; certifications=${(b.certifications || []).join(', ')}; transportation=${b.transportation}; availability=${(b.availability || []).join(', ')}; notes=${b.notes || ''}`
       : `Venue intake: venue=${b.venueName}; contact=${b.contactName} (${b.contactRole}); email=${b.email}; phone=${b.phone}; type=${b.venueType}; state=${b.state}; city=${b.city}; address=${b.address || ''}; rolesNeeded=${(b.rolesNeeded || []).join(', ')}; busiestNights=${(b.busiestNights || []).join(', ')}; calloutFrequency=${b.calloutFrequency}; notes=${b.notes || ''}`;
     const referralLine = referredBy.trim() ? `\nReferred by: ${referredBy}` : '';
-    await pd('/notes', 'POST', { deal_id: deal.id, content: `INTAKE ${new Date().toISOString()}: ${fields}${referralLine}` });
-    if (flags.length) await pd('/notes', 'POST', { deal_id: deal.id, content: `FLAGGED — intake: ${flags.join('; ')}. Do NOT auto-approve; needs Rashad's decision.` });
+    await C.create(store, 'notes', { deal_id: deal.id, person_id: person.id, org_id: orgId, content: `INTAKE ${new Date().toISOString()}: ${fields}${referralLine}` });
+    if (flags.length) await C.create(store, 'notes', { deal_id: deal.id, person_id: person.id, org_id: orgId, content: `FLAGGED — intake: ${flags.join('; ')}. Do NOT auto-approve; needs Rashad's decision.` });
     return L.ok({ ok: true, dealId: deal.id, personId: person.id, orgId, flagged: flags.length > 0, flags, nearMatch }, 201);
   } catch (e) {
-    // A failed Pipedrive write returns an error to the visitor ("try again")
-    // and never silently drops a registration. Token-misconfiguration is
-    // reported generically — the token value is never in any message.
+    // A failed CRM write returns an error to the visitor ("try again") and
+    // never silently drops a registration. Store detail is reported
+    // generically — internals are never in any message.
     console.error('intake error:', e.message);
     return { statusCode: 502, body: JSON.stringify({ ok: false, error: 'Registration could not be saved — please try again.' }) };
   }
