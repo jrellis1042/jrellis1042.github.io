@@ -1,4 +1,7 @@
 // POST /.netlify/functions/portal-auth  (also mapped to /portal-auth)
+// PHASE 3 (2026-11-03): eligibility/overview reads now come from the
+// in-house CRM via portal-lib.js (was Pipedrive; trial expired). Routes,
+// request/response shapes, session behavior, and validation are unchanged.
 // Website portal auth — one function, four actions:
 //   create-password {email, role, password}  — first-time password for an
 //     ELIGIBLE email only (approved pipeline-5 deal for talent/venue, or an
@@ -8,7 +11,7 @@
 //   me {} — role-scoped portal state; also served on GET with a session.
 // Sessions are server-side, role-bound, fixed 7-day expiry (never sliding).
 // Passwords: scrypt hashes only, stored in the auth store — never plaintext,
-// never logged, never written to Pipedrive, never in any repo file.
+// never logged, never written to the CRM, never in any repo file.
 // Store: Netlify Blobs ("nocturnal-portal-auth") in production; a
 // clearly-marked file-backed store ONLY when PORTAL_AUTH_ALLOW_FILE_STORE=1
 // (local tests). If PORTAL_SESSION_SECRET is missing, every action fails
@@ -26,7 +29,7 @@
 //   signin {email, password} — owner accounts are tried only when the
 //     email matches OWNER_LOGIN_EMAIL.
 //   me {} for an owner session returns a READ-ONLY overview: live counts,
-//     pipeline counts, and roster/status views read from Pipedrive.
+//     pipeline counts, and roster/status views read from the CRM.
 //     NO toggles, NO payment-status changes, NO deal/stage moves,
 //     NO approvals, NO Command Center tabs in v1. Full Command Center is
 //     a later phase. The owner dashboard page is pages/owner-portal.html.
@@ -105,7 +108,7 @@ async function buildMe(session) {
     if (!ownerEmail() || session.email !== ownerEmail()) return null;
     return buildOwnerOverview(session);
   }
-  // Fresh Pipedrive read on every call — portal state is never cached here.
+  // Fresh CRM read on every call — portal state is never cached here.
   if (session.role === 'recruiter') {
     const notes = await P.personNotes(session.personId);
     const code = P.referralCodeFromNotes(notes);
@@ -133,7 +136,7 @@ async function buildMe(session) {
       claimingNote: 'Claiming is a talent/venue flow; recruiters never claim, book, or verify.',
     };
   }
-  // Talent / venue: re-derive eligibility + status from Pipedrive.
+  // Talent / venue: re-derive eligibility + status from the CRM.
   const record = await P.eligibleBenchRecord(session.email, session.role);
   if (!record) return null; // eligibility lost since sign-in: refuse, generic
   const { deal, notes } = record;
@@ -175,7 +178,7 @@ async function buildMe(session) {
       placements: [],
       placementsNote: 'No placements are recorded in the website record yet. Placements appear here once venues post and confirm them.',
       credentialsStatus: fields.certifications ? `On file: ${fields.certifications}` : 'No credentials recorded yet.',
-      // Points/rank are NOT invented: no points record exists in Pipedrive
+      // Points/rank are NOT invented: no points record exists in the CRM
       // for website registrants, so the portal reports that plainly.
       points: null, rank: null,
       pointsNote: 'Points and rank are tracked in the app and will appear here once your app record is linked.',
@@ -290,7 +293,7 @@ exports.handler = async (event) => {
 
     return L.bad('Unknown action. Use create-password, signin, signout, or me.');
   } catch (e) {
-    // Never leak store/token/Pipedrive detail to the caller.
+    // Never leak store/key detail to the caller.
     console.error('portal-auth error:', e.message);
     if (/PORTAL_SESSION_SECRET|store is unavailable/.test(e.message)) return unavailable();
     return { statusCode: 502, body: JSON.stringify({ ok: false, error: 'Sign-in is not available right now.' }) };
