@@ -46,6 +46,7 @@ function getStore(event) {
       async get(key) { const all = readAll(); return all[key] ?? null; },
       async set(key, value) { const all = readAll(); all[key] = value; writeAll(all); },
       async delete(key) { const all = readAll(); delete all[key]; writeAll(all); },
+      async list(prefix) { return Object.keys(readAll()).filter((k) => k.startsWith(prefix)); },
     };
   }
   let blobs;
@@ -55,12 +56,31 @@ function getStore(event) {
   if (event && typeof blobs.connectLambda === 'function') {
     try { blobs.connectLambda(event); } catch {}
   }
-  const store = blobs.getStore(STORE_NAME);
+  let store;
+  try { store = blobs.getStore({ name: STORE_NAME, consistency: 'strong' }); }
+  catch { store = blobs.getStore(STORE_NAME); }
   return {
     kind: 'blobs',
     async get(key) { const v = await store.get(key, { type: 'json' }); return v ?? null; },
     async set(key, value) { await store.setJSON(key, value); },
     async delete(key) { await store.delete(key); },
+    // Prefix key scan — the AUTHORITATIVE listing. The idx:<collection>
+    // arrays are read-modify-write and Netlify Blobs' eventual consistency
+    // clobbered them during the bulk seed (2026-11-03: indexes lost most
+    // ids while every record key survived). Listings therefore derive from
+    // the record keys themselves; idx is kept only as a legacy fallback.
+    async list(prefix) {
+      const keys = [];
+      let cursor;
+      for (;;) {
+        const res = await store.list({ prefix, cursor });
+        const blobsList = (res && res.blobs) || [];
+        for (const b of blobsList) keys.push(b.key);
+        cursor = res && res.cursor;
+        if (!cursor || !blobsList.length) break;
+      }
+      return keys;
+    },
   };
 }
 
@@ -74,6 +94,15 @@ async function setMeta(store, meta) { await store.set('meta', meta); }
 
 // ----------------------------------------------------------------- CRUD ----
 async function listIds(store, collection) {
+  if (typeof store.list === 'function') {
+    try {
+      const keys = await store.list(PREFIX[collection]);
+      const ids = keys
+        .map((k) => Number(k.slice(PREFIX[collection].length)))
+        .filter((n) => Number.isFinite(n));
+      if (ids.length) return [...new Set(ids)].sort((a, b) => a - b);
+    } catch { /* fall through to the legacy index */ }
+  }
   return (await store.get(`idx:${collection}`)) || [];
 }
 async function listAll(store, collection) {
@@ -91,7 +120,12 @@ async function getOne(store, collection, id) {
 async function create(store, collection, fields) {
   const meta = await getMeta(store);
   let id = fields && fields.id != null ? Number(fields.id) : null;
-  if (id == null) id = meta.nextId[collection] || 1;
+  if (id == null) {
+    // Allocate from the authoritative key scan, not the read-modify-write
+    // meta counter (eventual consistency can hand out a duplicate id).
+    const existing = await listIds(store, collection);
+    id = existing.length ? Math.max(...existing) + 1 : (meta.nextId[collection] || 1);
+  }
   if (id >= (meta.nextId[collection] || 1)) meta.nextId[collection] = id + 1;
   const now = new Date().toISOString();
   const rec = { ...fields, id, add_time: fields.add_time || now, update_time: now };
