@@ -1,4 +1,7 @@
 // POST /.netlify/functions/portal-request  (also mapped to /portal-request)
+// PHASE 3 (2026-11-03): the STAFFING REQUEST note is written to the
+// in-house CRM (crm-lib) instead of Pipedrive. Gates, validation, and
+// response shapes are unchanged.
 // Signed-in venue staffing requests (v1). A request is stored as a
 // STAFFING REQUEST note on the venue's OWN pipeline-5 deal only — it never
 // moves a deal/stage, never approves anything, never creates an app account,
@@ -10,6 +13,7 @@
 // because a posted request with a performer role must never enter preview).
 const L = require('./lib');
 const P = require('./portal-lib');
+const C = require('./crm-lib');
 
 exports.handler = async (event) => {
   try {
@@ -18,10 +22,11 @@ exports.handler = async (event) => {
     let b = {};
     try { b = JSON.parse(event.body || '{}'); } catch { return L.bad('Invalid JSON body.'); }
     const store = P.getStore(event);
+    const store2 = C.getStore(event);
     const session = await P.readSession(store, P.tokenFromEvent(event));
     if (!session || session.role !== 'venue') return { statusCode: 401, body: JSON.stringify({ ok: false, error: P.GENERIC_REFUSAL }) };
 
-    // Re-derive status from Pipedrive on every request (never trust the session).
+    // Re-derive status from the CRM on every request (never trust the session).
     const record = await P.eligibleBenchRecord(session.email, 'venue');
     if (!record) return { statusCode: 401, body: JSON.stringify({ ok: false, error: P.GENERIC_REFUSAL }) };
     const { deal, notes } = record;
@@ -46,7 +51,7 @@ exports.handler = async (event) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return L.bad('Date is required (YYYY-MM-DD).');
     const venueName = String(deal.title || '').split(' — ')[0] || 'Venue';
     const content = `STAFFING REQUEST ${new Date().toISOString()}: venue=${venueName}; role=${role}${role === 'Other' ? ` (${b.otherSpecify.trim()})` : ''}; date=${date}; window=${String(b.window || '').trim()}; dress=${String(b.dress || '').trim()}; notes=${String(b.notes || '').trim()}`;
-    const saved = await L.pd('/notes', 'POST', { deal_id: deal.id, content });
+    const saved = await C.create(store2, 'notes', { deal_id: deal.id, person_id: session.personId || null, content });
     return L.ok({ ok: true, noteId: saved.id }, 201);
   } catch (e) {
     console.error('portal-request error:', e.message);
