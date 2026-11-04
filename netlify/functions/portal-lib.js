@@ -1,7 +1,14 @@
 // Nocturnal website portals — shared server library (portal-auth, portal-request).
+// PHASE 3 (2026-11-03): rewired from Pipedrive to the in-house CRM
+// (crm-lib.js, Netlify Blobs store "nocturnal-crm"). Pipedrive's trial
+// expired 2026-11-03 and every API call returns 401; the CRM holds the
+// same records with the same ids/fields, so eligibility semantics carry
+// over unchanged. The ONLY intentional behavior change vs the Pipedrive
+// version: stage 27's label is "On the Rotation" (the Nov 2 terminology
+// rename — the Pipedrive-era label "On the Bench" was stale code).
 // Node, no dependencies except @netlify/blobs in production (see store below).
 // HARD RULES (see build report):
-//  - Portals READ Pipedrive eligibility; they NEVER approve a registration,
+//  - Portals READ CRM eligibility; they NEVER approve a registration,
 //    NEVER move a deal/stage, NEVER create an app account, NEVER write
 //    "verified" from a recruiter action.
 //  - No prices in any public payload. Amounts appear ONLY inside a signed-in
@@ -17,14 +24,14 @@
 //    disabled with the gate message.
 const crypto = require('crypto');
 const L = require('./lib');
-const { pd, findPersonByEmail } = L;
+const C = require('./crm-lib');
 
 const GENERIC_REFUSAL = 'Sign-in is not available for that email.';
 const PAYMENT_GATE_MESSAGE = 'Postings activate once your venue payment is received.';
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // fixed 7-day expiry, never sliding
 const COOKIE_NAME = 'nocturnal_portal_session';
 const ROLES = ['Bartender', 'Barback', 'Door Staff', 'VIP Host', 'Bottle Service', 'Venue Support', 'Other'];
-const STAGE_LABELS = { 24: 'New Registration', 25: 'Contacted', 26: 'In Verification', 27: 'On the Bench', 28: 'Active' };
+const STAGE_LABELS = { 24: 'New Registration', 25: 'Contacted', 26: 'In Verification', 27: 'On the Rotation', 28: 'Active' };
 
 function sessionSecret() { return process.env.PORTAL_SESSION_SECRET || ''; }
 function requireSecret() {
@@ -40,7 +47,13 @@ function requireSecret() {
 // clearly-marked FILE-BACKED TEST STORE. If neither is available, every auth
 // action fails closed (never a silent in-memory store in production).
 let fileStorePath = null;
+// The Lambda event from the most recent getStore() call. crm-lib's store
+// needs the event for connectLambda in production; the eligibility helpers
+// below keep their Pipedrive-era signatures (no event parameter), so they
+// reuse the event the handler already passed to getStore.
+let lastEvent = null;
 function getStore(event) {
+  if (event) lastEvent = event;
   if (process.env.PORTAL_AUTH_ALLOW_FILE_STORE === '1') {
     const p = process.env.PORTAL_AUTH_FILE_STORE || '/tmp/nocturnal-portal-auth-test-store.json';
     fileStorePath = p;
@@ -85,6 +98,7 @@ function getStore(event) {
     async delete(key) { await store.delete(key); },
   };
 }
+function crmStore() { return C.getStore(lastEvent); }
 
 // ------------------------------------------------------------- passwords ---
 function hashPassword(password) {
@@ -149,35 +163,26 @@ function tokenFromEvent(event) {
   return b ? b[1] : null;
 }
 
-// ------------------------------------------------------------ Pipedrive ---
+// ------------------------------------------------------------------ CRM ----
+// Same shapes the Pipedrive versions returned: open deals only, notes as
+// plain arrays. "Open" mirrors crm.js/counts.js: status 'open' or unset.
+function isOpen(d) { return !d.deleted && (d.status === 'open' || !d.status); }
 async function listDealsByPerson(personId) {
-  const data = await pd(`/deals?person_id=${personId}&status=open&limit=100`);
-  return Array.isArray(data) ? data : (data && data.items ? data.items : []);
+  const deals = await C.listAll(crmStore(), 'deals');
+  return deals.filter((d) => Number(d.person_id) === Number(personId) && isOpen(d));
 }
 async function listAllDeals() {
-  const out = [];
-  let start = 0;
-  for (;;) {
-    const data = await pd(`/deals?status=open&limit=100&start=${start}`);
-    const deals = Array.isArray(data) ? data : (data && data.items ? data.items : []);
-    out.push(...deals);
-    const more = data && data.additional_data && data.additional_data.pagination && data.additional_data.pagination.more_items_in_collection;
-    if (!more) break;
-    start += 100;
-    if (start > 5000) break;
-  }
-  return out;
+  const deals = await C.listAll(crmStore(), 'deals');
+  return deals.filter(isOpen);
 }
 async function dealNotes(dealId) {
-  const notes = await pd(`/deals/${dealId}/notes?limit=100`);
-  return Array.isArray(notes) ? notes : [];
+  return C.dealNotes(crmStore(), dealId);
 }
 async function personNotes(personId) {
-  const notes = await pd(`/notes?person_id=${personId}&limit=100`);
-  return Array.isArray(notes) ? notes : [];
+  return C.personNotes(crmStore(), personId);
 }
 function hasApprovalNote(notes) {
-  return notes.some((n) => String(n.content || '').includes('APPROVED by'));
+  return C.hasApprovalNote(notes);
 }
 // Venue payment: derived ONLY from a payment marker note. There is no
 // payment field on the record in v1, so a marker note is the source of
@@ -201,7 +206,8 @@ function stageLabel(stageId) { return STAGE_LABELS[stageId] || 'Registered'; }
 // Eligibility: approved pipeline-5 deal for the requested talent/venue role.
 // Returns null when not eligible (caller maps every null to GENERIC_REFUSAL).
 async function eligibleBenchRecord(email, role) {
-  const person = await findPersonByEmail(email);
+  const store = crmStore();
+  const person = await C.findPersonByEmail(store, email);
   if (!person) return null;
   const wantedType = role === 'talent' ? String(L.TYPE_TALENT) : String(L.TYPE_VENUE);
   const deals = (await listDealsByPerson(person.id)).filter(
@@ -221,7 +227,8 @@ async function eligibleBenchRecord(email, role) {
 // Cutover note: an approved recruiter's Person record must carry a note
 // containing "RECRUITER APPROVED" before first sign-in.
 async function eligibleRecruiterRecord(email) {
-  const person = await findPersonByEmail(email);
+  const store = crmStore();
+  const person = await C.findPersonByEmail(store, email);
   if (!person) return null;
   const notes = await personNotes(person.id);
   if (!notes.some((n) => String(n.content || '').includes('RECRUITER APPROVED'))) return null;
