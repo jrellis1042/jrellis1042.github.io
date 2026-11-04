@@ -22,6 +22,13 @@
 <p class="muted" id="pwhint">First time? Your new password must be at least 10 characters.</p>
 <button id="go" type="button">Continue</button>
 <div id="msg" role="status"></div>
+<p><a href="#" id="forgotLink">Forgot password?</a></p>
+<div id="forgotPanel" class="hidden">
+<p class="muted">Request a reset and our team will email you a reset code. Then enter the code with a new password (at least 10 characters) and you are back in.</p>
+<label>Reset code <input id="resetCode" type="text" autocomplete="one-time-code"></label>
+<label>New password <input id="newPw" type="password" autocomplete="new-password"></label>
+<p><button id="reqReset" type="button">Request reset</button> <button id="doReset" type="button">Set new password</button></p>
+</div>
 </section>
 <section id="dash" class="card hidden">
 <h2>Your venue status</h2>
@@ -116,8 +123,22 @@ document.getElementById('go').addEventListener('click',async()=>{
   show('Signed in.'); me();
 });
 document.getElementById('out').addEventListener('click',async()=>{await call(AUTH,{action:'signout'});location.reload();});
+document.getElementById('forgotLink').addEventListener('click',function(e){e.preventDefault();document.getElementById('forgotPanel').classList.toggle('hidden');});
+document.getElementById('reqReset').addEventListener('click',async()=>{
+  const email=document.getElementById('email').value.trim();
+  if(!email){show('Enter your email above first, then request a reset.',true);return;}
+  const res=await call(AUTH,{action:'forgot-password',email});
+  show(res.message||'If an account matches that email, a reset request has been logged. Watch your inbox for a reset code from our team.');
+});
+document.getElementById('doReset').addEventListener('click',async()=>{
+  const email=document.getElementById('email').value.trim(), code=document.getElementById('resetCode').value.trim(), np=document.getElementById('newPw').value;
+  if(!email||!code||!np){show('Email, reset code, and a new password are all required.',true);return;}
+  if(np.length<10){show('Your new password must be at least 10 characters.',true);return;}
+  const res=await call(AUTH,{action:'reset-password',email,code,password:np});
+  if(!res.ok){show(res.error||'That reset code did not work. Check the code and try again, or request a new one.',true);return;}
+  show('Password updated - you can sign in now with your new password.');
+});
 me(true);
 </script>
 </body>
 </html>
-<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="c132a19f-9db2-420a-9e24-515331739ab4" data-app-host="app.netlify.com" data-account-tier="personal"></script>
