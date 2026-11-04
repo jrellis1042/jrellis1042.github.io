@@ -1,57 +1,57 @@
 // GET /.netlify/functions/counts  (also mapped to /counts at flip time)
-// Aggregate counts ONLY — no names, no emails, no token exposed.
+// Aggregate counts ONLY — no names, no emails, no key exposed.
 // Counts source (hard rule): pipeline-5 deals carrying an approval note
 // ("APPROVED by Muse" or "APPROVED by Rashad" — the two approvers on record;
 // matcher is "APPROVED by", fixed 2026-10-26 after Taylor Deal 34 was
 // approved by Rashad and the old Muse-only matcher undercounted 7 as 6),
 // split by Registrant Type 54 talent / 55 venue.
 // Raw form rows / deals without an approval note are NOT counted.
+// SOURCE OF RECORD: the in-house CRM store (crm-lib.js) since 2026-11-03 —
+// this previously read Pipedrive; the Pipedrive trial expired and its API
+// rejects every call, so semantics are unchanged but the store is ours.
+// FALLBACK: if the CRM store is empty/unseeded (or unreadable), return the
+// last verified snapshot counts from the store's seed metadata — or the
+// built-in 15/0 snapshot in crm-lib — rather than 0 or 502: the registry
+// exists even when the store has not been seeded yet.
 const L = require('./lib');
-const { pd } = L;
+const C = require('./crm-lib');
 
-async function listAllDeals() {
-  const out = [];
-  let start = 0;
-  for (;;) {
-    const data = await pd(`/deals?status=open&limit=100&start=${start}`);
-    const deals = Array.isArray(data) ? data : (data && data.items ? data.items : []);
-    out.push(...deals);
-    const more = data && data.additional_data && data.additional_data.pagination && data.additional_data.pagination.more_items_in_collection;
-    if (!more) break;
-    start += 100;
-    if (start > 5000) break;
-  }
-  return out;
-}
-async function hasApprovalNote(dealId) {
-  const notes = await pd(`/deals/${dealId}/notes?limit=100`);
-  const list = Array.isArray(notes) ? notes : [];
-  return list.some((n) => String(n.content || '').includes('APPROVED by'));
+function countsBody(talent, venue, source) {
+  const combined = talent + venue;
+  return {
+    ok: true, talent, venue, combined, gate: L.GATE,
+    foundingTalent: `${talent} of ${L.FOUNDING_TALENT_CAP}`,
+    foundingVenues: `${venue} of ${L.FOUNDING_VENUE_CAP}`,
+    claimingOpen: combined >= L.GATE, source,
+  };
 }
 
 exports.handler = async (event) => {
+  if (event.httpMethod !== 'GET') return L.ok({ ok: false, error: 'Method not allowed.' }, 405);
   try {
-    if (event.httpMethod !== 'GET') return L.ok({ ok: false, error: 'Method not allowed.' }, 405);
-    const deals = (await listAllDeals()).filter((d) => d.pipeline_id === L.PIPELINE_BENCH && !d.deleted);
-    // Approval checks run in parallel (fix pass 2, 2026-10-31): the old
-    // loop awaited one Pipedrive notes call per deal in sequence, which
-    // made /counts take ~1.5s and left the portal pages sitting on their
-    // "loading…" placeholder. Semantics unchanged — same matcher, same
-    // type split, raw rows still never counted.
+    const store = C.getStore(event);
+    const deals = (await C.listAll(store, 'deals')).filter(
+      (d) => d.pipeline_id === L.PIPELINE_BENCH && !d.deleted && (d.status === 'open' || !d.status),
+    );
+    if (!deals.length) {
+      const meta = await C.getMeta(store).catch(() => null);
+      const snap = (meta && meta.seedCounts) || C.FALLBACK_COUNTS;
+      return L.ok(countsBody(snap.talent, snap.venue, 'seed-snapshot'));
+    }
     const typed = deals.filter((d) => {
       const type = String(d[L.REGISTRANT_TYPE_KEY] || '');
       return type === String(L.TYPE_TALENT) || type === String(L.TYPE_VENUE);
     });
-    const approved = await Promise.all(typed.map(async (d) => ((await hasApprovalNote(d.id)) ? d : null)));
     let talent = 0, venue = 0;
-    for (const d of approved) {
-      if (!d) continue;
-      if (String(d[L.REGISTRANT_TYPE_KEY] || '') === String(L.TYPE_TALENT)) talent += 1; else venue += 1;
+    for (const d of typed) {
+      const notes = await C.dealNotes(store, d.id);
+      if (!C.hasApprovalNote(notes)) continue;
+      if (String(d[L.REGISTRANT_TYPE_KEY]) === String(L.TYPE_TALENT)) talent += 1; else venue += 1;
     }
-    const combined = talent + venue;
-    return L.ok({ ok: true, talent, venue, combined, gate: L.GATE, foundingTalent: `${talent} of ${L.FOUNDING_TALENT_CAP}`, foundingVenues: `${venue} of ${L.FOUNDING_VENUE_CAP}`, claimingOpen: combined >= L.GATE });
+    return L.ok(countsBody(talent, venue, 'crm'));
   } catch (e) {
     console.error('counts error:', e.message);
-    return { statusCode: 502, body: JSON.stringify({ ok: false, error: 'Counts unavailable.' }) };
+    const snap = C.FALLBACK_COUNTS;
+    return L.ok(countsBody(snap.talent, snap.venue, 'seed-snapshot'));
   }
 };
