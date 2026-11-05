@@ -346,7 +346,7 @@
       </div>
     <!-- TICKER + BAR: both are filled from the live /counts feed by the script below (counts only, never names or emails). No counts are hardcoded on this page. -->
     <div class="ticker" aria-hidden="true">
-      <div class="ticker-track"><span><b>14 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>13 OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span><span><b>14 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>13 OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span></div>
+      <div class="ticker-track"><span><b>15 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>15 OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span><span><b>15 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>15 OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span></div>
     </div>
     </header>
 
@@ -410,14 +410,14 @@
           <h2 class="title">The rotation, at a glance.</h2>
           <p class="sub">The shape of the rotation — the roles registered so far, in aggregate. Every person on it is verified individually before they can ever be claimed. Names, photos, and full profiles are not public; they live inside the venue portal.</p>
           <div class="bench-grid" id="bench-role-grid" aria-label="Rotation role mix">
-            <div class="bench-card"><div class="n">8</div><div class="r">Bartenders</div></div>
+            <div class="bench-card"><div class="n">10</div><div class="r">Bartenders</div></div>
             <div class="bench-card"><div class="n">7</div><div class="r">Venue Support</div></div>
             <div class="bench-card"><div class="n">10</div><div class="r">VIP Hosts</div></div>
             <div class="bench-card"><div class="n">8</div><div class="r">Barbacks</div></div>
             <div class="bench-card"><div class="n">8</div><div class="r">Door Staff</div></div>
-            <div class="bench-card"><div class="n">2</div><div class="r">Bottle Service</div></div>
+            <div class="bench-card"><div class="n">3</div><div class="r">Bottle Service</div></div>
           </div>
-          <p class="sub" id="bench-mix-note" style="font-size:15px;">Role mix as of November 2, 2026. Many rotation members cover more than one role — that is the point of a rotation. The founding rotation is in verification now.</p>
+          <p class="sub" id="bench-mix-note" style="font-size:15px;">Role mix as of November 4, 2026. Many rotation members cover more than one role — that is the point of a rotation. Every member of the founding rotation is verified and on the rotation.</p>
         </div>
       </section>
 
@@ -1036,7 +1036,7 @@
               var out = '';
               order.forEach(function (k) { if (b.roleMix[k]) out += '<div class="bench-card"><div class="n">' + b.roleMix[k] + '</div><div class="r">' + labels[k] + '</div></div>'; });
               if (out) grid.innerHTML = out;
-              if (note) note.textContent = 'Role mix updated from the live registry. Many rotation members cover more than one role — that is the point of a rotation. The founding rotation is in verification now.';
+              if (note) note.textContent = 'Role mix updated from the live registry. Many rotation members cover more than one role — that is the point of a rotation. Every member of the founding rotation is verified and on the rotation.';
             }).catch(function () { setTimeout(function () { attempt(i + 1); }, 1200); });
           }
           attempt(0);
