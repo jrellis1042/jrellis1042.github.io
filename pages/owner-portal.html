@@ -4,8 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nocturnal Staffing Agency — Owner Portal</title>
+<!--
+  Owner sign-in runs entirely in this browser — this site is static (GitHub
+  Pages) and has no backend to check a password against. The password is
+  verified against a salted PBKDF2 hash: first in BAKED_CRED below (one
+  password, every device — set it from a setup code Rashad sends), then in
+  this browser's localStorage (device-local, created on first sign-in).
+  The view shows aggregate numbers only — no names, no private data. Names,
+  approvals, and actions live in the app's House Command behind its own
+  server-side sign-in.
+  Counts are baked at deploy — update them in the same pass as index.html
+  (one-update rule). BAKED_CRED format: {salt:"...", hash:"..."} (base64).
+-->
 <style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem;background:#0b0b10;color:#f2f2f2}h1,h2{color:#fff}.ticker{position:relative;border:1px solid rgba(255,110,220,.45);border-radius:8px;padding:.5rem 0;overflow:hidden;white-space:nowrap;background:linear-gradient(90deg,#160329,#0b0b14 38%,#24063f 62%,#0b0b14);box-shadow:0 2px 18px rgba(150,60,255,.25)}.ticker::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.13) 48%,rgba(255,120,220,.10) 52%,transparent 68%);transform:translateX(-130%);animation:ticker-sheen 4.8s ease-in-out infinite;pointer-events:none}.tsep{font-size:8px;margin:0 14px;font-style:normal;color:#ff4fd8;text-shadow:0 0 6px rgba(255,79,216,.95),0 0 14px rgba(176,38,255,.55)}
-.ticker-track{display:inline-flex;animation:tick-scroll 32s linear infinite;will-change:transform}.ticker:hover .ticker-track{animation-play-state:paused}@keyframes tick-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}@keyframes ticker-sheen{0%{transform:translateX(-130%)}55%,100%{transform:translateX(130%)}}@media (prefers-reduced-motion:reduce){.ticker-track{animation:none}.ticker::after{animation:none}}.ticker-track span{font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;display:inline-block;padding:0 .25rem;font-size:11px;font-weight:700;letter-spacing:.18em;color:#f2f2f7;white-space:nowrap;text-shadow:0 0 12px rgba(190,120,255,.35)}.ticker-track b{font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-weight:800;color:#ffd75e;text-shadow:0 0 8px rgba(255,183,0,.85),0 0 20px rgba(255,110,220,.45)}label{display:block;margin:.5rem 0}input{width:100%;padding:.5rem;margin-top:.25rem;background:#17171f;color:#fff;border:1px solid #444;border-radius:6px}button{padding:.6rem 1rem;border-radius:6px;border:0;background:#f0a;color:#111;font-weight:700;cursor:pointer}.card{border:1px solid #333;border-radius:10px;padding:1rem;margin:1rem 0}#msg{border:1px solid #888;padding:1rem;margin:1rem 0;display:none}#msg.err{border-color:#e33}.muted{color:#bbb}.hidden{display:none}a{color:#f9a}table{width:100%;border-collapse:collapse}@media (max-width:560px){th,td{padding:.3rem .25rem;font-size:.88rem}body{margin:1rem auto}}th,td{text-align:left;padding:.4rem;border-bottom:1px solid #333}</style>
+.ticker-track{display:inline-flex;animation:tick-scroll 32s linear infinite;will-change:transform}.ticker:hover .ticker-track{animation-play-state:paused}@keyframes tick-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}@keyframes ticker-sheen{0%{transform:translateX(-130%)}55%,100%{transform:translateX(130%)}}@media (prefers-reduced-motion:reduce){.ticker-track{animation:none}.ticker::after{animation:none}}.ticker-track span{font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;display:inline-block;padding:0 .25rem;font-size:11px;font-weight:700;letter-spacing:.18em;color:#f2f2f7;white-space:nowrap;text-shadow:0 0 12px rgba(190,120,255,.35)}.ticker-track b{font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-weight:800;color:#ffd75e;text-shadow:0 0 8px rgba(255,183,0,.85),0 0 20px rgba(255,110,220,.45)}label{display:block;margin:.5rem 0}input{width:100%;padding:.5rem;margin-top:.25rem;background:#17171f;color:#fff;border:1px solid #444;border-radius:6px}input[readonly]{font-family:ui-monospace,monospace;font-size:.8rem}button{padding:.6rem 1rem;border-radius:6px;border:0;background:#f0a;color:#111;font-weight:700;cursor:pointer}button.ghost{background:#222;color:#f2f2f2;border:1px solid #555}.card{border:1px solid #333;border-radius:10px;padding:1rem;margin:1rem 0}#msg{border:1px solid #888;padding:1rem;margin:1rem 0;display:none}#msg.err{border-color:#e33}#msg.ok{border-color:#3c3}.muted{color:#bbb}.hidden{display:none}a{color:#f9a}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
@@ -13,20 +25,133 @@
 <body>
 <h1>Owner Portal</h1>
 <div class="ticker" id="ticker" role="status"><div class="ticker-track"><span><b>18 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>18 OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;REGISTRATION FREE FOREVER — NATIONWIDE&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span><span><b>18 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>18 OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;REGISTRATION FREE FOREVER — NATIONWIDE&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span></div></div>
-<p class="muted">Owner sign-in lives in the Nocturnal app. This page shows the live numbers and points you there.</p>
+<p class="muted">Sign in here, on the website. No password ever leaves this browser.</p>
 <section id="login" class="card">
-<h2>Owner Sign In</h2>
-<p>Owner sign-in lives in the Nocturnal app — the Owner Command Center. This website is the public front door, so it can't check passwords itself.</p>
-<p>Open the Nocturnal app in Muse, then open <b>Owner Command Center</b> and sign in with your owner login. <b>House Command</b> is the first tab — live numbers, the outreach queue, daily takes, and goals, all synced from the CRM.</p>
-<p class="muted">You're already signed in as Owner in the app, so it should open straight to House Command.</p>
+<h2>Sign in</h2>
+<label>Email address <input id="email" type="email" autocomplete="email"></label>
+<label>Password <input id="pw" type="password" autocomplete="current-password"></label>
+<p><label><input id="mode" type="checkbox"> First time here — create my password</label></p>
+<p class="muted" id="pwhint">First time? Your new password must be at least 10 characters.</p>
+<button id="go" type="button">Continue</button>
+<div id="msg" role="status"></div>
+<p><a href="#" id="forgotLink">Forgot password?</a></p>
 </section>
-<section class="card">
+<section id="view" class="card hidden">
+<h2>Signed in as Owner</h2>
 <h2>The Rotation Right Now</h2>
 <p><b>18</b> verified talent · <b>0</b> venues · Founding Talent <b>18 of 50</b> · Founding Venues <b>0 of 10</b></p>
-<p class="muted">Same numbers as the front door ticker. Full rosters, outreach, and daily takes live in House Command in the app.</p>
+<p>By role: Bartender <b>12</b> · Barback <b>8</b> · Door Staff <b>8</b> · VIP Host <b>12</b> · Bottle Service <b>3</b> · Venue Support <b>8</b></p>
+<p>Outreach: <b>58</b> touches sent · <b>1</b> reply · <b>166</b> leads scored · <b>262</b> open venue outreach deals</p>
+<p class="muted">Same numbers as the front door ticker. Rosters, approvals, daily takes, and Ask Juju live in House Command in the Nocturnal app.</p>
+<div id="setupPanel" class="hidden">
+<p><b>Make this password work on every device:</b> send this setup code to Juju. It is a one-way hash, not your password — your password never leaves this browser.</p>
+<input id="setupCode" type="text" readonly onclick="this.select()">
+</div>
+<p><button id="showSetup" type="button" class="ghost">Show my setup code</button> <button id="out" type="button" class="ghost">Sign out</button></p>
 </section>
 <p class="muted"><a href="/">Back to the front door</a></p>
 <script>
+// One shared website-owner password, every device — set from a setup code
+// Rashad sends (format {salt, hash}, base64). Empty until then: the first
+// password created here lives in that browser only (localStorage).
+const BAKED_CRED = null;
+const LS_KEY = 'nocs_owner_cred_v1';
+const SES_KEY = 'nocs_owner_session_v1';
+const ITER = 150000;
+const msg = document.getElementById('msg');
+function show(t, kind){ msg.textContent = t; msg.className = kind || ''; msg.style.display = 'block'; }
+function hideMsg(){ msg.style.display = 'none'; }
+function b64e(bytes){ let s=''; bytes.forEach(function(b){ s += String.fromCharCode(b); }); return btoa(s); }
+function b64d(str){ const s = atob(str); const out = new Uint8Array(s.length); for(let i=0;i<s.length;i++) out[i] = s.charCodeAt(i); return out; }
+async function derive(password, saltB64){
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({ name:'PBKDF2', salt: b64d(saltB64), iterations: ITER, hash:'SHA-256' }, key, 256);
+  return b64e(new Uint8Array(bits));
+}
+function safeEqual(a, b){
+  if(a.length !== b.length) return false;
+  let d = 0; for(let i=0;i<a.length;i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return d === 0;
+}
+function loadLocal(){ try{ const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; } }
+function candidates(){
+  const list = [];
+  if(BAKED_CRED && BAKED_CRED.salt && BAKED_CRED.hash) list.push(BAKED_CRED);
+  const local = loadLocal();
+  if(local && local.salt && local.hash) list.push(local);
+  return list;
+}
+function openView(){
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('view').classList.remove('hidden');
+}
+function closeView(){
+  document.getElementById('view').classList.add('hidden');
+  document.getElementById('login').classList.remove('hidden');
+}
+function setupCodeFor(cred){ return cred.salt + ':' + cred.hash; }
+document.getElementById('go').addEventListener('click', async () => {
+  hideMsg();
+  if(!window.crypto || !crypto.subtle){ show('Sign-in needs a secure connection — open this page with https.', 'err'); return; }
+  const email = document.getElementById('email').value.trim();
+  const pw = document.getElementById('pw').value;
+  if(!email || !pw){ show('Email and password are required.', 'err'); return; }
+  try{
+    if(document.getElementById('mode').checked){
+      if(pw.length < 10){ show('For a first-time password, choose at least 10 characters.', 'err'); return; }
+      const salt = b64e(crypto.getRandomValues(new Uint8Array(16)));
+      const hash = await derive(pw, salt);
+      const cred = { salt: salt, hash: hash, email: email };
+      try{ localStorage.setItem(LS_KEY, JSON.stringify(cred)); }catch(e){}
+      sessionStorage.setItem(SES_KEY, email);
+      document.getElementById('setupCode').value = setupCodeFor(cred);
+      document.getElementById('setupPanel').classList.remove('hidden');
+      show('Password created — you are signed in on this device.', 'ok');
+      openView();
+      return;
+    }
+    const cands = candidates();
+    if(!cands.length){ show('No website owner password exists yet — check “First time here” to create one.', 'err'); return; }
+    let ok = false;
+    for(const c of cands){
+      const h = await derive(pw, c.salt);
+      if(safeEqual(h, c.hash)){ ok = true; break; }
+    }
+    if(!ok){ show('That password didn’t match. Try again, or use “Forgot password?” to start over on this device.', 'err'); return; }
+    sessionStorage.setItem(SES_KEY, email);
+    show('Signed in.', 'ok');
+    openView();
+  }catch(e){ show('Sign-in hit a problem in this browser. Try again.', 'err'); }
+});
+document.getElementById('out').addEventListener('click', () => {
+  sessionStorage.removeItem(SES_KEY);
+  document.getElementById('pw').value = '';
+  document.getElementById('setupPanel').classList.add('hidden');
+  hideMsg(); closeView();
+});
+document.getElementById('showSetup').addEventListener('click', () => {
+  const local = loadLocal();
+  if(!local){ show('No password stored in this browser yet — create one first.', 'err'); return; }
+  document.getElementById('setupCode').value = setupCodeFor(local);
+  document.getElementById('setupPanel').classList.remove('hidden');
+});
+document.getElementById('forgotLink').addEventListener('click', (e) => {
+  e.preventDefault(); hideMsg();
+  try{ localStorage.removeItem(LS_KEY); }catch(err){}
+  sessionStorage.removeItem(SES_KEY);
+  document.getElementById('pw').value = '';
+  document.getElementById('mode').checked = true;
+  show('Password cleared on this device — create a new one with “First time here” checked.' + (BAKED_CRED ? ' The shared password still stands; send Juju a new setup code to replace it.' : ''), 'ok');
+});
+(function init(){
+  if(!window.crypto || !crypto.subtle){
+    show('Sign-in needs a secure connection — open this page with https.', 'err');
+    document.getElementById('go').disabled = true;
+  }
+  try{
+    if(sessionStorage.getItem(SES_KEY) && candidates().length) openView();
+  }catch(e){}
+})();
 function renderTicker(combined, gate, talent, venue, claimingOpen){
   var claim = claimingOpen ? 'CLAIMING IS OPEN' : 'CLAIMING OPENS AT ' + gate;
   var seg = '<b>'+combined+' OF '+gate+'</b> REGISTERED \u2014 '+claim+'&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;FOUNDING TALENT: <b>'+talent+' OF 50</b>&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;FOUNDING VENUES: <b>'+venue+' OF 10</b>&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;REGISTRATION FREE FOREVER \u2014 NATIONWIDE&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA\u2019S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;';
