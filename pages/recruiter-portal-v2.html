@@ -66,7 +66,7 @@ async function fetchCounts(){
 }
 async function ticker(){
   try{const c=await fetchCounts();
-    var seg='<b>'+c.combined+' OF '+c.gate+'</b> REGISTERED \u2014 '+(c.claimingOpen?'CLAIMING IS OPEN':'CLAIMING OPENS AT '+c.gate)+'&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>'+c.talent+' OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>'+c.venue+' OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;';
+    var seg='<b>'+c.combined+' OF '+c.gate+'</b> REGISTERED \u2014 '+(c.claimingOpen?'CLAIMING IS OPEN':'CLAIMING OPENS ONCE OUR FIRST VENUE IS PAYMENT-ACTIVE')+'&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>'+c.talent+' OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>'+c.venue+' OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;';
     document.getElementById('ticker').innerHTML='<div class="ticker-track"><span>'+seg+'</span><span>'+seg+'</span></div>';
   }catch{document.getElementById('ticker').textContent='Registration counts unavailable right now.';}
 }
