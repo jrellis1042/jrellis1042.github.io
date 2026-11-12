@@ -12,108 +12,36 @@
 </head>
 <body>
 <h1>Owner Portal</h1>
-<div class="ticker" id="ticker" role="status">Registration counts loading…</div>
-<p class="muted">Read-only overview (v1). No toggles, payment changes, deal moves, or approvals are available here.</p>
+<div class="ticker" id="ticker" role="status"><div class="ticker-track"><span><b>18 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>18 OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;REGISTRATION FREE FOREVER — NATIONWIDE&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span><span><b>18 OF 75</b> REGISTERED — CLAIMING OPENS AT 75&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>18 OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;REGISTRATION FREE FOREVER — NATIONWIDE&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span></div></div>
+<p class="muted">Owner sign-in lives in the Nocturnal app. This page shows the live numbers and points you there.</p>
 <section id="login" class="card">
-<h2>Sign in</h2>
-<label>Email address <input id="email" type="email" autocomplete="email"></label>
-<label>Password <input id="pw" type="password" autocomplete="current-password"></label>
-<p><label><input id="mode" type="checkbox"> First time here — create my password</label></p>
-<p class="muted" id="pwhint">First time? Your new password must be at least 10 characters.</p>
-<button id="go" type="button">Continue</button>
-<div id="msg" role="status"></div>
-<p><a href="#" id="forgotLink">Forgot password?</a></p>
-<div id="forgotPanel" class="hidden">
-<p class="muted">Request a reset and our team will email you a reset code. Then enter the code with a new password (at least 10 characters) and you are back in.</p>
-<label>Reset code <input id="resetCode" type="text" autocomplete="one-time-code"></label>
-<label>New password <input id="newPw" type="password" autocomplete="new-password"></label>
-<p><button id="reqReset" type="button">Request reset</button> <button id="doReset" type="button">Set new password</button></p>
-</div>
+<h2>Owner Sign In</h2>
+<p>Owner sign-in lives in the Nocturnal app — the Owner Command Center. This website is the public front door, so it can't check passwords itself.</p>
+<p>Open the Nocturnal app in Muse, then open <b>Owner Command Center</b> and sign in with your owner login. <b>House Command</b> is the first tab — live numbers, the outreach queue, daily takes, and goals, all synced from the CRM.</p>
+<p class="muted">You're already signed in as Owner in the app, so it should open straight to House Command.</p>
 </section>
-<section id="dash" class="card hidden">
-<h2>Registration counts</h2>
-<p id="counts"></p>
-<h2>Rotation by stage (approved)</h2>
-<p id="stages"></p>
-<h2>In verification now</h2>
-<ul id="vqueue"></ul>
-<h2>Pipeline counts</h2>
-<p id="pipelines"></p>
-<h2>Talent roster (approved, by status)</h2>
-<table><thead><tr><th>Name</th><th>Stage</th><th>Verification</th><th>Zone</th></tr></thead><tbody id="talent"></tbody></table>
-<h2>Venue roster (approved, by status)</h2>
-<table><thead><tr><th>Venue</th><th>Stage</th><th>Verification</th><th>Payment active</th></tr></thead><tbody id="venues"></tbody></table>
-<p id="note" class="muted"></p>
-<p><button id="out" type="button" class="hidden">Sign out</button></p>
+<section class="card">
+<h2>The Rotation Right Now</h2>
+<p><b>18</b> verified talent · <b>0</b> venues · Founding Talent <b>18 of 50</b> · Founding Venues <b>0 of 10</b></p>
+<p class="muted">Same numbers as the front door ticker. Full rosters, outreach, and daily takes live in House Command in the app.</p>
 </section>
 <p class="muted"><a href="/">Back to the front door</a></p>
 <script>
-const AUTH='/portal-auth';
-const msg=document.getElementById('msg');
-function show(t,err){msg.textContent=t;msg.className=err?'err':'';msg.style.display='block';}
-function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-async function fetchCounts(){
-  // /counts is backed by live registry reads and can take a moment (or a
-  // cold start) — retry before ever showing "unavailable" (fix pass 2).
-  for(var i=0;i<3;i++){
-    try{const r=await fetch('/counts');if(!r.ok)throw new Error('counts');
-      const c=await r.json();
-      if(typeof c.combined!=='number'||typeof c.talent!=='number'||typeof c.venue!=='number')throw new Error('counts shape');
-      return c;
-    }catch(e){ if(i===2) throw e; await new Promise(function(res){setTimeout(res,1500);}); }
-  }
+function renderTicker(combined, gate, talent, venue, claimingOpen){
+  var claim = claimingOpen ? 'CLAIMING IS OPEN' : 'CLAIMING OPENS AT ' + gate;
+  var seg = '<b>'+combined+' OF '+gate+'</b> REGISTERED \u2014 '+claim+'&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;FOUNDING TALENT: <b>'+talent+' OF 50</b>&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;FOUNDING VENUES: <b>'+venue+' OF 10</b>&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;REGISTRATION FREE FOREVER \u2014 NATIONWIDE&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA\u2019S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;';
+  document.getElementById('ticker').innerHTML='<div class="ticker-track"><span>'+seg+'</span><span>'+seg+'</span></div>';
 }
-async function ticker(){
-  try{const c=await fetchCounts();
-    var seg='<b>'+c.combined+' OF '+c.gate+'</b> REGISTERED \u2014 '+(c.claimingOpen?'CLAIMING IS OPEN':'CLAIMING OPENS AT '+c.gate)+'&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>'+c.talent+' OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>'+c.venue+' OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;';
-    document.getElementById('ticker').innerHTML='<div class="ticker-track"><span>'+seg+'</span><span>'+seg+'</span></div>';
-  }catch{document.getElementById('ticker').textContent='Registration counts unavailable right now.';}
+// Baked numbers stand on this host (/counts is not served on GitHub Pages).
+// If a /counts endpoint ever exists again, refresh from it like the front door does.
+async function refreshCounts(){
+  try{const r=await fetch('/counts');if(!r.ok)throw new Error('counts');
+    const c=await r.json();
+    if(typeof c.combined!=='number'||typeof c.talent!=='number'||typeof c.venue!=='number')throw new Error('counts shape');
+    renderTicker(c.combined, c.gate || 75, c.talent, c.venue, !!c.claimingOpen);
+  }catch(e){/* baked numbers stand */}
 }
-ticker(); setInterval(ticker,60000);
-async function call(body){
-  const r=await fetch(AUTH,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(body)});
-  return r.json();
-}
-async function me(quiet){
-  const m=await call({action:'me'});
-  if(!m.ok||m.role!=='owner'){if(!m.ok&&!quiet)show(m.error||'Sign-in is not available for that email.',true);return;}
-  document.getElementById('login').classList.add('hidden');
-  document.getElementById('dash').classList.remove('hidden');
-  document.getElementById('counts').textContent=m.counts.combined+' of '+m.counts.gate+' registered · '+m.counts.talent+' talent · '+m.counts.venue+' venues · Claiming '+(m.counts.claimingOpen?'open':'opens at '+m.counts.gate);
-  document.getElementById('pipelines').textContent=Object.keys(m.pipelineCounts).map(function(k){return 'Pipeline '+k+': '+m.pipelineCounts[k];}).join(' · ')||'No open deals.';
-  document.getElementById('talent').innerHTML=m.talentRoster.length?m.talentRoster.map(function(r){return '<tr><td>'+esc(r.name)+'</td><td>'+esc(r.stage)+'</td><td>'+esc(r.verification)+'</td><td>'+esc(r.zone||'Nationwide')+'</td></tr>';}).join(''):'<tr><td colspan="4">None yet.</td></tr>';
-  document.getElementById('venues').innerHTML=m.venueRoster.length?m.venueRoster.map(function(r){return '<tr><td>'+esc(r.name)+'</td><td>'+esc(r.stage)+'</td><td>'+esc(r.verification)+'</td><td>'+(r.paymentActive?'Yes':'No')+'</td></tr>';}).join(''):'<tr><td colspan="4">None yet.</td></tr>';
-  document.getElementById('stages').textContent=m.benchStageCounts?Object.keys(m.benchStageCounts).map(function(k){return k+': '+m.benchStageCounts[k];}).join(' · '):'Not available.';
-  document.getElementById('vqueue').innerHTML=(m.verificationQueue&&m.verificationQueue.length)?m.verificationQueue.map(function(r){return '<li>'+esc(r.name)+' ('+esc(r.type)+')</li>';}).join(''):'<li>None in verification right now.</li>';
-  document.getElementById('note').textContent=m.note;
-  document.getElementById('out').classList.remove('hidden');
-}
-document.getElementById('go').addEventListener('click',async()=>{
-  const email=document.getElementById('email').value.trim(), pw=document.getElementById('pw').value;
-  if(!email||!pw){show('Email and password are required.',true);return;}
-  if(document.getElementById('mode').checked&&pw.length<10){show('For a first-time password, choose at least 10 characters.',true);return;}
-  const action=document.getElementById('mode').checked?'create-password':'signin';
-  const res=await call({action,email,role:'owner',password:pw});
-  if(!res.ok){show(res.error||'Sign-in is not available for that email.',true);return;}
-  show('Signed in.'); me();
-});
-document.getElementById('out').addEventListener('click',async()=>{await call({action:'signout'});location.reload();});
-document.getElementById('forgotLink').addEventListener('click',function(e){e.preventDefault();document.getElementById('forgotPanel').classList.toggle('hidden');});
-document.getElementById('reqReset').addEventListener('click',async()=>{
-  const email=document.getElementById('email').value.trim();
-  if(!email){show('Enter your email above first, then request a reset.',true);return;}
-  const res=await call({action:'forgot-password',email});
-  show(res.message||'If an account matches that email, a reset request has been logged. Watch your inbox for a reset code from our team.');
-});
-document.getElementById('doReset').addEventListener('click',async()=>{
-  const email=document.getElementById('email').value.trim(), code=document.getElementById('resetCode').value.trim(), np=document.getElementById('newPw').value;
-  if(!email||!code||!np){show('Email, reset code, and a new password are all required.',true);return;}
-  if(np.length<10){show('Your new password must be at least 10 characters.',true);return;}
-  const res=await call({action:'reset-password',email,code,password:np});
-  if(!res.ok){show(res.error||'That reset code did not work. Check the code and try again, or request a new one.',true);return;}
-  show('Password updated - you can sign in now with your new password.');
-});
-me(true);
+refreshCounts(); setInterval(refreshCounts,60000);
 </script>
 </body>
 </html>
