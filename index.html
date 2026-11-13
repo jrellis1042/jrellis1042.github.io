@@ -80,7 +80,7 @@ section{position:relative;padding:86px 0;overflow:hidden}
 .stat strong span{color:var(--pink);font-size:1.6rem}
 .stat p{margin:6px 0 0;font-size:.9rem}
 .progress{height:10px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden;margin-top:14px}
-.progress i{display:block;height:100%;width:24%;background:linear-gradient(90deg,var(--pink),var(--gold))}
+.progress i{display:block;height:100%;width:36%;background:linear-gradient(90deg,var(--pink),var(--gold))}
 /* Rotation */
 .role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
 @media(max-width:800px){.role-grid{grid-template-columns:1fr 1fr}}
@@ -216,7 +216,7 @@ section[id]{scroll-margin-top:132px}
       <button class="btn btn-ghost" onclick="openIrene('hi')">Ask Irene 💬</button>
     </div>
     <div class="hero-meta">
-      <span class="pill"><b>18 Of 75</b> Registered</span>
+      <span class="pill"><b>18</b> Registered</span>
       <span class="pill">Founding Talent <b>18 / 50</b></span>
       <span class="pill">Founding Venues <b>0 / 10 — Wide Open</b></span>
       <span class="pill">Registration Free Forever • Nationwide</span>
@@ -242,7 +242,7 @@ section[id]{scroll-margin-top:132px}
     <h2>The Night Is Filling In</h2>
     <p style="max-width:680px">Founding registration is open and free. Claiming stays in preview until our first venue partner is payment-active — then Founding Talent and Founding Venues who are verified claim first.</p>
     <div class="stats">
-      <div class="stat"><strong><span id="statCombined">18</span> <span>/ 75</span></strong><p>Combined Registrations<br>Claiming Opens Once Our First Venue Is Payment-Active</p><div class="progress"><i></i></div></div>
+      <div class="stat"><strong><span id="statCombined">18</span> <span>Registered</span></strong><p>Combined Registrations<br>Claiming Opens Once Our First Venue Is Payment-Active</p><div class="progress"><i id="statCombinedBar" style="width:36%"></i></div></div>
       <div class="stat"><strong><span id="statTalent">18</span> <span>/ 50</span></strong><p>Founding Talent<br><span id="statTalentLeft">32</span> Founding Spots Left</p><div class="progress"><i style="width:36%;background:linear-gradient(90deg,var(--teal),var(--gold))"></i></div></div>
       <div class="stat"><strong><span id="statVenue">0</span> <span>/ 10</span></strong><p>Founding Venues<br><b style="color:var(--gold)">Every Spot Still Open — Venues Move First</b></p><div class="progress"><i style="width:4%"></i></div></div>
       <div class="stat"><strong>50 <span>States</span></strong><p>Registration Open Nationwide<br>Placements Launch First On Florida's I-4 Corridor</p></div>
@@ -258,7 +258,7 @@ section[id]{scroll-margin-top:132px}
     <h2>A Living Roster, Not A List</h2>
     <p style="max-width:700px">The shape of The Rotation — the roles registered so far, in aggregate. Every person on it is verified individually before they can ever be claimed. Names, photos, and full profiles live inside the venue portal, never public. Many members cover more than one role — that is the point of a rotation.</p>
     <div class="role-grid" id="roleGrid"></div>
-    <p style="font-size:.88rem" id="roleMixNote">Role Mix As Of November 7, 2026 • 47 Role Assignments Across 16 Verified Members • Every Founding Member Is Verified And On The Rotation</p>
+    <p style="font-size:.88rem" id="roleMixNote">Role Mix As Of November 11, 2026 • 51 Role Assignments Across 18 Verified Members • Every Founding Member Is Verified And On The Rotation</p>
 <p style="margin-top:14px"><a href="https://nocturnalstaffing.com/pages/bench-preview" style="font-weight:800;color:var(--gold)">Preview The Rotation — Roles And Coverage, No Sign-Up Needed →</a></p>
   </div>
 </section>
@@ -477,18 +477,18 @@ section[id]{scroll-margin-top:132px}
 <script>
 /* Ticker — bottom only, live from /counts (static text below is the fallback if the feed is unreachable) */
 (function(){
-  function renderTicker(combined, gate, talent, venue, claimingOpen){
+  function renderTicker(combined, talent, venue, claimingOpen){
     var claim = claimingOpen ? "CLAIMING IS OPEN" : "CLAIMING OPENS ONCE OUR FIRST VENUE IS PAYMENT-ACTIVE";
-    var items = combined + " OF " + gate + " REGISTERED — " + claim + " ◆ FOUNDING TALENT: " + talent + " OF 50 ◆ FOUNDING VENUES: " + venue + " OF 10 ◆ REGISTRATION FREE FOREVER — NATIONWIDE ◆ PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR ◆ ";
+    var items = combined + " REGISTERED — " + claim + " ◆ FOUNDING TALENT: " + talent + " OF 50 ◆ FOUNDING VENUES: " + venue + " OF 10 ◆ IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS ◆ CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC ◆ REGISTRATION FREE FOREVER — NATIONWIDE ◆ PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR ◆ ";
     var h = "<span>"+items.replace(/◆/g,'<span class="dot">◆</span>')+"</span>";
     document.getElementById('tickerTrack').innerHTML = h+h+h+h;
   }
-  renderTicker(18, 75, 18, 0, false);
+  renderTicker(18, 18, 0, false);
   fetch('/counts').then(function(r){ if(!r.ok) throw new Error('counts'); return r.json(); }).then(function(c){
     if (typeof c.combined !== 'number' || typeof c.talent !== 'number' || typeof c.venue !== 'number') throw new Error('counts shape');
-    var gate = c.gate || 75;
-    renderTicker(c.combined, gate, c.talent, c.venue, !!c.claimingOpen);
+    renderTicker(c.combined, c.talent, c.venue, !!c.claimingOpen);
     var sc = document.getElementById('statCombined'); if (sc) sc.textContent = c.combined;
+    var sb = document.getElementById('statCombinedBar'); if (sb) sb.style.width = Math.min(100, c.combined / 50 * 100) + '%';
     var st = document.getElementById('statTalent'); if (st) st.textContent = c.talent;
     var sv = document.getElementById('statVenue'); if (sv) sv.textContent = c.venue;
     var sl = document.getElementById('statTalentLeft'); if (sl) sl.textContent = Math.max(0, 50 - c.talent);
@@ -497,7 +497,7 @@ section[id]{scroll-margin-top:132px}
 
 /* Role mix — live from /bench; the snapshot below stays only if every fetch attempt fails */
 var roles=[
-  {name:"Bartenders",n:10},{name:"VIP Hosts",n:10},{name:"Barbacks",n:8},
+  {name:"Bartenders",n:12},{name:"VIP Hosts",n:12},{name:"Barbacks",n:8},
   {name:"Door Staff",n:8},{name:"Venue Support",n:8},{name:"Bottle Service",n:3}
 ];
 function renderRoles(list){
@@ -519,7 +519,7 @@ renderRoles(roles);
       if (!list.length) throw new Error('bench empty');
       renderRoles(list);
       var total = list.reduce(function(a,r){ return a + r.n; }, 0);
-      var members = (typeof b.talent === 'number') ? b.talent : 15;
+      var members = (typeof b.talent === 'number') ? b.talent : 18;
       var note = document.getElementById('roleMixNote');
       if (note) note.textContent = 'Role Mix Updated From The Live Registry \u2022 ' + total + ' Role Assignments Across ' + members + ' Verified Members \u2022 Every Founding Member Is Verified And On The Rotation';
     }).catch(function(){ setTimeout(function(){ attempt(i + 1); }, 1200); });
@@ -602,7 +602,7 @@ function matchAnswer(text){
   if(/recruit/.test(t)) return ANSWERS.recruiter;
   if(/venue|club|bar owner|manager|post a shift|post shift|hire/.test(t)) return ANSWERS.venue;
   if(/talent|bartend|barback|door|bottle|vip|job|work|sign up.*work|register.*talent/.test(t)) return ANSWERS.talent;
-  if(/claim|preview|when can i|75|shift/.test(t)) return ANSWERS.claiming;
+  if(/claim|preview|when can i|shift/.test(t)) return ANSWERS.claiming;
   if(/verif|credential|id\b|check|background/.test(t)) return ANSWERS.verification;
   if(/paid|get paid|payment|money/.test(t)) return ANSWERS.pay;
   if(/human|person|call|phone|email|contact|help|support/.test(t)) return ANSWERS.human;
