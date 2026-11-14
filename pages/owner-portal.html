@@ -24,7 +24,7 @@
 </head>
 <body>
 <h1>Owner Portal</h1>
-<div class="ticker" id="ticker" role="status"><div class="ticker-track"><span><b>18</b> REGISTERED — CLAIMING OPENS ONCE OUR FIRST VENUE IS PAYMENT-ACTIVE&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>18 OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;REGISTRATION FREE FOREVER — NATIONWIDE&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span><span><b>18</b> REGISTERED — CLAIMING OPENS ONCE OUR FIRST VENUE IS PAYMENT-ACTIVE&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING TALENT: <b>18 OF 50</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;REGISTRATION FREE FOREVER — NATIONWIDE&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span></div></div>
+<div class="ticker" id="ticker" role="status"><div class="ticker-track"><span><b>18</b> REGISTERED — CLAIMING OPENS ONCE OUR FIRST VENUE IS PAYMENT-ACTIVE&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;REGISTRATION FREE FOREVER — NATIONWIDE&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span><span><b>18</b> REGISTERED — CLAIMING OPENS ONCE OUR FIRST VENUE IS PAYMENT-ACTIVE&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;FOUNDING VENUES: <b>0 OF 10</b>&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;REGISTRATION FREE FOREVER — NATIONWIDE&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">◆</i>&nbsp;&nbsp;</span></div></div>
 <p class="muted">Sign in here, on the website. Your password is checked by Supabase — it never passes through this page's code.</p>
 <section id="login" class="card">
 <h2>Sign in</h2>
@@ -72,7 +72,7 @@ function closeView(){
 }
 function renderTicker(c){
   var claim = c.claimingOpen ? 'CLAIMING IS OPEN' : 'CLAIMING OPENS ONCE OUR FIRST VENUE IS PAYMENT-ACTIVE';
-  var seg = '<b>'+c.combined+'</b> REGISTERED \u2014 '+claim+'&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;FOUNDING TALENT: <b>'+c.talent+' OF 50</b>&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;FOUNDING VENUES: <b>'+c.venue+' OF 10</b>&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;REGISTRATION FREE FOREVER \u2014 NATIONWIDE&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA\u2019S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;';
+  var seg = '<b>'+c.combined+'</b> REGISTERED \u2014 '+claim+'&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;FOUNDING VENUES: <b>'+c.venue+' OF 10</b>&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;REGISTRATION FREE FOREVER \u2014 NATIONWIDE&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA\u2019S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;';
   document.getElementById('ticker').innerHTML='<div class="ticker-track"><span>'+seg+'</span><span>'+seg+'</span></div>';
 }
 async function loadPublicCounts(){
@@ -90,7 +90,7 @@ function renderOwner(snap, pub){
   var el = document.getElementById('ownerData');
   var html = '';
   if(pub && typeof pub.talent === 'number'){
-    html += '<h2>The Rotation Right Now</h2><p><b>'+pub.talent+'</b> verified talent \u00b7 <b>'+pub.venue+'</b> venues \u00b7 Founding Talent <b>'+pub.talent+' of 50</b> \u00b7 Founding Venues <b>'+pub.venue+' of 10</b></p>';
+    html += '<h2>The Rotation Right Now</h2><p><b>'+pub.talent+'</b> verified talent \u00b7 <b>'+pub.venue+'</b> venues \u00b7 Founding Venues <b>'+pub.venue+' of 10</b></p>';
   }
   if(snap && snap.talent && typeof snap.talent.totalVerified === 'number'){
     var roles = (snap.talent.byRole || []).map(function(x){ return esc(x.role)+' <b>'+x.count+'</b>'; }).join(' \u00b7 ');
