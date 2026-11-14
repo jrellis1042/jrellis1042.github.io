@@ -18,7 +18,7 @@
   --radius:22px;
 }
 *{box-sizing:border-box} html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;overflow-x:hidden;padding-bottom:52px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;overflow-x:hidden;padding-bottom:72px}
 a{color:inherit}
 img{max-width:100%;display:block}
 h1,h2{font-family:Anton, Impact, sans-serif;letter-spacing:.02em;text-transform:none;line-height:.95;font-weight:400}
@@ -142,9 +142,9 @@ section{position:relative;padding:86px 0;overflow:hidden}
 .statement p{color:#4a3a2a}
 .statement h2{color:#181008}
 /* Ticker bottom */
-.ticker{position:fixed;left:0;right:0;bottom:0;z-index:70;background:#0a070a;border-top:2px solid var(--pink);height:52px;display:flex;align-items:center;overflow:hidden}
-.ticker-track{display:flex;gap:0;white-space:nowrap;animation:tick 28s linear infinite;font-family:Bebas Neue,sans-serif;letter-spacing:.12em;font-size:1.05rem}
-.ticker-track span{padding:0 18px}
+.ticker{position:fixed;left:0;right:0;bottom:0;z-index:70;background:#0a070a;border-top:3px solid var(--pink);height:72px;display:flex;align-items:center;overflow:hidden;box-shadow:0 -12px 40px rgba(255,46,136,.28)}
+.ticker-track{display:flex;gap:0;white-space:nowrap;animation:tick 42s linear infinite;font-family:Bebas Neue,sans-serif;letter-spacing:.14em;font-size:1.35rem}
+.ticker-track span{padding:0 22px}
 .ticker-track .dot{color:var(--pink)}
 @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.ticker-track{animation:none} html{scroll-behavior:auto}}
@@ -478,7 +478,7 @@ section[id]{scroll-margin-top:132px}
 (function(){
   function renderTicker(combined, talent, venue, claimingOpen){
     var claim = claimingOpen ? "CLAIMING IS OPEN" : "CLAIMING OPENS ONCE OUR FIRST VENUE IS PAYMENT-ACTIVE";
-    var items = combined + " REGISTERED — " + claim + " ◆ FOUNDING VENUES: " + venue + " OF 10 ◆ IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS ◆ CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC ◆ REGISTRATION FREE FOREVER — NATIONWIDE ◆ PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR ◆ ";
+    var items = combined + " REGISTERED — " + claim + " ◆ THE ROTATION IS GROWING ◆ FOUNDING VENUES: " + venue + " OF 10 ◆ IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS ◆ CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC ◆ STATES: FLORIDA • NEW YORK • OHIO • CALIFORNIA • MASSACHUSETTS • VIRGINIA ◆ BARTENDERS • VIP HOSTS • BOTTLE SERVICE • BARBACKS • DOOR STAFF • VENUE SUPPORT ◆ VERIFIED BEFORE, DURING AND AFTER EVERY PLACEMENT ◆ HIRE DIRECT — NO MIDDLEMAN ◆ YOU DIDN'T KNOW YOU NEEDED US UNTIL FRIDAY AT 8:40 PM ◆ REGISTRATION FREE FOREVER — NATIONWIDE ◆ PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR ◆ ";
     var h = "<span>"+items.replace(/◆/g,'<span class="dot">◆</span>')+"</span>";
     document.getElementById('tickerTrack').innerHTML = h+h+h+h;
   }
