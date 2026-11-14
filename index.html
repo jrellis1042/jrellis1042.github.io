@@ -241,7 +241,7 @@ section[id]{scroll-margin-top:132px}
     <h2>The Night Is Filling In</h2>
     <p style="max-width:680px">Registration is open and free — and your first year is free after confirmed registration. Claiming stays in preview until our first venue partner is payment-active — then Founding Venues who are verified claim first.</p>
     <div class="stats">
-      <div class="stat"><strong><span id="statCombined">18</span> <span>Registered</span></strong><p>Combined Registrations<br>Claiming Opens Once Our First Venue Is Payment-Active</p></div>
+      <div class="stat"><strong><span id="statCombined">18</span> <span>Registered</span></strong><p>Combined Registrations<br>Claiming Opens When Your First Payment Is Active</p></div>
       <div class="stat"><strong><span id="statTalent">18</span></strong><p>Verified Talent On The Rotation<br>First Year Free After Confirmed Registration</p></div>
       <div class="stat"><strong><span id="statVenue">0</span> <span>/ 10</span></strong><p>Founding Venues<br><b style="color:var(--gold)">Every Spot Still Open — Venues Move First</b></p><div class="progress"><i style="width:4%"></i></div></div>
       <div class="stat"><strong>50 <span>States</span></strong><p>Registration Open Nationwide<br>Placements Launch First On Florida's I-4 Corridor</p></div>
@@ -417,7 +417,7 @@ section[id]{scroll-margin-top:132px}
     <h2>Questions, Answered Straight</h2>
     <details><summary>How Does Registration Work?</summary><p>Fill out the talent form with your role, your state, and the nights you're available — registration is open in all 50 states and free forever. Then complete verification after registration.</p></details>
     <details><summary>What Does Verification Mean?</summary><p>Verification is Nocturnal's own check of identity and credentials, completed before anyone can claim a shift. It's what lets a venue trust the match — and what makes your rank worth something.</p></details>
-    <details><summary>When Can I Claim A Shift?</summary><p>You can preview postings now. Claiming opens once our first venue partner is payment-active. Founding Venues (first 10) get early access once verified.</p></details>
+    <details><summary>When Can I Claim A Shift?</summary><p>You can preview postings now. Claiming opens when the venue's first payment is active. Founding Venues (first 10) get early access once verified.</p></details>
     <details><summary>Is Registration Really Free?</summary><p>Yes. Registration is free, forever — for talent and for venues starting their profile.</p></details>
     <details><summary>How Do I Get Paid As Talent?</summary><p>Venues pay you directly. Nocturnal verifies payment through two-party confirmation — the venue confirms payment was sent and you confirm it arrived — but Nocturnal never moves worker pay.</p></details>
     <details><summary>When Does My Venue Posting Go Live?</summary><p>A posting goes live once your venue's setup — including payment — is complete. Register first, get verified, then post shifts from your venue portal.</p></details>
@@ -477,7 +477,7 @@ section[id]{scroll-margin-top:132px}
 /* Ticker — bottom only, live from /counts (static text below is the fallback if the feed is unreachable) */
 (function(){
   function renderTicker(combined, talent, venue, claimingOpen){
-    var claim = claimingOpen ? "CLAIMING IS OPEN" : "CLAIMING OPENS ONCE OUR FIRST VENUE IS PAYMENT-ACTIVE";
+    var claim = claimingOpen ? "CLAIMING IS OPEN" : "CLAIMING OPENS WHEN YOUR FIRST PAYMENT IS ACTIVE";
     var items = combined + " REGISTERED — " + claim + " ◆ THE ROTATION IS GROWING ◆ FOUNDING VENUES: " + venue + " OF 10 ◆ IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS ◆ CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC ◆ STATES: FLORIDA • NEW YORK • OHIO • CALIFORNIA • MASSACHUSETTS • VIRGINIA ◆ BARTENDERS • VIP HOSTS • BOTTLE SERVICE • BARBACKS • DOOR STAFF • VENUE SUPPORT ◆ VERIFIED BEFORE, DURING AND AFTER EVERY PLACEMENT ◆ HIRE DIRECT — NO MIDDLEMAN ◆ YOU DIDN'T KNOW YOU NEEDED US UNTIL FRIDAY AT 8:40 PM ◆ REGISTRATION FREE FOREVER — NATIONWIDE ◆ PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR ◆ ";
     var h = "<span>"+items.replace(/◆/g,'<span class="dot">◆</span>')+"</span>";
     document.getElementById('tickerTrack').innerHTML = h+h+h+h;
@@ -567,7 +567,7 @@ var ANSWERS={
   talent:"Love it — here's how talent registration works:<br><br>1) Fill out the talent form with your role, state, and the nights you're available. Registration is open in all 50 states and <b>free forever</b>.<br>2) Complete verification after you register — nobody claims a shift until they're verified.<br>3) Preview postings now. Your first year is free after confirmed registration — we're at <b>18</b> verified and growing.<br><br>"+LINKS.talent,
   venue:"Venues move first right now — here's the path:<br><br>1) Fill out the Founding Venue form to start your venue's profile today.<br>2) Get verified and complete your setup — postings go live once setup, including payment setup, is complete.<br>3) Post shifts, review screened candidates, and hire directly.<br><br>The first <b>10 venues</b> earn a permanent numbered Founding Venue badge and first claim on The Rotation. Right now we're at <b>0 of 10</b> — every spot is open.<br><br>"+LINKS.venue,
   recruiter:"Recruiters <b>prove it first</b> at Nocturnal — nobody recruits on a claim.<br><br>You'll need certifications or licenses (with issuer and expiry), verified venue work history, and a reachable professional reference. Approval and referral codes switch on only after the proof checks out.<br><br>"+LINKS.recruiter,
-  claiming:"Here's how claiming works, straight:<br><br>• You can <b>preview postings now</b>.<br>• <b>General claiming opens once our first venue partner is payment-active</b>.<br>• <b>Founding Venues (first 10)</b> get <b>early access once verified</b>.<br>• Every placement has both sides confirm role, date, time, place, dress code, and agreed pay — with a named backup behind it.",
+  claiming:"Here's how claiming works, straight:<br><br>• You can <b>preview postings now</b>.<br>• <b>General claiming opens when the venue's first payment is active</b>.<br>• <b>Founding Venues (first 10)</b> get <b>early access once verified</b>.<br>• Every placement has both sides confirm role, date, time, place, dress code, and agreed pay — with a named backup behind it.",
   verification:"Verification is Nocturnal's own check of identity and credentials — and it's required for <b>everyone</b>, talent and venues, before claiming or posting.<br><br><b>Before the night:</b> credentials checked, both sides confirm the details, transport confirmed, backup named.<br><b>During:</b> arrival check-in confirmed by the venue.<br><b>After:</b> both sides confirm hours and sign off — only then does the placement count.<br><br>It's what lets a venue trust the match, and what makes a talent's rank worth something.",
   human:"Of course — a human is one tap away:<br><br>📞 Call <a href='tel:+18632880341'>(863) 288-0341</a><br>✉️ Email <a href='mailto:joshua.ellis.staffing@gmail.com'>joshua.ellis.staffing@gmail.com</a><br><br>Registration questions I can usually answer faster right here — try one of the quick actions below.",
   cost:"Registration is <b>free</b> — free forever, for talent and for venues starting their profile. For partnership details beyond registration, a human follows up with you directly: call <a href='tel:+18632880341'>(863) 288-0341</a> or email <a href='mailto:joshua.ellis.staffing@gmail.com'>joshua.ellis.staffing@gmail.com</a>.",
@@ -612,7 +612,7 @@ function toggleIrene(open){
   panel.classList.toggle('open',open);
   if(open && !started){
     started=true;
-    addMsg("Hi, I'm <b>Irene</b> — I'm an AI assistant for Nocturnal Staffing Agency. 🦩 I help talent, venues, and recruiters register, understand verification and claiming, and find their way around. Registration is open — claiming opens once our first venue partner is payment-active, and Founding spots are still open. What can I do for you tonight?",'bot');
+    addMsg("Hi, I'm <b>Irene</b> — I'm an AI assistant for Nocturnal Staffing Agency. 🦩 I help talent, venues, and recruiters register, understand verification and claiming, and find their way around. Registration is open — claiming opens when the venue's first payment is active, and Founding Venue spots are still open. What can I do for you tonight?",'bot');
     renderQuick();
   }
   if(open){ setTimeout(function(){document.getElementById('ireneText').focus();},80); }
