@@ -216,7 +216,7 @@ section[id]{scroll-margin-top:132px}
       <button class="btn btn-ghost" onclick="openIrene('hi')">Ask Irene 💬</button>
     </div>
     <div class="hero-meta">
-      <span class="pill"><b>18</b> Registered</span>
+      <span class="pill"><b>19</b> Registered</span>
       <span class="pill">Founding Venues <b>0 / 10 — Wide Open</b></span>
       <span class="pill">Registration Free Forever • Nationwide</span>
     </div>
@@ -241,8 +241,8 @@ section[id]{scroll-margin-top:132px}
     <h2>The Night Is Filling In</h2>
     <p style="max-width:680px">Registration is open and free — and your first year is free after confirmed registration. Claiming stays in preview until our first venue partner is payment-active — then Founding Venues who are verified claim first.</p>
     <div class="stats">
-      <div class="stat"><strong><span id="statCombined">18</span> <span>Registered</span></strong><p>Combined Registrations<br>Claiming Opens When Your First Payment Is Active</p></div>
-      <div class="stat"><strong><span id="statTalent">18</span></strong><p>Verified Talent On The Rotation<br>First Year Free After Confirmed Registration</p></div>
+      <div class="stat"><strong><span id="statCombined">19</span> <span>Registered</span></strong><p>Combined Registrations<br>Claiming Opens When Your First Payment Is Active</p></div>
+      <div class="stat"><strong><span id="statTalent">19</span></strong><p>Verified Talent On The Rotation<br>First Year Free After Confirmed Registration</p></div>
       <div class="stat"><strong><span id="statVenue">0</span> <span>/ 10</span></strong><p>Founding Venues<br><b style="color:var(--gold)">Every Spot Still Open — Venues Move First</b></p><div class="progress"><i style="width:4%"></i></div></div>
       <div class="stat"><strong>50 <span>States</span></strong><p>Registration Open Nationwide<br>Placements Launch First On Florida's I-4 Corridor</p></div>
     </div>
@@ -257,7 +257,7 @@ section[id]{scroll-margin-top:132px}
     <h2>A Living Roster, Not A List</h2>
     <p style="max-width:700px">The shape of The Rotation — the roles registered so far, in aggregate. Every person on it is verified individually before they can ever be claimed. Names, photos, and full profiles live inside the venue portal, never public. Many members cover more than one role — that is the point of a rotation.</p>
     <div class="role-grid" id="roleGrid"></div>
-    <p style="font-size:.88rem" id="roleMixNote">Role Mix As Of November 11, 2026 • 51 Role Assignments Across 18 Verified Members • Every Member Is Verified And On The Rotation</p>
+    <p style="font-size:.88rem" id="roleMixNote">Role Mix As Of November 14, 2026 • 52 Role Assignments Across 19 Verified Members • Every Member Is Verified And On The Rotation</p>
 <p style="margin-top:14px"><a href="https://nocturnalstaffing.com/pages/bench-preview" style="font-weight:800;color:var(--gold)">Preview The Rotation — Roles And Coverage, No Sign-Up Needed →</a></p>
   </div>
 </section>
@@ -303,11 +303,11 @@ section[id]{scroll-margin-top:132px}
       <article class="f-card f-venue">
         <div class="big-num">0 / 10</div>
         <h3 style="font-size:1.7rem;margin:.3em 0">Founding Venues — The Prize Is Still Wide Open</h3>
-        <p>Talent is already at 18. Venues are at zero. The first 10 venues earn a permanent, numbered Founding Venue badge and first claim on The Rotation as it fills. The venues that start now hold the advantage before everyone wants in.</p>
+        <p>Talent is already at 19. Venues are at zero. The first 10 venues earn a permanent, numbered Founding Venue badge and first claim on The Rotation as it fills. The venues that start now hold the advantage before everyone wants in.</p>
         <a class="btn btn-gold" href="https://nocturnalstaffing.com/pages/venue-form.html">Claim A Founding Venue Spot →</a>
       </article>
       <article class="f-card f-talent">
-        <div class="big-num" style="color:var(--pink)">18</div>
+        <div class="big-num" style="color:var(--pink)">19</div>
         <h3 style="font-size:1.5rem">Talent — Join The Rotation</h3>
         <p>Register free, get verified, and your first year is free after confirmed registration. The Rotation is growing — the early ones set the standard.</p>
         <a class="btn btn-ghost" href="https://nocturnalstaffing.com/pages/talent-form.html">Join The Rotation →</a>
@@ -482,7 +482,7 @@ section[id]{scroll-margin-top:132px}
     var h = "<span>"+items.replace(/◆/g,'<span class="dot">◆</span>')+"</span>";
     document.getElementById('tickerTrack').innerHTML = h+h+h+h;
   }
-  renderTicker(18, 18, 0, false);
+  renderTicker(19, 19, 0, false);
   fetch('/counts').then(function(r){ if(!r.ok) throw new Error('counts'); return r.json(); }).then(function(c){
     if (typeof c.combined !== 'number' || typeof c.talent !== 'number' || typeof c.venue !== 'number') throw new Error('counts shape');
     renderTicker(c.combined, c.talent, c.venue, !!c.claimingOpen);
@@ -495,7 +495,7 @@ section[id]{scroll-margin-top:132px}
 /* Role mix — live from /bench; the snapshot below stays only if every fetch attempt fails */
 var roles=[
   {name:"Bartenders",n:12},{name:"VIP Hosts",n:12},{name:"Barbacks",n:8},
-  {name:"Door Staff",n:8},{name:"Venue Support",n:8},{name:"Bottle Service",n:3}
+  {name:"Door Staff",n:9},{name:"Venue Support",n:8},{name:"Bottle Service",n:3}
 ];
 function renderRoles(list){
   document.getElementById('roleGrid').innerHTML = list.map(function(r){
