@@ -62,6 +62,15 @@
 .map-pin{cursor:pointer}
 .leader-row{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid #222;font-size:.92rem}
 .leader-row b{color:#ffd75e}
+.data-boundary{border:2px solid #ff2e88;border-radius:18px;padding:1rem;margin:1rem 0;background:rgba(255,46,136,.07)}
+.data-boundary h3{margin-top:0;color:#ff2e88}
+.suggest-box{border:1px solid #333;border-radius:18px;padding:1rem;margin:1rem 0}
+.suggest-box textarea{width:100%;min-height:90px;padding:.5rem;margin-top:.25rem;background:#101018;color:#fff;border:1px solid #444;border-radius:6px;font-family:Manrope,system-ui,sans-serif;box-sizing:border-box}
+.suggest-box input[type=text]{width:100%;padding:.5rem;margin-top:.25rem;background:#101018;color:#fff;border:1px solid #444;border-radius:6px;box-sizing:border-box}
+.suggest-item{border-bottom:1px solid #222;padding:.5rem 0;font-size:.92rem}
+.suggest-item .suggest-status{color:#ffd75e;font-weight:700}
+.irene-fab{position:fixed;right:20px;bottom:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#ff2e88,#ff6a3d);color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(255,46,136,.5);cursor:pointer;border:0;z-index:50;padding:0}
+.irene-fab span{font-size:.62rem;font-weight:800;position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);color:#f4f2ee;letter-spacing:.05em;white-space:nowrap}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -97,6 +106,7 @@
   <button type="button" id="tabOverview" class="ghost" role="tab" aria-selected="false">Overview</button>
   <button type="button" id="tabMap" class="ghost" role="tab" aria-selected="false">Map</button>
   <button type="button" id="tabTeam" class="ghost" role="tab" aria-selected="false">Team</button>
+  <button type="button" id="tabData" class="ghost" role="tab" aria-selected="false">Data</button>
 </div>
 <div id="hqData" role="tabpanel"><p class="muted">Loading Nocturnal HQ…</p></div>
 <div id="ownerData" class="hidden" role="tabpanel"><p class="muted">Loading the live numbers…</p></div>
@@ -128,8 +138,42 @@
 <div class="team-card"><div class="team-mono">DR</div><div class="team-body"><h3>Dara</h3><p class="team-title">Data Department</p><p>Owns the house's data products — venue lists, buyer terms, and the market intelligence the niche is worth.</p><p class="team-thanks">“Named November 14 to build the data department layer by layer — venue data only, talent data never for sale.”</p></div></div>
 </div>
 </div>
+<div id="dataData" class="hidden" role="tabpanel">
+<h2>Data Department — Plans &amp; Development</h2>
+<p class="muted">The department builds in the background, layer by layer. Dara owns it — venue data products, buyer terms, and market intelligence. Content here is baked from the department plan; a plan change means a redeploy.</p>
+<h3>Where We Are</h3>
+<p><b>Layer 1 — Foundation: DONE.</b> Audit, product definition, buyer-terms outline, hygiene backlog, proposed launch gates. No storefront, no launch, no sales.</p>
+<p><b>Layer 2 — Packaging / storefront: not started.</b> Needs the structured venue store, a verification pass, a sample list, pricing (Rashad's call), and an attorney read on the buyer terms.</p>
+<p><b>Layer 3 — Intelligence reports: not started.</b> Needs Layer 2's store plus snapshot history trend data (history started November 14, 2026).</p>
+<h3>The Audit, Honestly</h3>
+<p><b>325 real venue orgs</b> in the CRM — but the records are name-only: <b>0 addresses, 0 cities, 0 states, 0 websites, 0 contact persons</b> on file. <b>67 verified business emails (21%)</b> found in outreach notes. The engine headline says 251 venues scored, but per-segment counters sum to 199 — a <b>52-record gap to reconcile</b> before any sale. <b>Nothing is sellable today as a ready product.</b> The list is real and fresh (123 venues added in the last 30 days), but it is not a product yet.</p>
+<p id="dataLive" class="muted">Live numbers load with the snapshot…</p>
+<h3>What We Will Sell</h3>
+<p><b>Unit 1 — Venue lead lists</b> (by city / region / venue type): business name, city, state, venue type, verified business email, fit score, last-verified date, source. No phone numbers in v1. No suppressed contacts, ever. Sold as a dated snapshot.</p>
+<p><b>Unit 2 — Aggregated demand reports:</b> no per-venue rows. Short-staffed cities, hard-to-fill roles, territory coverage, trend lines. This is the first unit that can ship — it contains no contact data at all.</p>
+<p><b>Unit 3 (later) — Enrichment / verification:</b> a buyer brings their own venue list; Nocturnal verifies contacts and scores against its coverage.</p>
+<h3>Hygiene Backlog — 8 Items Before Any Sale</h3>
+<p>1. Join city + state to every venue record from verified sources — no invented geography. 2. Build one structured venue store. 3. Reconcile the 199-vs-251 scored gap. 4. Resolve the ~8 look-alike venue groups. 5. Strip the 9 suppressed addresses and the 2 test orgs from any product extract — permanently. 6. Re-verify the 67 on-file emails before any sale. 7. Backfill addresses/websites from public sources only. 8. Record provenance per record.</p>
+<h3>Proposed Launch Gates (Proposals — Not Decided)</h3>
+<p>1. <b>1,000+ verified fresh venue records</b> in the structured store (today: 325 names, 67 emails, 1 structured score). 2. <b>The staffing engine's first paying venue</b> — the core business comes first. 3. Hygiene backlog cleared. 4. Attorney read on the buyer terms. 5. Pricing approved by Rashad.</p>
+<div class="data-boundary"><h3>Hard Boundary — Talent Data Is Never For Sale</h3><p><b>Talent PII is never for sale.</b> No talent names, emails, phones, or dates of birth in any data product, ever, without explicit opt-in consent (none exists today). Only venue and business data is in scope. Any step that would touch talent records is skipped.</p></div>
+<h3>Dara's Lane</h3>
+<p>Dara — Data Department (named November 14, 2026) — owns the data products, dataset hygiene, buyer terms, and intelligence reports. Venue/business data only; talent PII never for sale.</p>
+<div class="suggest-box" id="suggestBox">
+<h3>Send Juju an Idea</h3>
+<p class="muted">Ideas for the data department — or anything else you want Juju to build. Irene is floating close by: tap her anywhere in the portal and this box opens.</p>
+<label>Topic (optional) <input type="text" id="suggestTopic" placeholder="e.g. Data department"></label>
+<label>Your idea <textarea id="suggestText" placeholder="Type your idea here…"></textarea></label>
+<button id="suggestSend" type="button">Send to Juju</button>
+<p id="suggestMsg" class="muted" role="status"></p>
+<h3>Your Suggestions</h3>
+<div id="suggestList"><p class="muted">Loading your suggestions…</p></div>
+</div>
+<p class="muted">Plan written November 15, 2026. This tab refreshes when the plan updates — a plan change means a redeploy.</p>
+</div>
 <p class="muted">Same numbers as the front door ticker. Rosters, approvals, daily takes, and Ask Juju live in House Command in the Nocturnal app.</p>
 <p><button id="out" type="button" class="ghost">Sign out</button></p>
+<button id="ireneFab" type="button" class="irene-fab" title="Irene — send an idea to Juju" aria-label="Irene — send an idea to Juju">💬<span>Irene</span></button>
 </section>
 <p class="muted"><a href="/">Back to the front door</a></p>
 <script>
@@ -221,7 +265,7 @@ function renderOwner(snap, pub){
   }
   el.innerHTML = html || '<p class="muted">Numbers unavailable right now — reload the page.</p>';
 }
-var TAB_IDS = {hq:['tabHq','hqData'], overview:['tabOverview','ownerData'], map:['tabMap','mapData'], team:['tabTeam','teamData']};
+var TAB_IDS = {hq:['tabHq','hqData'], overview:['tabOverview','ownerData'], map:['tabMap','mapData'], team:['tabTeam','teamData'], data:['tabData','dataData']};
 function showTab(which){
   Object.keys(TAB_IDS).forEach(function(k){
     var on = k === which;
@@ -232,11 +276,72 @@ function showTab(which){
     b.setAttribute('aria-selected', on ? 'true' : 'false');
   });
   if(which === 'map') renderMap();
+  if(which === 'data') loadDataTab();
 }
 document.getElementById('tabHq').addEventListener('click', function(){ showTab('hq'); });
 document.getElementById('tabOverview').addEventListener('click', function(){ showTab('overview'); });
 document.getElementById('tabMap').addEventListener('click', function(){ showTab('map'); });
 document.getElementById('tabTeam').addEventListener('click', function(){ showTab('team'); });
+document.getElementById('tabData').addEventListener('click', function(){ showTab('data'); });
+
+/* Data tab: live strip from the snapshot already fetched by loadOwner,
+   plus the suggestion box (Supabase portal_suggestions: anon INSERT,
+   owner-only SELECT — same pattern as pageviews). If the table is not
+   created yet, the box says so instead of failing. */
+function renderDataLive(){
+  var el = document.getElementById('dataLive');
+  if(!el) return;
+  if(lastSnap && lastSnap.outreach){
+    var o = lastSnap.outreach;
+    el.innerHTML = 'Live right now: <b>' + (o.leadsTotal || 0) + '</b> venues scored &middot; <b>' + (o.touchesSent || 0) + '</b> touches sent &middot; <b>' + (o.repliesReceived || 0) + '</b> replies &middot; <b>' + ((lastSnap.talent && lastSnap.talent.totalVerified) || 0) + '</b> verified talent.';
+  } else {
+    el.textContent = 'Live numbers unavailable right now — they fill in after the next sync (every 30 minutes).';
+  }
+}
+async function loadSuggestions(){
+  var list = document.getElementById('suggestList');
+  if(!list) return;
+  try{
+    var r = await sb.from('portal_suggestions').select('created_at,text,topic,status').order('created_at', {ascending:false}).limit(50);
+    if(r.error) throw new Error('suggestions unavailable');
+    var rows = r.data || [];
+    if(!rows.length){ list.innerHTML = '<p class="muted">No suggestions yet — yours will be the first.</p>'; return; }
+    list.innerHTML = rows.map(function(s){
+      var d = s.created_at ? new Date(s.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '';
+      return '<div class="suggest-item"><b>' + esc(s.topic || 'Idea') + '</b> <span class="suggest-status">' + esc(s.status || 'new') + '</span> &middot; <span class="muted">' + d + '</span><br>' + esc(s.text) + '</div>';
+    }).join('');
+  }catch(e){
+    list.innerHTML = '<p class="muted">Suggestion history will appear here once the suggestions table is live.</p>';
+  }
+}
+function loadDataTab(){
+  renderDataLive();
+  loadSuggestions();
+}
+document.getElementById('suggestSend').addEventListener('click', async function(){
+  var msgEl = document.getElementById('suggestMsg');
+  var text = document.getElementById('suggestText').value.trim();
+  var topic = document.getElementById('suggestTopic').value.trim();
+  if(!text){ msgEl.textContent = 'Type your idea first.'; return; }
+  msgEl.textContent = 'Sending…';
+  try{
+    var r = await sb.from('portal_suggestions').insert({text: text, topic: topic || null, status: 'new'});
+    if(r.error) throw new Error('save failed');
+    document.getElementById('suggestText').value = '';
+    document.getElementById('suggestTopic').value = '';
+    msgEl.textContent = 'Sent — Juju will see it.';
+    loadSuggestions();
+  }catch(e){
+    msgEl.textContent = 'Couldn\u2019t save right now — the suggestions table isn\u2019t set up yet. Try again later.';
+  }
+});
+document.getElementById('ireneFab').addEventListener('click', function(){
+  showTab('data');
+  var box = document.getElementById('suggestBox');
+  if(box) box.scrollIntoView({behavior:'smooth', block:'start'});
+  var ta = document.getElementById('suggestText');
+  if(ta) ta.focus({preventScroll:true});
+});
 
 function renderHQ(snap, pub){
   var el = document.getElementById('hqData');
@@ -534,6 +639,7 @@ async function loadOwner(){
     renderHQ(snap, pub);
     loadTraffic();
     loadCharts(snap);
+    loadDataTab();
     mapRendered = false;
     renderMap();
   }catch(e){
