@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<meta name="description" content="Nocturnal Staffing Agency — the new way nightlife works. Venues get staffed, talent gets work, recruiters get paid. Verified bartenders, barbacks, door staff, VIP hosts, bottle service and venue support, verified before, during and after every placement. Registration free forever.">
+<meta name="description" content="Nocturnal Staffing Agency — the new way nightlife works. Venues get staffed, talent gets work, recruiters get paid. Verified bartenders, barbacks, door staff, VIP hosts, bottle service and venue support, verified before, during and after every placement. Registration is free.">
 <link rel="icon" href="data:,">
 <title>Nocturnal Staffing Agency — The New Way Nightlife Works</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -250,7 +250,7 @@ footer a:hover{color:white}
       </form>
       <p class="hero-search-result" id="hireSearchResult" aria-live="polite"></p>
       <div class="hero-meta">
-        <span class="pill"><b>Registration Free Forever</b></span>
+        <span class="pill"><b>Registration Is Free</b></span>
         <span class="pill">Claiming Opens When Your First Payment Is Active</span>
       </div>
     </div>
@@ -408,10 +408,10 @@ footer a:hover{color:white}
 <section id="founding" style="padding-top:0">
   <div class="wrap">
     <div class="founding-band">
-      <span class="eyebrow" style="color:white">Founding Venues</span>
-      <h2>Be One Of The First 10 Founding Venues</h2>
-      <p>Founding Venues get early status and first access when placements launch on the I-4 Corridor. Ten spots. When they are gone, they are gone.</p>
-      <a class="btn btn-white" href="pages/venue-form.html">Claim A Founding Spot</a>
+      <span class="eyebrow" style="color:white">Founding Membership</span>
+      <h2>Your First 60 Days Free As A Founding Member</h2>
+      <p>New venues get their first 60 days free as founding members, then Reserve membership to keep member pricing. Founding membership starts the day you register.</p>
+      <a class="btn btn-white" href="pages/venue-form.html">Register Your Venue</a>
     </div>
   </div>
 </section>
@@ -445,11 +445,11 @@ footer a:hover{color:white}
     </details>
     <details>
       <summary>Is Registration Free?</summary>
-      <p>Yes. Registration is free forever, for venues and for talent. There is no charge to join the Rotation or to register your room.</p>
+      <p>Yes. Registration is free, for venues and for talent. There is no charge to join the Rotation or to register your room.</p>
     </details>
     <details>
       <summary>What Does It Cost?</summary>
-      <p>Registration is free forever. Placement options are shared after you register, shaped around your room and your nights &mdash; never as a bare price list up front.</p>
+      <p>Registration is free. Placement options are shared after you register, shaped around your room and your nights &mdash; never as a bare price list up front.</p>
     </details>
     <details>
       <summary>Where Does The Talent Come From?</summary>
@@ -529,7 +529,7 @@ footer a:hover{color:white}
 (function(){
   function renderTicker(combined, talent, venue, claimingOpen){
     var claim = claimingOpen ? "CLAIMING IS OPEN" : "CLAIMING OPENS WHEN YOUR FIRST PAYMENT IS ACTIVE";
-    var items = combined + " REGISTERED — " + claim + " ◆ THE ROTATION IS GROWING ◆ FOUNDING VENUES: " + venue + " OF 10 ◆ IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS ◆ CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC ◆ STATES: FLORIDA • NEW YORK • OHIO • CALIFORNIA • MASSACHUSETTS • VIRGINIA ◆ BARTENDERS • VIP HOSTS • BOTTLE SERVICE • BARBACKS • DOOR STAFF • VENUE SUPPORT ◆ VERIFIED BEFORE, DURING AND AFTER EVERY PLACEMENT ◆ HIRE DIRECT — NO MIDDLEMAN ◆ YOU DIDN'T KNOW YOU NEEDED US UNTIL FRIDAY AT 8:40 PM ◆ REGISTRATION FREE FOREVER — NATIONWIDE ◆ PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR ◆ ";
+    var items = combined + " REGISTERED — " + claim + " ◆ THE ROTATION IS GROWING ◆ FOUNDING MEMBERSHIP: 60 DAYS FREE FOR NEW VENUES ◆ IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS ◆ CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC ◆ STATES: FLORIDA • NEW YORK • OHIO • CALIFORNIA • MASSACHUSETTS • VIRGINIA ◆ BARTENDERS • VIP HOSTS • BOTTLE SERVICE • BARBACKS • DOOR STAFF • VENUE SUPPORT ◆ VERIFIED BEFORE, DURING AND AFTER EVERY PLACEMENT ◆ HIRE DIRECT — NO MIDDLEMAN ◆ YOU DIDN'T KNOW YOU NEEDED US UNTIL FRIDAY AT 8:40 PM ◆ REGISTRATION IS FREE — NATIONWIDE ◆ PLACEMENTS LAUNCH FIRST ON FLORIDA'S I-4 CORRIDOR ◆ ";
     var h = "<span>"+items.replace(/◆/g,'<span class="dot">◆</span>')+"</span>";
     document.getElementById('tickerTrack').innerHTML = h+h+h+h;
   }
