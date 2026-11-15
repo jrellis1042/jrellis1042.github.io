@@ -621,7 +621,7 @@ renderRoles(roles);
       renderRoles(window.__roleFilter ? list.filter(function(r){ return r.name === window.__roleFilter; }) : list);
     window.__roleList = list;
       var total = list.reduce(function(a,r){ return a + r.n; }, 0);
-      var members = (typeof b.talent === 'number') ? b.talent : 18;
+      var members = (typeof b.talent === 'number') ? b.talent : (function(){ var st = document.getElementById('statTalent'); var n = st ? parseInt(st.textContent, 10) : NaN; return isNaN(n) ? 19 : n; })(); /* fallback reads the baked/live #statTalent count the page already carries — never a second hardcoded number (19 is only the guard if that element is gone) */
       var note = document.getElementById('roleMixNote');
       if (note) note.textContent = 'Role Mix Updated From The Live Registry \u2022 ' + total + ' Role Assignments Across ' + members + ' Verified Members \u2022 Every Member Is Verified And On The Rotation';
     }).catch(function(){ setTimeout(function(){ attempt(i + 1); }, 1200); });
