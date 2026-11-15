@@ -45,7 +45,12 @@ section{position:relative;padding:86px 0;overflow:hidden}
 .logo small{display:block;font-family:Manrope,sans-serif;font-size:.58rem;letter-spacing:.42em;color:var(--teal);font-weight:800}
 .nav-links{display:flex;gap:20px;font-size:.86rem;font-weight:700}
 .nav-links a{text-decoration:none;color:var(--muted)} .nav-links a:hover{color:white}
-@media(max-width:860px){.nav-links{display:none}}
+.nav-toggle{display:none;background:none;border:1px solid var(--line);border-radius:10px;width:42px;height:42px;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;flex-shrink:0}
+.nav-toggle span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;transition:transform .2s ease,opacity .2s ease}
+.nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+.nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media(max-width:860px){.nav-toggle{display:flex}.nav-links{display:none}.nav.open .nav-links{display:flex;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;background:rgba(7,6,9,.98);border-bottom:1px solid var(--line);padding:8px 20px 16px}.nav.open .nav-links a{display:block;padding:13px 4px;font-size:1rem;border-top:1px solid rgba(255,255,255,.07)}}
 @media(max-width:640px){
   .nav-in{gap:8px}
   .logo{font-size:1.15rem;letter-spacing:.08em}
@@ -84,7 +89,7 @@ section{position:relative;padding:86px 0;overflow:hidden}
 /* Rotation */
 .role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
 @media(max-width:800px){.role-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:480px){.role-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.role-grid{grid-template-columns:1fr 1fr;gap:10px}.role{padding:14px}.role .num{font-size:2rem}.role b{font-size:.95rem}}
 .role{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
 .role-top{display:flex;justify-content:space-between;align-items:baseline}
 .role b{font-size:1.05rem} .role .num{font-family:Bebas Neue,sans-serif;font-size:2.6rem;color:var(--gold)}
@@ -92,7 +97,7 @@ section{position:relative;padding:86px 0;overflow:hidden}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--pink))}
 /* Steps */
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:26px}
-@media(max-width:900px){.steps{grid-template-columns:1fr 1fr}} @media(max-width:520px){.steps{grid-template-columns:1fr}}
+@media(max-width:900px){.steps{grid-template-columns:1fr 1fr}} @media(max-width:520px){.steps{grid-template-columns:1fr}.step{padding:18px}}
 .step{background:#fff;color:#171017;border-radius:20px;padding:22px}
 .step .n{width:42px;height:42px;border-radius:50%;background:#171017;color:var(--gold);display:grid;place-items:center;font-family:Bebas Neue,sans-serif;font-size:1.3rem}
 .step h3{margin:14px 0 8px;font-size:1.2rem} .step p{color:#5b4a55;font-size:.93rem}
@@ -173,6 +178,7 @@ footer{padding:50px 0 90px;color:var(--dim);font-size:.9rem}
 footer a{color:var(--muted)}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
 @media(max-width:800px){.split{grid-template-columns:1fr}}
+@media(max-width:800px){section{padding:56px 0}.role-grid,.stats,.steps,.scorecard,.founding,.cards3,.verify,.i4,.split{gap:10px}}
 
 /* Lane tabs — from the Tab Version, over the scroll flow */
 .lane-tabs{position:sticky;top:54px;z-index:55;background:rgba(7,6,9,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
@@ -189,13 +195,14 @@ section[id]{scroll-margin-top:132px}
 <header class="nav">
   <div class="nav-in">
     <a class="logo" href="#top">NOCTURNAL <span>STAFFING</span><small>AGENCY</small></a>
-    <nav class="nav-links">
+    <nav class="nav-links" id="mobileNav">
       <a href="#rotation">The Rotation</a><a href="#venues">For Venues</a><a href="#reserve">Reserve</a><a href="#verify">Verification</a><a href="#faq">FAQ</a>
     </nav>
     <div class="nav-actions" style="display:flex;gap:8px">
       <a class="btn btn-ghost" style="padding:10px 14px" href="https://nocturnalstaffing.com/pages/recruiter-portal.html">Portal Sign-In</a>
       <a class="btn btn-pink" style="padding:10px 14px" href="https://nocturnalstaffing.com/pages/venue-form.html">Register Venue</a>
     </div>
+    <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav"><span></span><span></span><span></span></button>
   </div>
 </header>
 
@@ -643,6 +650,27 @@ document.getElementById('ireneForm').onsubmit=function(e){
   }
   window.addEventListener('scroll', onScroll, {passive:true});
   onScroll();
+})();
+</script>
+
+<script>
+/* Mobile nav toggle */
+(function(){
+  var header=document.querySelector('.nav');
+  var btn=document.querySelector('.nav-toggle');
+  var links=document.getElementById('mobileNav');
+  if(!header||!btn||!links) return;
+  btn.addEventListener('click',function(){
+    var open=header.classList.toggle('open');
+    btn.setAttribute('aria-expanded',open?'true':'false');
+    btn.setAttribute('aria-label',open?'Close menu':'Open menu');
+  });
+  links.addEventListener('click',function(e){
+    if(e.target.tagName==='A'){header.classList.remove('open');btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-label','Open menu');}
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){header.classList.remove('open');btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-label','Open menu');}
+  });
 })();
 </script>
 </body>
