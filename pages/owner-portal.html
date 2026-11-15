@@ -16,7 +16,18 @@
   (one-update rule).
 -->
 <style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem;background:#0b0b10;color:#f2f2f2}h1,h2{color:#fff}.ticker{position:relative;border:1px solid rgba(255,110,220,.45);border-radius:8px;padding:.5rem 0;overflow:hidden;white-space:nowrap;background:linear-gradient(90deg,#160329,#0b0b14 38%,#24063f 62%,#0b0b14);box-shadow:0 2px 18px rgba(150,60,255,.25)}.ticker::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.13) 48%,rgba(255,120,220,.10) 52%,transparent 68%);transform:translateX(-130%);animation:ticker-sheen 4.8s ease-in-out infinite;pointer-events:none}.tsep{font-size:8px;margin:0 14px;font-style:normal;color:#ff4fd8;text-shadow:0 0 6px rgba(255,79,216,.95),0 0 14px rgba(176,38,255,.55)}
-.ticker-track{display:inline-flex;animation:tick-scroll 42s linear infinite;will-change:transform}.ticker:hover .ticker-track{animation-play-state:paused}@keyframes tick-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}@keyframes ticker-sheen{0%{transform:translateX(-130%)}55%,100%{transform:translateX(130%)}}@media (prefers-reduced-motion:reduce){.ticker-track{animation:none}.ticker::after{animation:none}}.ticker-track span{font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;display:inline-block;padding:0 .25rem;font-size:11px;font-weight:700;letter-spacing:.18em;color:#f2f2f7;white-space:nowrap;text-shadow:0 0 12px rgba(190,120,255,.35)}.ticker-track b{font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-weight:800;color:#ffd75e;text-shadow:0 0 8px rgba(255,183,0,.85),0 0 20px rgba(255,110,220,.45)}label{display:block;margin:.5rem 0}input{width:100%;padding:.5rem;margin-top:.25rem;background:#17171f;color:#fff;border:1px solid #444;border-radius:6px}button{padding:.6rem 1rem;border-radius:6px;border:0;background:#f0a;color:#111;font-weight:700;cursor:pointer}button.ghost{background:#222;color:#f2f2f2;border:1px solid #555}.card{border:1px solid #333;border-radius:10px;padding:1rem;margin:1rem 0}#msg{border:1px solid #888;padding:1rem;margin:1rem 0;display:none}#msg.err{border-color:#e33}#msg.ok{border-color:#3c3}.muted{color:#bbb}.hidden{display:none}a{color:#f9a}</style>
+.ticker-track{display:inline-flex;animation:tick-scroll 42s linear infinite;will-change:transform}.ticker:hover .ticker-track{animation-play-state:paused}@keyframes tick-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}@keyframes ticker-sheen{0%{transform:translateX(-130%)}55%,100%{transform:translateX(130%)}}@media (prefers-reduced-motion:reduce){.ticker-track{animation:none}.ticker::after{animation:none}}.ticker-track span{font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;display:inline-block;padding:0 .25rem;font-size:11px;font-weight:700;letter-spacing:.18em;color:#f2f2f7;white-space:nowrap;text-shadow:0 0 12px rgba(190,120,255,.35)}.ticker-track b{font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-weight:800;color:#ffd75e;text-shadow:0 0 8px rgba(255,183,0,.85),0 0 20px rgba(255,110,220,.45)}label{display:block;margin:.5rem 0}input{width:100%;padding:.5rem;margin-top:.25rem;background:#17171f;color:#fff;border:1px solid #444;border-radius:6px}button{padding:.6rem 1rem;border-radius:6px;border:0;background:#f0a;color:#111;font-weight:700;cursor:pointer}button.ghost{background:#222;color:#f2f2f2;border:1px solid #555}.card{border:1px solid #333;border-radius:10px;padding:1rem;margin:1rem 0}#msg{border:1px solid #888;padding:1rem;margin:1rem 0;display:none}#msg.err{border-color:#e33}#msg.ok{border-color:#3c3}.muted{color:#bbb}.hidden{display:none}a{color:#f9a}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:.5rem 0 0}
+.tabs button{background:#222;color:#f2f2f2;border:1px solid #555}
+.tabs button.active{background:#f0a;color:#111;border-color:#f0a}
+.hq-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:1rem 0}
+.hq-stat{border:1px solid #333;border-radius:10px;padding:.75rem;text-align:center}
+.hq-stat b{display:block;font-size:1.6rem;color:#ffd75e}
+.hq-stat span{font-size:.8rem;color:#bbb}
+.hq-bar{height:10px;background:rgba(255,255,255,.09);border-radius:999px;overflow:hidden;margin-top:8px}
+.hq-bar i{display:block;height:100%;background:linear-gradient(90deg,#f0a,#ffd75e)}
+.hq-links a{display:inline-block;margin:.2rem .6rem .2rem 0}
+@media (max-width:520px){.hq-stats{grid-template-columns:1fr 1fr}}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
@@ -45,7 +56,12 @@
 </section>
 <section id="view" class="card hidden">
 <h2>Signed in as Owner</h2>
-<div id="ownerData"><p class="muted">Loading the live numbers…</p></div>
+<div class="tabs" role="tablist">
+  <button type="button" id="tabHq" class="active" role="tab" aria-selected="true">Nocturnal HQ</button>
+  <button type="button" id="tabOverview" class="ghost" role="tab" aria-selected="false">Overview</button>
+</div>
+<div id="hqData" role="tabpanel"><p class="muted">Loading Nocturnal HQ…</p></div>
+<div id="ownerData" class="hidden" role="tabpanel"><p class="muted">Loading the live numbers…</p></div>
 <p class="muted">Same numbers as the front door ticker. Rosters, approvals, daily takes, and Ask Juju live in House Command in the Nocturnal app.</p>
 <p><button id="out" type="button" class="ghost">Sign out</button></p>
 </section>
@@ -107,6 +123,79 @@ function renderOwner(snap, pub){
   }
   el.innerHTML = html || '<p class="muted">Numbers unavailable right now — reload the page.</p>';
 }
+function showTab(which){
+  var hq = which === 'hq';
+  document.getElementById('hqData').classList.toggle('hidden', !hq);
+  document.getElementById('ownerData').classList.toggle('hidden', hq);
+  document.getElementById('tabHq').classList.toggle('active', hq);
+  document.getElementById('tabHq').classList.toggle('ghost', !hq);
+  document.getElementById('tabHq').setAttribute('aria-selected', hq ? 'true' : 'false');
+  document.getElementById('tabOverview').classList.toggle('active', !hq);
+  document.getElementById('tabOverview').classList.toggle('ghost', hq);
+  document.getElementById('tabOverview').setAttribute('aria-selected', !hq ? 'true' : 'false');
+}
+document.getElementById('tabHq').addEventListener('click', function(){ showTab('hq'); });
+document.getElementById('tabOverview').addEventListener('click', function(){ showTab('overview'); });
+
+function renderHQ(snap, pub){
+  var el = document.getElementById('hqData');
+  if(!snap){ el.innerHTML = '<p class="muted">HQ sync pending — the numbers fill in after the first sync (runs every 30 minutes).</p>'; return; }
+  var t = snap.talent || {}, v = snap.venues || {}, o = snap.outreach || {}, g = snap.goals || {};
+  var html = '<div class="hq-stats">'
+    + '<div class="hq-stat"><b>' + (t.totalVerified || 0) + '</b><span>Verified talent</span></div>'
+    + '<div class="hq-stat"><b>' + (v.foundingClaimed || 0) + ' of ' + (v.foundingCap || 10) + '</b><span>Founding Venues</span></div>'
+    + '<div class="hq-stat"><b>' + (t.agreementsOutstanding || 0) + '</b><span>Agreements outstanding</span></div>'
+    + '<div class="hq-stat"><b>' + (o.touchesSent || 0) + '</b><span>Touches sent</span></div>'
+    + '</div>';
+  html += '<p class="muted">' + esc(g.claimingNote || 'Claiming opens once our first venue is payment-active.') + '</p>';
+  var roles = (t.byRole || []).map(function(x){ return esc(x.role) + ' <b>' + x.count + '</b>'; }).join(' &middot; ');
+  var cities = (t.byCity || []).slice(0, 5).map(function(x){ return esc(x.label) + ' <b>' + x.count + '</b>'; }).join(' &middot; ');
+  var newest = (t.newest || []).map(function(n){
+    var d = n.registeredAt ? new Date(n.registeredAt).toLocaleDateString('en-US', {month:'short', day:'numeric'}) : '';
+    return esc(n.name) + ' (' + esc(n.role) + ', ' + esc(n.city) + (d ? ', ' + d : '') + ')';
+  }).join(' &middot; ');
+  html += '<h2>The Rotation</h2><p>By role: ' + roles + '</p>'
+    + (cities ? '<p>Top cities: ' + cities + '</p>' : '')
+    + (newest ? '<p>Newest: ' + newest + '</p>' : '');
+  var st = v.byStage || {};
+  html += '<h2>Venue Pipeline</h2><p>Registered <b>' + (st.registered || 0) + '</b> &middot; Contacted <b>' + (st.contacted || 0) + '</b> &middot; In verification <b>' + (st.inVerification || 0) + '</b> &middot; Payment-active <b>' + (st.paymentActive || 0) + '</b> &middot; Verified <b>' + (st.verified || 0) + '</b></p>'
+    + '<p>Founding Venues: <b>' + (v.foundingClaimed || 0) + ' of ' + (v.foundingCap || 10) + '</b></p>'
+    + '<div class="hq-bar"><i style="width:' + Math.round(100 * (v.foundingClaimed || 0) / (v.foundingCap || 10)) + '%"></i></div>';
+  html += '<h2>Outbound Engine</h2><p><b>' + (o.touchesSent || 0) + '</b> touches sent &middot; <b>' + (o.repliesReceived || 0) + '</b> replies &middot; <b>' + (o.leadsTotal || 0) + '</b> venues scored &middot; <b>0</b> registrations</p>';
+  var tb = o.touchBreakdown || null;
+  if(tb){ html += '<p>Touch 1 <b>' + (tb.touch1 || 0) + '</b> &middot; Touch 2 <b>' + (tb.touch2 || 0) + '</b> &middot; Touch 3 <b>' + (tb.touch3 || 0) + '</b> &middot; Touch 4 <b>' + (tb.touch4 || 0) + '</b> &middot; Bounces <b>' + (tb.bounces || 0) + '</b></p>'; }
+  html += '<h2>Traffic</h2><div id="hqTraffic"><p class="muted">Loading traffic…</p></div>';
+  html += '<h2>Quick Links</h2><p class="hq-links">'
+    + '<a href="/">Front door</a><a href="/hire.html">Hire page</a>'
+    + '<a href="/pages/talent-form.html">Talent form</a><a href="/pages/venue-form.html">Venue form</a>'
+    + '<a href="https://www.instagram.com/nocturnalstaffing">Instagram</a>'
+    + '<a href="https://www.tiktok.com/@nocturnalstaffing">TikTok</a>'
+    + '<a href="https://www.facebook.com/61595442374504">Facebook Page</a>'
+    + '<a href="https://www.google.com/search?q=Nocturnal+Staffing+Agency+Winter+Haven">Google Business Profile</a>'
+    + '</p>';
+  html += '<p class="muted">Synced ' + esc(snap.generatedAt || '') + '.</p>';
+  el.innerHTML = html;
+}
+async function loadTraffic(){
+  var t = document.getElementById('hqTraffic');
+  if(!t) return;
+  try{
+    var start = new Date(); start.setHours(0,0,0,0);
+    var week = new Date(Date.now() - 7*24*60*60*1000);
+    var today = await sb.from('pageviews').select('*', {count:'exact', head:true}).gte('created_at', start.toISOString());
+    var weekR = await sb.from('pageviews').select('*', {count:'exact', head:true}).gte('created_at', week.toISOString());
+    if(today.error || weekR.error) throw new Error('traffic unavailable');
+    var rows = await sb.from('pageviews').select('path').gte('created_at', week.toISOString()).order('created_at', {ascending:false}).limit(1000);
+    if(rows.error) throw new Error('traffic unavailable');
+    var counts = {};
+    (rows.data || []).forEach(function(r){ counts[r.path] = (counts[r.path] || 0) + 1; });
+    var top = Object.keys(counts).sort(function(a,b){ return counts[b]-counts[a]; }).slice(0,5);
+    t.innerHTML = '<p>Pageviews today <b>' + (today.count || 0) + '</b> &middot; Last 7 days <b>' + (weekR.count || 0) + '</b></p>'
+      + (top.length ? '<p>Top pages: ' + top.map(function(p){ return esc(p) + ' <b>' + counts[p] + '</b>'; }).join(' &middot; ') + '</p>' : '<p class="muted">No pageviews recorded yet.</p>');
+  }catch(e){
+    t.innerHTML = '<p class="muted">Traffic tracking is not turned on yet — the pageviews table is still being set up. Pageviews will show here once it is live.</p>';
+  }
+}
 async function loadOwner(){
   var pub = await loadPublicCounts();
   if(pub) renderTicker(pub);
@@ -114,8 +203,12 @@ async function loadOwner(){
     var r = await sb.from('owner_snapshot').select('data').eq('id', 1).single();
     var snap = (r.data && r.data.data && Object.keys(r.data.data).length) ? r.data.data : null;
     renderOwner(snap, pub);
+    renderHQ(snap, pub);
+    loadTraffic();
   }catch(e){
     renderOwner(null, pub);
+    renderHQ(null, pub);
+    loadTraffic();
   }
 }
 document.getElementById('go').addEventListener('click', async function(){

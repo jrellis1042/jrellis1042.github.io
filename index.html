@@ -673,5 +673,23 @@ document.getElementById('ireneForm').onsubmit=function(e){
   });
 })();
 </script>
+<script>
+/* Nocturnal pageview log — Supabase, no cookies, no personal data. */
+(function(){
+  try{
+    fetch('https://mkyrzikeqpqncgemlsds.supabase.co/rest/v1/pageviews', {
+      method: 'POST',
+      keepalive: true,
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1reXJ6aWtlcXBxbmNnZW1sc2RzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzNjU0MjcsImV4cCI6MjEwNzk0MTQyN30.N1v7Ndd8hjDDkYCzu5kvQU3St3_mkzNpxwlZVy_SD4g',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1reXJ6aWtlcXBxbmNnZW1sc2RzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzNjU0MjcsImV4cCI6MjEwNzk0MTQyN30.N1v7Ndd8hjDDkYCzu5kvQU3St3_mkzNpxwlZVy_SD4g',
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ path: window.location.pathname, referrer: document.referrer || null })
+    }).catch(function(){});
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
