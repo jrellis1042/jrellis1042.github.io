@@ -363,6 +363,12 @@ function renderHQ(snap, pub){
   html += '<h2>The Rotation</h2><p>By role: ' + roles + '</p>'
     + (cities ? '<p>Top cities: ' + cities + '</p>' : '')
     + (newest ? '<p>Newest: ' + newest + '</p>' : '');
+  var goalTotal = 50;
+  var goalCur = t.totalVerified || 0;
+  var goalPct = Math.min(100, Math.round(goalCur / goalTotal * 100));
+  html += '<h2>Rotation Goal</h2><p><b>' + goalCur + '</b> of <b>' + goalTotal + '</b> verified talent &middot; <b>' + Math.max(0, goalTotal - goalCur) + '</b> to go</p>'
+    + '<div class="hq-bar"><i style="width:' + goalPct + '%"></i></div>'
+    + '<p class="muted">A milestone, not a gate \u2014 claiming still opens at the first payment-active venue.</p>';
   var st = v.byStage || {};
   html += '<h2>Venue Pipeline</h2><p>Registered <b>' + (st.registered || 0) + '</b> &middot; Contacted <b>' + (st.contacted || 0) + '</b> &middot; In verification <b>' + (st.inVerification || 0) + '</b> &middot; Payment-active <b>' + (st.paymentActive || 0) + '</b> &middot; Verified <b>' + (st.verified || 0) + '</b></p>'
     + '<p>Founding Membership: <b>First 60 Days Free For New Venues</b> \u2014 then Reserve membership to keep member pricing.</p>'
