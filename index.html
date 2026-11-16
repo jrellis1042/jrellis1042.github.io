@@ -188,6 +188,10 @@ footer a{color:var(--muted)}
 .aud-switch a{padding:9px 14px;font-size:.82rem;font-weight:800;text-decoration:none;color:var(--muted);white-space:nowrap}
 .aud-switch a.active{background:linear-gradient(135deg,var(--pink),var(--pink2));color:#fff}
 @media(max-width:640px){.aud-switch{display:none}}
+.biz-switch{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:rgba(255,255,255,.05);flex-shrink:0}
+.biz-switch a{padding:9px 14px;font-size:.82rem;font-weight:800;text-decoration:none;color:var(--muted);white-space:nowrap}
+.biz-switch a.active{background:linear-gradient(135deg,var(--pink),var(--pink2));color:#fff}
+@media(max-width:640px){.biz-switch{display:none}}
 /* Hero search — ZipRecruiter-style search-first module */
 .hero-search{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px;background:rgba(10,7,10,.72);border:1px solid var(--line);border-radius:18px;padding:14px;backdrop-filter:blur(10px)}
 .hero-search label{display:flex;flex-direction:column;gap:6px;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex:1;min-width:140px}
@@ -254,6 +258,10 @@ section[id]{scroll-margin-top:148px}
     <div class="aud-switch" role="tablist" aria-label="Choose your lane">
       <a href="#talent" class="aud active" data-aud="talent">For Talent</a>
       <a href="#venues" class="aud" data-aud="venue">For Venues</a>
+    </div>
+    <div class="biz-switch" role="tablist" aria-label="Choose your business">
+      <a href="https://nocturnalstaffing.com/" class="active">Staffing</a>
+      <a href="https://nocturnalstaffing.com/leads/">Leads</a>
     </div>
     <div class="nav-actions" style="display:flex;gap:8px">
       <a class="btn btn-ghost" style="padding:10px 14px" href="https://nocturnalstaffing.com/pages/recruiter-portal.html">Portal Sign-In</a>
@@ -612,9 +620,9 @@ function bbFill(id,people,off){var t=document.getElementById(id);if(!t)return;va
   <div class="wrap" style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap">
     <div><b style="color:white;font-family:Bebas Neue,sans-serif;letter-spacing:.12em;font-size:1.2rem">NOCTURNAL STAFFING AGENCY</b><br>Nightlife Staffing, Verified. Tampa / Ybor • Lakeland / Polk • Orlando — The I-4 Corridor.</div>
     <div style="line-height:2">
-      <a href="https://nocturnalstaffing.com/pages/talent-form.html">Talent Form</a> · <a href="https://nocturnalstaffing.com/pages/venue-form.html">Venue Form</a> · <a href="https://nocturnalstaffing.com/pages/recruiter-portal.html">Recruiter Portal</a> · <a href="https://nocturnalstaffing.com/pages/owner-portal.html">Owner Sign In</a> · <a href="https://nocturnalstaffing.com/lead-platforms.html">Lead Platforms Guide</a><br>
+      <a href="https://nocturnalstaffing.com/pages/talent-form.html">Talent Form</a> · <a href="https://nocturnalstaffing.com/pages/venue-form.html">Venue Form</a> · <a href="https://nocturnalstaffing.com/pages/recruiter-portal.html">Recruiter Portal</a> · <a href="https://nocturnalstaffing.com/pages/owner-portal.html">Owner Sign In</a> · <a href="https://nocturnalstaffing.com/leads/">Nocturnal Leads</a><br>
       Talk To A Human: <a href="tel:+18632880341">(863) 288-0341</a> · <a href="mailto:joshua.ellis.staffing@gmail.com">joshua.ellis.staffing@gmail.com</a><br>
-      <a href="https://nocturnalstaffing.com">nocturnalstaffing.com</a>
+      <a href="https://nocturnalstaffing.com">nocturnalstaffing.com</a><br>Part of Nocturnal Holdings — <a href="https://nocturnalstaffing.com/">Staffing</a> · <a href="https://nocturnalstaffing.com/leads/">Leads</a>
     </div>
   </div>
 </footer>
