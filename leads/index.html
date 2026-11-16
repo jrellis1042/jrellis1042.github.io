@@ -201,10 +201,13 @@ footer h3{margin:0 0 10px;font-size:16px}
 .site-footer a{color:var(--gold-strong)}
 
 /* --- BUSINESS SWITCHER (Staffing / Leads) --- */
-.biz-switch{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:rgba(255,255,255,.05);flex-shrink:0}
-.biz-switch a{padding:9px 14px;font-size:.82rem;font-weight:800;text-decoration:none;color:var(--ink2);white-space:nowrap}
-.biz-switch a.active{background:var(--gold-bg);color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
-@media(max-width:820px){.biz-switch{display:none}}
+.biz-switch{position:relative;display:flex;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.05);flex-shrink:0;padding:3px}
+.biz-switch::before{content:"";position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:999px;background:var(--gold-bg);box-shadow:inset 0 0 0 1px var(--gold);transition:left .25s ease}
+.biz-switch[data-active="leads"]::before{left:calc(50%)}
+.biz-switch a{position:relative;z-index:1;flex:1;padding:7px 14px;font-size:.82rem;font-weight:800;text-decoration:none;color:var(--ink2);white-space:nowrap;text-align:center}
+.biz-switch a.active{color:var(--gold)}
+.nav-links .biz-switch{display:none}
+@media(max-width:820px){.nav-in>.biz-switch{display:none}.nav-links.open .biz-switch{display:flex;margin:10px 0 4px}.nav-links.open .biz-switch a{padding:7px 14px;font-size:.82rem;border-top:0}}
 </style>
 </head>
 <body>
@@ -216,10 +219,14 @@ footer h3{margin:0 0 10px;font-size:16px}
       <a href="/leads/">Home</a>
       <a href="/leads/guide.html">The Guide</a>
       <a href="https://docs.google.com/forms/d/e/1FAIpQLSdXhBval0Pa24IYtwje2LO6CcUpA_nmR4lMll1v071vzkH6WA/viewform">Join The Waitlist</a>
+      <div class="biz-switch" role="tablist" aria-label="Choose your business" data-active="leads">
+        <a href="https://nocturnalstaffing.com/" role="tab" aria-selected="false">Staffing</a>
+        <a href="/leads/" class="active" role="tab" aria-selected="true">Leads</a>
+      </div>
     </nav>
-    <div class="biz-switch" role="tablist" aria-label="Choose your business">
-      <a href="https://nocturnalstaffing.com/">Staffing</a>
-      <a href="/leads/" class="active">Leads</a>
+    <div class="biz-switch" role="tablist" aria-label="Choose your business" data-active="leads">
+      <a href="https://nocturnalstaffing.com/" role="tab" aria-selected="false">Staffing</a>
+      <a href="/leads/" class="active" role="tab" aria-selected="true">Leads</a>
     </div>
     <div class="nav-actions">
       <a class="btn btn-pink" href="https://docs.google.com/forms/d/e/1FAIpQLSdXhBval0Pa24IYtwje2LO6CcUpA_nmR4lMll1v071vzkH6WA/viewform">Join The Waitlist</a>
