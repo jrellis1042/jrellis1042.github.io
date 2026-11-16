@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<title>Lead Platforms for Nightlife Staffing — Nocturnal Staffing Agency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080d; --bg2:#0d0d14; --card:#101018; --card2:#171722;
+  --ink:#f4f2ee; --ink2:#cbb8c2; --ink3:#9a8992;
+  --line:rgba(255,255,255,.12); --line2:rgba(255,255,255,.22);
+  --gold:#ffb81c; --gold-bg:rgba(255,184,28,.14); --gold-strong:#ffb81c;
+  --pink:#ff2e88; --pink2:#ff6a3d;
+  --teal:#2dd4bf; --teal-bg:rgba(45,212,191,.12);
+  --red:#ff7a7a; --red-bg:rgba(255,107,107,.12);
+  --amber:#fcd34d; --amber-bg:rgba(252,211,77,.12);
+  --radius:18px;
+  --shadow:0 8px 30px rgba(0,0,0,.45);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Manrope",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--gold-strong);text-decoration:underline;text-underline-offset:3px}
+button{font-family:inherit;cursor:pointer;min-height:44px}
+.mono{font-family:"IBM Plex Mono",monospace}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+@media(min-width:768px){.wrap{padding:0 32px}}
+
+/* HERO */
+.hero{padding:36px 0 28px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--gold);margin:0 0 14px}
+.hero h1{font-size:clamp(36px,6vw,62px);line-height:.95;letter-spacing:-.03em;font-weight:900;margin:0;max-width:820px}
+.hero h1 em{font-style:normal;color:var(--gold-strong)}
+.lede{margin:18px 0 0;font-size:18px;line-height:1.6;color:var(--ink2);max-width:720px}
+.lede strong{color:var(--ink)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid var(--line2);border-radius:999px;background:var(--card);font-size:13px;font-weight:600}
+.pill b{font-family:"IBM Plex Mono",monospace}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0}
+.answer-box{margin-top:26px;background:var(--ink);color:var(--bg);border-radius:20px;padding:24px}
+
+.answer-box p{margin:0;font-size:17px;line-height:1.6}
+.answer-box strong{color:var(--gold-strong)}
+
+
+/* STACKS */
+.section{padding:36px 0}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.section-head h2{font-size:28px;letter-spacing:-.02em;line-height:1.05;margin:0;font-weight:900}
+.section-head p{margin:6px 0 0;color:var(--ink2);max-width:620px;font-size:15px}
+.kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--gold);margin-bottom:8px}
+.stacks{display:grid;gap:16px}
+@media(min-width:820px){.stacks{grid-template-columns:1fr 1fr}}
+.stack-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.stack-card.featured{border-color:var(--gold-strong);border-width:1.5px}
+.stack-top{display:flex;justify-content:space-between;align-items:start;gap:12px}
+.stack-top h3{margin:0;font-size:19px;line-height:1.2}
+.price{font-family:"IBM Plex Mono",monospace;font-size:28px;font-weight:600;line-height:1;white-space:nowrap}
+.price small{font-size:13px;color:var(--ink2)}
+.stack-list{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}
+.stack-list li{display:flex;justify-content:space-between;gap:12px;padding:11px 12px;background:var(--bg2);border-radius:12px;font-size:14px}
+.stack-list li span:last-child{font-family:"IBM Plex Mono",monospace;font-weight:600;white-space:nowrap}
+.note{font-size:13px;color:var(--ink2);margin-top:14px;line-height:1.55}
+
+/* WARNING */
+.warning{background:var(--red-bg);border:1px solid color-mix(in srgb, var(--red) 25%, transparent);border-radius:var(--radius);padding:22px}
+.warning h3{margin:0 0 8px;font-size:18px}
+.warning p{margin:0;color:var(--ink2);font-size:15px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat b{display:block;font-size:22px;line-height:1;font-family:"IBM Plex Mono",monospace}
+.stat span{font-size:12.5px;color:var(--ink2);line-height:1.4;display:block;margin-top:6px}
+
+/* TOP 5 */
+.top5{display:grid;gap:12px}
+.rank{display:grid;grid-template-columns:52px 1fr;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.rank-num{width:52px;height:52px;border-radius:14px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:900;font-size:22px}
+
+.rank h3{margin:0;font-size:17px;line-height:1.25}
+.rank h3 span{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--gold-strong);font-size:14px}
+.rank p{margin:6px 0 0;color:var(--ink2);font-size:14.5px}
+.rank .tagline{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);margin-top:8px}
+
+/* BUILDER */
+.builder{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--shadow)}
+.builder-grid{display:grid;gap:8px;margin-top:16px}
+@media(min-width:700px){.builder-grid{grid-template-columns:1fr 1fr}}
+.build-btn{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;padding:13px 14px;border-radius:12px;border:1px solid var(--line2);background:var(--bg);color:var(--ink);font-size:14px;font-weight:600;min-height:52px}
+.build-btn[aria-pressed="true"]{background:var(--gold-bg);border-color:var(--gold-strong)}
+.build-btn small{display:block;font-weight:500;color:var(--ink2);font-size:12px;margin-top:2px}
+.build-btn .amt{font-family:"IBM Plex Mono",monospace;font-weight:600;white-space:nowrap}
+.meter{height:12px;background:var(--bg2);border-radius:999px;overflow:hidden;margin-top:18px;border:1px solid var(--line)}
+.meter-fill{height:100%;background:var(--teal);width:0%;transition:width .3s ease}
+.meter-fill.over{background:var(--red)}
+.builder-total{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-top:12px}
+.builder-total strong{font-family:"IBM Plex Mono",monospace;font-size:26px}
+.builder-total span{color:var(--ink2);font-size:14px}
+
+/* FILTERS + CARDS */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.filter-btn{padding:10px 16px;border-radius:999px;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-weight:700;font-size:14px;min-height:44px}
+.filter-btn.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.grid{display:grid;gap:14px}
+@media(min-width:700px){.grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1020px){.grid{grid-template-columns:1fr 1fr 1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column}
+.card.hidden{display:none}
+.card-head{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.card h3{margin:0;font-size:17px;line-height:1.2}
+.badge{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:6px 8px;border-radius:999px;white-space:nowrap}
+.badge.yes{background:var(--teal-bg);color:var(--teal)}
+.badge.no{background:var(--red-bg);color:var(--red)}
+.badge.warn{background:var(--amber-bg);color:var(--amber)}
+.card p{font-size:14px;color:var(--ink2);margin:10px 0 0;line-height:1.55}
+.card dl{margin:14px 0 0;display:grid;gap:8px;font-size:13.5px}
+.card dl div{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:8px}
+.card dt{color:var(--ink3);font-weight:600}
+.card dd{margin:0;text-align:right;font-weight:600}
+.caveat{margin-top:12px;padding:11px 12px;background:var(--bg2);border-radius:10px;font-size:13px;line-height:1.5;color:var(--ink2)}
+.caveat strong{color:var(--ink)}
+
+/* TABLES AS LISTS */
+.list-rows{display:grid;gap:10px}
+.row{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.row h4{margin:0;font-size:15.5px}
+.row p{margin:6px 0 0;font-size:14px;color:var(--ink2)}
+.row-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-size:12px;font-weight:700;padding:5px 8px;border-radius:999px;background:var(--bg2);border:1px solid var(--line)}
+.chip.red{background:var(--red-bg);color:var(--red);border-color:transparent}
+.chip.teal{background:var(--teal-bg);color:var(--teal);border-color:transparent}
+
+/* FAILS */
+.fails{display:flex;flex-wrap:wrap;gap:8px}
+.fail{padding:10px 12px;border-radius:999px;background:var(--red-bg);color:var(--red);font-size:13.5px;font-weight:700;border:1px solid color-mix(in srgb, var(--red) 18%, transparent)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--line);padding:28px 0 44px}
+footer h3{margin:0 0 10px;font-size:16px}
+.sources{font-size:13.5px;color:var(--ink2);line-height:1.7}
+.sources a{word-break:break-all}
+.small{font-size:13px;color:var(--ink3);line-height:1.6}
+.two-col{display:grid;gap:16px}
+@media(min-width:820px){.two-col{grid-template-columns:1fr 1fr}}
+.open-q{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.open-q ul{margin:10px 0 0;padding-left:18px;color:var(--ink2);font-size:14px;line-height:1.65}
+.open-q li{margin-bottom:8px}
+@media (prefers-reduced-motion: reduce){*{transition:none !important;scroll-behavior:auto !important}}
+
+/* --- NOCTURNAL SITE CHROME --- */
+.topbar{position:sticky;top:0;z-index:60}
+.nav{position:relative;z-index:61;background:rgba(8,8,13,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav-in{width:min(1180px,calc(100% - 32px));margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0}
+.logo{display:flex;align-items:center;gap:10px;font-family:"Bebas Neue",sans-serif;font-size:1.7rem;letter-spacing:.14em;line-height:1;text-decoration:none;color:var(--ink)}
+.logo span span{color:var(--gold)}
+.logo small{display:block;font-size:.55em;letter-spacing:.3em;color:var(--ink2)}
+.nav-links{display:flex;gap:20px;font-size:.86rem;font-weight:700}
+.nav-links a{text-decoration:none;color:var(--ink2)}
+.nav-links a:hover{color:#fff}
+.nav-actions{display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;border-radius:999px;font-weight:800;text-decoration:none;border:1px solid transparent;cursor:pointer;font-size:.95rem}
+.btn-pink{background:linear-gradient(135deg,var(--pink),var(--pink2));color:#fff;box-shadow:0 10px 30px rgba(255,46,136,.35)}
+.btn:hover{transform:translateY(-1px)}
+.nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:1px solid var(--line);border-radius:10px;padding:10px;cursor:pointer}
+.nav-toggle span{display:block;width:20px;height:2px;background:var(--ink)}
+@media(max-width:820px){
+  .nav-links{display:none}
+  .nav-links.open{display:flex;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;background:rgba(7,6,9,.98);border-bottom:1px solid var(--line);padding:8px 20px 16px}
+  .nav-links.open a{display:block;padding:13px 4px;font-size:1rem;border-top:1px solid rgba(255,255,255,.07)}
+  .nav-toggle{display:flex}
+  .nav-actions .btn{padding:9px 12px !important;font-size:.78rem;white-space:nowrap}
+  .logo{font-size:1.15rem;letter-spacing:.08em}
+}
+/* --- NOCTURNAL INTRO + CLOSING CTA --- */
+.nocturnal-intro{margin-top:26px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px}
+.nocturnal-intro h2{font-size:22px;margin:0 0 10px;font-weight:800;letter-spacing:-.01em}
+.nocturnal-intro p{margin:0;color:var(--ink2);font-size:15.5px;line-height:1.65}
+.nocturnal-intro p strong{color:var(--ink)}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;border-radius:999px;font-weight:800;text-decoration:none;font-size:.95rem;background:linear-gradient(135deg,var(--pink),var(--pink2));color:#fff;box-shadow:0 10px 30px rgba(255,46,136,.35)}
+.cta-btn:hover{transform:translateY(-1px)}
+.cta-btn.ghost{background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--ink);box-shadow:none}
+/* --- CONSUMER STEPS --- */
+.steps{display:grid;gap:14px}
+@media(min-width:760px){.steps{grid-template-columns:repeat(3,1fr)}}
+.step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.step .n{width:40px;height:40px;border-radius:12px;background:var(--gold-bg);color:var(--gold);display:grid;place-items:center;font-weight:900;font-size:18px;margin-bottom:12px}
+.step h3{margin:0 0 8px;font-size:17px;line-height:1.25}
+.step p{margin:0;color:var(--ink2);font-size:14.5px;line-height:1.6}
+.closing-cta{margin:8px 0 36px;background:linear-gradient(135deg,rgba(255,46,136,.16),rgba(255,184,28,.10));border:1px solid var(--line);border-radius:20px;padding:28px 24px}
+.closing-cta h2{font-size:26px;margin:0 0 10px;font-weight:900;letter-spacing:-.02em}
+.closing-cta p{margin:0;color:var(--ink2);font-size:15.5px;line-height:1.65}
+.site-footer{border-top:1px solid var(--line);padding:28px 0 44px}
+.site-footer a{color:var(--gold-strong)}
+</style>
+</head>
+<body>
+<div class="topbar">
+<header class="nav">
+  <div class="nav-in">
+    <a class="logo" href="https://nocturnalstaffing.com/"><span>NOCTURNAL <span>LEADS</span></span></a>
+    <nav class="nav-links" id="mobileNav">
+      <a href="https://nocturnalstaffing.com/">Home</a>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdXhBval0Pa24IYtwje2LO6CcUpA_nmR4lMll1v071vzkH6WA/viewform">Join The Waitlist</a>
+      <a href="#stacks-h">See The Homework</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="btn btn-pink" href="https://docs.google.com/forms/d/e/1FAIpQLSdXhBval0Pa24IYtwje2LO6CcUpA_nmR4lMll1v071vzkH6WA/viewform">Join The Waitlist</a>
+    </div>
+    <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav"><span></span><span></span><span></span></button>
+  </div>
+</header>
+</div>
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <p class="eyebrow">Nocturnal Leads • A Free Guide For Venue Owners</p>
+    <h1>You Didn't Know You Needed Us Until <em>Friday At 8:40 PM.</em></h1>
+    <p class="lede">Finding real nightlife leads is the hard part. <strong>We did that hard work for you</strong> — we researched every lead platform, and now we are building the verified list ourselves, venue by venue. Join the waitlist and get first access when paid access opens.</p>
+    <div class="cta-row">
+      <a class="cta-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdXhBval0Pa24IYtwje2LO6CcUpA_nmR4lMll1v071vzkH6WA/viewform">Join The Waitlist &rarr;</a>
+      <a class="cta-btn ghost" href="#stacks-h">See The Homework Below &darr;</a>
+    </div>
+  </header>
+
+  <!-- WE DID THE HARD WORK -->
+  <section class="section" aria-labelledby="hardwork-h">
+    <div class="section-head">
+      <div>
+        <div class="kicker">The Hard Work Is Done</div>
+        <h2 id="hardwork-h">We Did The Hard Work</h2>
+        <p>Finding nightlife staff should not be your second job. Here is what we already did for you.</p>
+      </div>
+    </div>
+    <div class="steps">
+      <article class="step"><div class="n">1</div><h3>We Researched Every Lead Platform Out There</h3><p>Apollo, Scrap.io, Hunter, and all the rest — we checked what they really sell, what they really cost, and where they fall short.</p></article>
+      <article class="step"><div class="n">2</div><h3>We Verify Every Venue Ourselves</h3><p>No bought lists, no guesses. Every venue on our list is checked before it counts — trading, licensed, and real.</p></article>
+      <article class="step"><div class="n">3</div><h3>You Join The Waitlist And Get First Access</h3><p>Join the waitlist. When paid access opens, you are first in line for the verified list.</p></article>
+    </div>
+    <div class="nocturnal-intro">
+      <h2>The Short Answer</h2>
+      <p>No single tool sells a verified, nightlife-only list inside a small budget. The ones that claim to are enterprise-priced, sell you workers instead of clients, or hand you a static list that goes stale. <strong>So we built our own verified list instead</strong> — venue by venue, checked before it counts. The homework is below, free to read, if you want to see how we got here.</p>
+    </div>
+  </section>
+
+  <!-- CLOSING CTA (moved up — before the research) -->
+  <section class="closing-cta" aria-labelledby="closing-h">
+    <h2 id="closing-h">Want First Access To The List?</h2>
+    <p>Paid access opens when the list launches. Join the waitlist and we will reach out first — no spam, just the opening.</p>
+    <div class="cta-row">
+      <a class="cta-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdXhBval0Pa24IYtwje2LO6CcUpA_nmR4lMll1v071vzkH6WA/viewform">Join The Waitlist &rarr;</a>
+      <a class="cta-btn ghost" href="https://nocturnalstaffing.com/pages/venue-form.html">Register Your Venue &rarr;</a>
+    </div>
+  </section>
+
+  <!-- STACKS -->
+  <section class="section" aria-labelledby="stacks-h">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Start here</div>
+        <h2 id="stacks-h">Two Stacks That Fit The Budget</h2>
+        <p>Test match rates for free first. Only pay once you know Apollo / Scrap.io actually find your Winter Haven, Orlando, and Tampa venues.</p>
+      </div>
+    </div>
+    <div class="stacks">
+      <article class="stack-card">
+        <div class="stack-top"><h3>The $0 Validation Stack</h3><div class="price">$0<small>/mo</small></div></div>
+        <ul class="stack-list">
+          <li><span>Google Places API — free tier</span><span>$0</span></li>
+          <li><span>Florida DBPR / ABT licence search</span><span>$0</span></li>
+          <li><span>Apollo Free — 75 credits/mo</span><span>$0</span></li>
+          <li><span>Hunter Free — 50 credits/mo</span><span>$0</span></li>
+          <li><span>Snov Free Trial — 50 credits</span><span>$0</span></li>
+        </ul>
+        <p class="note">Enough to test ~50 known venues and learn your real match rate before spending a dollar. Google Places: Text Search Enterprise gives 1,000 free requests/mo (1 request = up to 20 places). Billing account + card required even for free use.</p>
+      </article>
+      <article class="stack-card featured">
+        <div class="stack-top"><h3>The Working Stack — Recommended</h3><div class="price">$122<small>/mo*</small></div></div>
+        <ul class="stack-list">
+          <li><span>Scrap.io Basic — 10,000 exports/mo</span><span>$39</span></li>
+          <li><span>Apollo Basic — 2,500 credits/mo</span><span>$49</span></li>
+          <li><span>Hunter Starter — 2,000 credits/mo</span><span>$34</span></li>
+        </ul>
+        <p class="note">*All three priced billed annually. Leaves ~$78/mo headroom under $200. Scrap.io builds the live bar list, Apollo finds decision-makers, Hunter verifies before you send. Monthly billing is higher — see each card below.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- WARNING -->
+  <section aria-labelledby="verify-h">
+    <div class="warning">
+      <h3 id="verify-h">⚠ “Verified” On A Sales Page Is Not Verified In Your Inbox</h3>
+      <p>No B2B database meets a verified-only standard on its own. Independent tests consistently land well below vendor claims, and B2B data decays 22–30% per year. One reported case paid $800 for 5,000 bar contacts and saw a 38% bounce rate. Rule: use Apollo's Verified filter only, then re-verify every export (Hunter Verifier at 0.5 credit, or a tool that verifies at export like UpLead / BookYourData) before outreach.</p>
+      <div class="stats">
+        <div class="stat"><b>91–97% → 79–88%</b><span>Apollo: vendor claim on Verified emails vs. independent US deliverability</span></div>
+        <div class="stat"><b>20–30%</b><span>Reported bounce on Seamless.AI “verified” reveals (Capterra reviewers)</span></div>
+        <div class="stat"><b>62–68%</b><span>Lusha independent phone accuracy vs. 85% vendor claim (email claim: 98%)</span></div>
+        <div class="stat"><b>22–30% / yr</b><span>B2B contact data decay — why static bought lists fail fastest</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOP 5 -->
+  <section class="section" aria-labelledby="top5-h">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Ranked by fit for Nocturnal</div>
+        <h2 id="top5-h">Top 5</h2>
+        <p>Ranked for a bootstrapped nightlife agency that only contacts verified addresses — not for enterprise sales teams.</p>
+      </div>
+    </div>
+    <div class="top5">
+      <article class="rank"><div class="rank-num">1</div><div><h3>Google Places API (Free) + Florida DBPR ABT Search <span>$0</span></h3><p>Free, live, most complete Florida venue list — up to 20,000 records/mo free, and ABT proves the licence is active (look for 4COP = full-liquor bars/nightclubs). Gives phone + website only, never email or owner name.</p><div class="tagline">Best discovery layer • Caveat: Google terms restrict lead-list use — check current terms</div></div></article>
+      <article class="rank"><div class="rank-num">2</div><div><h3>Apollo.io — Free, Then Basic <span>$49/mo annual</span></h3><p>Best single paid tool: 275M+ contacts / 73M companies, Google Maps Business Search filter, Verified-email filter, plus sequences + dialer in one seat. Free tier (75 credits/mo) is enough to test match rates first.</p><div class="tagline">Best paid all-in-one • Re-verify exports — real deliverability ~79–88%</div></div></article>
+      <article class="rank"><div class="rank-num">3</div><div><h3>Scrap.io — Basic <span>$39/mo annual</span></h3><p>Cheapest live bar/nightclub list builder: 10,000 exports/mo, city search, has-email filter. Vendor counts 228,084 US bars, 78,805 with a verified email (Aug 2026, vendor's own count).</p><div class="tagline">Best for volume • Emails are generic website inboxes, not owner emails</div></div></article>
+      <article class="rank"><div class="rank-num">4</div><div><h3>Hunter.io — Free, Then Starter <span>$49/mo monthly / $34 annual</span></h3><p>The verification layer the whole stack needs: 0.5 credit per verification, no charge if nothing found. As a finder alone it fails — it needs a domain or name first — so pair it with #1 or #3.</p><div class="tagline">Best verification layer • Not a discovery tool on its own</div></div></article>
+      <article class="rank"><div class="rank-num">5</div><div><h3>Snov.io — Free, Then Starter <span>$29.25/mo annual</span></h3><p>Cheapest paid all-rounder: find + verify + sequences + warm-up, unlimited seats on paid plans. Smallest credits per dollar at scale and no published accuracy guarantee.</p><div class="tagline">Budget alternative to Apollo • Test it if Apollo match rates disappoint</div></div></article>
+    </div>
+    <p class="small" style="margin-top:14px"><strong>Just missed:</strong> UpLead Essentials ($74/mo annual) — best verification-at-export, but only 170 contacts/mo. BookYourData ($99 one-off for 250 contacts, credits never expire) — best one-off nightclub list buy. LeadIQ Pro ($15/mo annual) — cheapest paid, but LinkedIn-only workflow misses most bar owners.</p>
+  </section>
+
+  <!-- BUILDER -->
+  <section aria-labelledby="builder-h" style="padding-bottom:8px">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Try it</div>
+        <h2 id="builder-h">Build Your Own Stack — Stay Under $200</h2>
+        <p>Tap platforms to add them. Prices are the monthly equivalent when billed annually, except where noted. BookYourData is a one-off, not monthly.</p>
+      </div>
+    </div>
+    <div class="builder">
+      <div class="builder-grid" id="builderGrid"></div>
+      <div class="meter" aria-hidden="true"><div class="meter-fill" id="meterFill"></div></div>
+      <div class="builder-total"><span id="builderLabel">Nothing selected — start with the $0 stack above, or tap a paid tool.</span><strong id="builderTotal">$0 / $200</strong></div>
+      <p class="small" id="builderNote" style="margin-top:8px"></p>
+    </div>
+  </section>
+
+  <!-- B2B PLATFORMS -->
+  <section class="section" aria-labelledby="b2b-h">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Category 1</div>
+        <h2 id="b2b-h">B2B Lead-Data Platforms</h2>
+        <p>These find people, not venues. Most bar owners have no LinkedIn or corporate domain, so find the venue first, then enrich it here.</p>
+      </div>
+    </div>
+    <div class="filters" role="group" aria-label="Filter platforms">
+      <button class="filter-btn active" data-filter="all">All platforms</button>
+      <button class="filter-btn" data-filter="fits">Fits $200/mo</button>
+      <button class="filter-btn" data-filter="free">Has a free tier</button>
+      <button class="filter-btn" data-filter="avoid">Skip / over budget</button>
+    </div>
+    <div class="grid" id="platformGrid">
+      <!-- Apollo -->
+      <article class="card" data-tags="fits free"><div class="card-head"><h3>Apollo.io</h3><span class="badge yes">Fits • #2 pick</span></div><p>275M+ contacts / 73M companies. Name, title, verified email, direct/mobile phone, firmographics. Filters by industry, headcount, location — plus a Google Maps Business Search filter. Sequences + dialer built in.</p><dl><div><dt>Free tier</dt><dd>$0 — 75 credits/mo</dd></div><div><dt>Cheapest paid</dt><dd>Basic $49/mo annual</dd></div><div><dt>Monthly billing</dt><dd>$65/mo</dd></div><div><dt>Credits</dt><dd>30,000/yr on Basic</dd></div></dl><div class="caveat"><strong>Caveat:</strong> 65% of the DB is unverified. Verified = 5–15% bounce risk; catch-all 15–30%. Apollo refunds credits if a Verified email bounces within 30 days. Price verified live 16 Nov 2026.</div></article>
+      <!-- Hunter -->
+      <article class="card" data-tags="fits free"><div class="card-head"><h3>Hunter.io</h3><span class="badge yes">Fits • #4 pick</span></div><p>Email Finder (name + domain → email + confidence), Domain Search, Email Verifier, Discover. No phone numbers, no owner names unless you already know the domain/name. It enriches a list you have — it does not find venues.</p><dl><div><dt>Free tier</dt><dd>$0 — 50 credits/mo</dd></div><div><dt>Cheapest paid</dt><dd>Starter $49/mo monthly</dd></div><div><dt>Annual</dt><dd>$34/mo ($408/yr)</dd></div><div><dt>Credits</dt><dd>2,000/mo on Starter</dd></div></dl><div class="caveat"><strong>Caveat:</strong> 1 credit per email found, 0.5 per verification; no charge if nothing found or “unknown.” Hunter's own benchmark: verifier 70% overall accuracy. Accept-all (catch-all) results are charged and are the main risk.</div></article>
+      <!-- Snov -->
+      <article class="card" data-tags="fits free"><div class="card-head"><h3>Snov.io</h3><span class="badge yes">Fits • #5 pick</span></div><p>Email finder + verifier, sequences, warm-up, light CRM, LinkedIn automation as add-on. Database search shows first 20 prospects free. 1 credit = 1 email found or verified.</p><dl><div><dt>Free tier</dt><dd>$0 Trial — 50 credits / 30 days</dd></div><div><dt>Cheapest paid</dt><dd>Starter $39/mo</dd></div><div><dt>Annual</dt><dd>$29.25/mo</dd></div><div><dt>Credits</dt><dd>1,000/mo on Starter</dd></div></dl><div class="caveat"><strong>Caveat:</strong> No bulk search/verification, export, or API on free. No published accuracy guarantee found. LinkedIn slot is a separate $69/mo ($62 annual) — don't buy it for venue owners, most aren't LinkedIn-active.</div></article>
+      <!-- Lusha -->
+      <article class="card" data-tags="fits free"><div class="card-head"><h3>Lusha</h3><span class="badge yes">Fits</span></div><p>Verified emails, direct dials, company data. Best-in-class LinkedIn / Chrome extension workflow; search/filter free, pay to reveal. Good for revealing a known GM's contact — weak as a venue-discovery tool.</p><dl><div><dt>Free tier</dt><dd>$0 — 40 credits/mo*</dd></div><div><dt>Cheapest paid</dt><dd>Starter $49.90/mo monthly</dd></div><div><dt>Annual</dt><dd>$37.45/mo</dd></div><div><dt>Credits</dt><dd>400/mo on Starter</dd></div></dl><div class="caveat"><strong>*Open question:</strong> One 2026 source claims free is now 70/mo and phones cost 10 credits (most sources: 5 credits/phone, 40 free/mo) — re-check lusha.com/pricing. Vendor claims 98% email / 85% phone; independent phone accuracy 62–68%; G2 accuracy 7.6/10.</div></article>
+      <!-- UpLead -->
+      <article class="card" data-tags="fits"><div class="card-head"><h3>UpLead</h3><span class="badge warn">Fits, barely</span></div><p>B2B database that verifies each email in real time at the moment of export. 1 credit = email + mobile together. 95% accuracy guarantee — strongest verification story in this price band.</p><dl><div><dt>Free tier</dt><dd>None — 7-day trial, 5 credits</dd></div><div><dt>Cheapest paid</dt><dd>Essentials $99/mo monthly</dd></div><div><dt>Annual</dt><dd>$74/mo</dd></div><div><dt>Credits</dt><dd>170/mo on Essentials</dd></div></dl><div class="caveat"><strong>Caveat:</strong> Real-time verification + credit refund on bounces, but low volume per dollar (~$0.58/contact). Worth it only if you value verified-over-volume. No free tier to test.</div></article>
+      <!-- LeadIQ -->
+      <article class="card" data-tags="fits free"><div class="card-head"><h3>LeadIQ</h3><span class="badge yes">Cheapest paid</span></div><p>LinkedIn / Sales Navigator capture → CRM; email + phone, job-change alerts. Workflow assumes prospects are on LinkedIn.</p><dl><div><dt>Free tier</dt><dd>$0 — 50 credits, 1 user</dd></div><div><dt>Cheapest paid</dt><dd>Pro $20/mo monthly</dd></div><div><dt>Annual</dt><dd>$15/mo</dd></div><div><dt>Credits</dt><dd>200/mo on Pro</dd></div></dl><div class="caveat"><strong>Caveat:</strong> Email 1 credit, phone 10 credits. Weak fit for this niche despite low price — most independent bar/nightclub owners/GMs are not reliably findable on LinkedIn.</div></article>
+      <!-- BookYourData -->
+      <article class="card" data-tags="fits free"><div class="card-head"><h3>BookYourData</h3><span class="badge yes">Best one-off buy</span></div><p>Self-serve B2B database with a nightclub/bar segment (advertised 17,314 contacts, via secondary source). Email + phone + company data per contact. Pay-as-you-go, no subscription.</p><dl><div><dt>Free</dt><dd>10 credits, no card</dd></div><div><dt>250 contacts</dt><dd>$99 ($0.40 ea)</dd></div><div><dt>1,000 contacts</dt><dd>$299 ($0.30 ea)</dd></div><div><dt>5,000 contacts</dt><dd>$799 ($0.16 ea)</dd></div></dl><div class="caveat"><strong>Caveat:</strong> Best verification among list sellers: 8-step real-time verification at export, 97% accuracy guarantee, credit refund for invalid records, reported bounce ~2–3%. Still a static snapshot — re-verify before sending. Credits never expire.</div></article>
+      <!-- Seamless -->
+      <article class="card" data-tags="avoid free"><div class="card-head"><h3>Seamless.AI</h3><span class="badge no">Avoid</span></div><p>Real-time B2B search, Chrome extension, emails + cell phones, buyer intent. Claims 1.8B+ emails. Now branded “Seamless.”</p><dl><div><dt>Free tier</dt><dd>$0 — 50 lifetime credits</dd></div><div><dt>Paid</dt><dd>Quote-only, no published price</dd></div><div><dt>Reported</dt><dd>Basic ~$147/mo annual*</dd></div></dl><div class="caveat"><strong>*Not vendor-published:</strong> Third-party reports put Basic ~$147/mo billed annually (250 credits/mo). Reviewers report 20–30% bounce on “verified” reveals, credit spent even when email bounces. Annual contract + 60-day cancellation notice.</div></article>
+      <!-- ZoomInfo -->
+      <article class="card" data-tags="avoid free"><div class="card-head"><h3>ZoomInfo</h3><span class="badge no">6× over budget</span></div><p>Largest B2B database — contact + company + intent. Gold standard for data depth, irrelevant at this budget.</p><dl><div><dt>Free</dt><dd>Lite — ~10 credits/mo, restricted</dd></div><div><dt>Paid</dt><dd>No published price</dd></div><div><dt>Reported</dt><dd>Professional ~$14,995/yr*</dd></div></dl><div class="caveat"><strong>*Third-party reported:</strong> Advanced $24,995–$29,995/yr, Elite $39,995+/yr; 3-seat minimum, annual only, no monthly billing, 60–90-day cancellation window. ~$1,250/mo minimum.</div></article>
+      <!-- Cognism -->
+      <article class="card" data-tags="avoid"><div class="card-head"><h3>Cognism</h3><span class="badge no">Enterprise only</span></div><p>B2B prospecting, Diamond Data verified mobiles, Bombora intent. GDPR-focused, EU strength, manual verification on higher tier.</p><dl><div><dt>Free / trial</dt><dd>None — sample on request</dd></div><div><dt>Paid</dt><dd>No published price</dd></div><div><dt>Estimates</dt><dd>Grow ~$15,000/yr*</dd></div></dl><div class="caveat"><strong>*Estimates only:</strong> Grow ~$15,000/yr + ~$1,500/user/yr; Elevate ~$25,000/yr + ~$2,500/user/yr; Vendr median $36,000/yr (108 contracts). Annual, 5 seats included in current packages.</div></article>
+      <!-- Clearbit -->
+      <article class="card" data-tags="avoid"><div class="card-head"><h3>Clearbit</h3><span class="badge no">Not a lead source</span></div><p>Was enrichment + website-visitor Reveal. Standalone product sunset 30 Apr 2025; free tools switched off. Now HubSpot Breeze Intelligence only.</p><dl><div><dt>Standalone</dt><dd>Sunset — no signup</dd></div><div><dt>Estimate</dt><dd>~$45/mo / 100 credits*</dd></div><div><dt>All-in</dt><dd>~$65/mo with HubSpot</dd></div></dl><div class="caveat"><strong>*Third-party estimate only;</strong> HubSpot publishes no standalone Breeze price. It enriches records you already have — it is not a prospecting database. No phone enrichment. Do not buy for this use case.</div></article>
+      <!-- Leadfeeder -->
+      <article class="card" data-tags="avoid free"><div class="card-head"><h3>Leadfeeder (Dealfront)</h3><span class="badge no">Wrong tool</span></div><p>Website visitor identification: reverse-IP → which companies visited your site. Cannot create new venue leads.</p><dl><div><dt>Free</dt><dd>Lite €0 — last 100 companies</dd></div><div><dt>Discover</dt><dd>From €79/mo annual</dd></div><div><dt>Activate</dt><dd>From €369/mo (with contacts)</dd></div></dl><div class="caveat"><strong>Caveat:</strong> Discover fits budget but gives no contact data; the tier with verified emails/direct dials is €369/mo. Only identifies companies that already found your website.</div></article>
+    </div>
+  </section>
+
+  <!-- VENUE DATABASES -->
+  <section class="section" style="padding-top:8px" aria-labelledby="venue-h">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Category 2 • Venue databases &amp; directories</div>
+        <h2 id="venue-h">Listings Are Not Contacts</h2>
+        <p>Almost everything here gives name / address / phone / website — no email, no owner name. The email has to come from the venue's website (Scrap.io / Hunter) or a B2B database above.</p>
+      </div>
+    </div>
+    <div class="list-rows">
+      <div class="row"><h4>Google Places API (New) — $0 free tier ⭐</h4><p>Name, address, type, business status, phone, website, rating, reviews, hours, price level. 200M+ places — the most complete, freshest venue list because venues maintain their own Maps profiles. Never provides email or owner name.</p><div class="row-meta"><span class="chip teal">1,000 free Text Search req/mo</span><span class="chip">5,000 free Pro req/mo</span><span class="chip">Beyond free: $32–$35 / 1,000 req</span><span class="chip red">Terms restrict lead-list / direct-marketing use — check before building</span></div></div>
+      <div class="row"><h4>Scrap.io — Basic $39/mo billed yearly ✓ Verified live</h4><p>The only tool here that exposes emails: website-published emails (classified individual vs. generic info@/contact@/sales@), phone, socials — 50+ fields, filter by has-email / has-website / rating / open-now. No owner/GM names unless on the website. Price verified live 16 Nov 2026 at scrap.io/pricing.</p><div class="row-meta"><span class="chip teal">Basic $39/mo annual — 10,000 exports</span><span class="chip">Pro $79 • Agency $159 • Company $399 (annual)</span><span class="chip">Monthly ~$49/$99/$199/$499 — secondary sources, not live-verified</span><span class="chip">7-day trial, 100 leads</span></div></div>
+      <div class="row"><h4>Florida DBPR / ABT Liquor-Licence Search — $0 ⭐</h4><p>The most authoritative venue list in Florida (myfloridalicense.com): licensee name, DBA, licence no., type/series, county, status, issue/expiry, address. Proves a venue is actually trading — map data lags on closures. No email or phone. No bulk export found — manual or public-records request.</p><div class="row-meta"><span class="chip teal">$0, no account</span><span class="chip">Filter: 4COP = full-liquor bars / nightclubs</span></div></div>
+      <div class="row"><h4>Yelp Fusion / Places API — ⚠ Pricing conflict, do not rely on it yet</h4><p>Name, address, phone, categories, rating, hours; website on Enhanced tier+. No email, no owner name.</p><div class="row-meta"><span class="chip red">Conflict: older guides say 5,000 calls/day free</span><span class="chip red">Oct 2026 pricing-page reading: Base $229/mo, Enhanced $299, Premium $643 + overage; 30-day trial only</span><span class="chip red">Terms: keep data max 24h; bar building a listing DB / direct marketing</span></div><p style="margin-top:10px">If the Oct 2026 reading is correct, Yelp is unusable as a lead source at this budget. Re-check yelp.com/developers directly before spending.</p></div>
+      <div class="row"><h4>Ticketmaster Discovery API — Free, discovery signal only</h4><p>Events, attractions, venues (name, address, coords, timezone). 230k+ events. Good for identifying active large venues/promoters. No email, phone, or owner.</p><div class="row-meta"><span class="chip teal">Free key, 5,000 calls/day, no card</span><span class="chip">Terms forbid deriving revenue, cap caching</span></div></div>
+      <div class="row"><h4>Not lead sources — do not buy for venue leads</h4><p><strong>Eventbrite API:</strong> manages your own org's events only; public search retired 2020. <strong>Resident Advisor:</strong> no contacts, no official API, ToS bans automated extraction for commercial use — manual research only. <strong>Bandsintown:</strong> API restricted to artists / those working on their behalf. <strong>Songkick:</strong> key applications frozen, partnerships-only; sold to Suno (Nov 2025). <strong>OpenTable</strong> (Basic $149/mo, Core $299, Pro $499 + $1–$1.50/cover) and <strong>SevenRooms</strong> (quote-only, reported ~$499/mo+) are venue-side software, not prospecting databases.</p></div>
+      <div class="row"><h4>Wrong side of the market — these sell you workers, not venue clients</h4><p><strong>Poached</strong> (~$59/post, $425/mo unlimited reported), <strong>Harri</strong> ($70/mo 1 post, $168/3, $240/5), <strong>Culinary Agents</strong> (ads $69 ea, ATS $39/mo, bundle $150/mo) are candidate-side job boards. <strong>Qwick</strong> (~40% markup on hourly shift rate, reported) and <strong>Instawork</strong> (~35% markup reported + $2,500 direct-hire fee / $1,000 after 320 hrs) are gig marketplaces — using them means buying labour at a markup, competing with your own model.</p><div class="row-meta"><span class="chip red">Buys candidate applications / shifts — not venue clients</span></div></div>
+    </div>
+  </section>
+
+  <!-- STAFFING SYSTEMS + LIST SELLERS -->
+  <section class="two-col" aria-labelledby="systems-h">
+    <div>
+      <div class="kicker">Category 3 • Staffing marketing / CRM systems</div>
+      <h2 style="font-size:24px;margin:0 0 6px;letter-spacing:-.02em" id="systems-h">Skip All Four For Lead-Gen</h2>
+      <p class="small" style="color:var(--ink2);font-size:14.5px">These sell candidate attraction and client management — none provides venue contact data. Your bottleneck is finding venue decision-makers, which none of them solve.</p>
+      <div class="list-rows" style="margin-top:14px">
+        <div class="row"><h4>Bullhorn — Starter $99/user/mo, Core $165/user/mo</h4><p>ATS + recruitment CRM. The sales CRM is Pro-only (quote-only). Fits alone on Starter, but it's an ATS to manage leads you already have — only worth it later as the operating system.</p></div>
+        <div class="row"><h4>Haley Marketing — Quote only</h4><p>Staffing websites, SEO/PPC, career portal, marketing automation. Lead-gen is inbound — candidate applications + client enquiries, not venue clients. Only hard number found: Starter Site valued at $7,495. Monthly rate not verified.</p></div>
+        <div class="row"><h4>Staffing Future — Quote only</h4><p>SEO career sites / job boards synced to Bullhorn + 20 ATSs; “Future Loop” reactivates your own database. FAQ states pricing depends on site, team size, and features — “you'll get a clear quote on your call.” Project + hosting model, not a $200/mo tool.</p></div>
+        <div class="row"><h4>Sense — From $500/mo</h4><p>Candidate engagement / talent CRM: SMS/WhatsApp journeys, AI chatbot + Voice AI screening, database reactivation. Candidate-side only, no venue prospecting. Published starting prices (G2 / sensehq.com): Messaging $500/mo, Scheduling $500/mo, Platform $2,000/mo, AI Recruiter $3,000/mo, Talent Acquisition $7,000/mo. No free plan/trial. Cheapest module is 2.5× budget.</p></div>
+      </div>
+      <p class="small" style="margin-top:12px">If a CRM is needed later, Bullhorn Starter ($99, 1 user) or a free HubSpot CRM are the only sub-$200 options — that's an ops decision, not lead-gen.</p>
+    </div>
+    <div>
+      <div class="kicker">Category 4 • Nightclub/bar list sellers</div>
+      <h2 style="font-size:24px;margin:0 0 6px;letter-spacing:-.02em">No Verified Nightclub-Only List Exists</h2>
+      <p class="small" style="color:var(--ink2);font-size:14.5px">Finding: no reputable platform sells a nightclub-only, verified, live-updated lead list as a subscription inside $200/mo. What exists is mostly static CSVs of rotting data.</p>
+      <div class="list-rows" style="margin-top:14px">
+        <div class="row"><h4>BookYourData — Best of the list sellers ✓</h4><p>$99 / 250 contacts, pay-as-you-go, credits never expire. See full card above.</p></div>
+        <div class="row"><h4>Scrap.io — Best overall for this niche ✓</h4><p>Live data, not a static list, cheapest per contact (~$0.005). See venue section above.</p></div>
+        <div class="row"><h4>Recordpipe — From $5,000 — No</h4><p>New/pending liquor-licence applications (venues before opening) with owner/applicant names + addresses from state filings. Scoping $500 (credited); ongoing feeds from $5,000 fixed-price contracts. Interesting signal — pre-opening venues need staff first — but 25× budget.</p></div>
+        <div class="row"><h4>Unverified — price not found in research</h4><p><strong>Openmart</strong> (markets 60k+ bar owner contacts, claimed), <strong>Binary Clues</strong> (US bars-and-pubs executive email list), <strong>PourWire</strong> (liquor + permit filing feed, free sample then paid seat — price not verified; likely over budget given Recordpipe). Treat all three as unverified.</p></div>
+        <div class="row"><h4>Upwork freelancers &amp; generic brokers — Avoid as a system</h4><p>Freelancers offer list-building at $15–$250/gig (e.g. $150/1,000 leads; $250/1,000 with named contact + verified email) — quality depends entirely on the freelancer, and you'd still re-verify. Generic brokers (Exact Data / Data Axle, LeadsPlease, etc.) run $0.10–$0.50/contact with accuracy guarantees topping out ~80% — stale snapshots that conflict with a verified-only rule.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAILS + OPEN QUESTIONS -->
+  <section class="section" aria-labelledby="fails-h">
+    <div class="kicker">Outright fails at this budget</div>
+    <h2 id="fails-h" style="font-size:24px;margin:0 0 14px;letter-spacing:-.02em">Don't Spend Time On These</h2>
+    <div class="fails">
+      <span class="fail">ZoomInfo — ~$1,250/mo min</span>
+      <span class="fail">Cognism — ~$15k+/yr</span>
+      <span class="fail">Sense — $500/mo min</span>
+      <span class="fail">Bullhorn Pro / CRM — quote-only</span>
+      <span class="fail">Haley Marketing — $7,495 site</span>
+      <span class="fail">Staffing Future — quote-only</span>
+      <span class="fail">Yelp Places API — $229/mo if Oct 2026 pricing holds + terms bar lead-list use</span>
+      <span class="fail">SevenRooms — ~$499/mo</span>
+      <span class="fail">Recordpipe — from $5,000</span>
+      <span class="fail">Seamless.AI — quote-only + annual lock-in + 20–30% reported bounce</span>
+    </div>
+    <div class="two-col" style="margin-top:20px">
+      <div class="open-q">
+        <h3 style="margin:0;font-size:16px">Open Questions — Flagged Plainly</h3>
+        <ul>
+          <li><strong>Yelp pricing conflicts:</strong> 5,000 calls/day free (older guides) vs. $229–$643/mo, no free plan (Oct 2026 reading). Re-check yelp.com/developers.</li>
+          <li><strong>Lusha credits conflict:</strong> 5 credits/phone + 40 free/mo (most sources) vs. 10 credits/phone + 70 free/mo (one 2026 source). Re-check lusha.com/pricing.</li>
+          <li><strong>Scrap.io monthly prices not live-verified:</strong> live page showed annual $39/$79/$159/$399; monthly $49/$99/$199/$499 is from secondary sources only.</li>
+          <li><strong>Haley &amp; Staffing Future:</strong> no monthly rate published anywhere found.</li>
+          <li><strong>Seamless / ZoomInfo / Cognism prices</strong> are third-party reported, vary 20–40% between sources — order-of-magnitude only.</li>
+          <li><strong>Google Places licence:</strong> whether building an outreach list breaches Google Maps Platform terms was flagged in secondary sources; the terms themselves were not read in full. Read them before bulk-building a list.</li>
+          <li><strong>Small-venue match rates are unknown:</strong> no source confirms coverage for small independent Florida bars/clubs in Apollo/Lusha/UpLead. The free-tier test against ~50 known venues is the only way to know.</li>
+          <li><strong>Still unspecified:</strong> how many venues/month you want to contact, and whether “verified” means SMTP-verified, human-confirmed, or website-published — that decides which tier is enough.</li>
+        </ul>
+      </div>
+      <div class="open-q">
+        <h3 style="margin:0;font-size:16px">How To Run The Free Test (Before Any Spend)</h3>
+        <ul>
+          <li><strong>1. Build the venue list:</strong> pull Winter Haven / Orlando / Tampa bars &amp; clubs from Google Places free tier; cross-check each against Florida DBPR — keep only active licences (4COP for full-liquor).</li>
+          <li><strong>2. Enrich ~50 venues:</strong> run the same 50 through Apollo Free (75 credits), Hunter Free (50), and Snov Free (50). Compare who finds an owner/GM email.</li>
+          <li><strong>3. Verify before any send:</strong> Hunter Verifier (0.5 credit) on every address. Count bounces/unknowns per tool — that's your real match + accuracy rate.</li>
+          <li><strong>4. Decide on evidence:</strong> if Apollo's match rate holds, Apollo Basic $49 is the first paid dollar. If you need volume of generic venue inboxes instead, Scrap.io Basic $39 is first. Don't buy both until the test says so.</li>
+        </ul>
+        <p class="small" style="margin-top:10px">Note: Steps 1–4 are the research report's recommended sequence, restated — no platform account was created during research.</p>
+      </div>
+    </div>
+  </section>
+
+
+
+
+  <footer>
+    <h3>Sources &amp; Verification</h3>
+    <p class="sources">
+      <strong>Verified live in the research browser, 16 Nov 2026:</strong>
+      Apollo.io pricing — <a href="https://www.apollo.io/pricing" target="_blank" rel="noopener">https://www.apollo.io/pricing</a> (Free $0 / 900 credits/yr; Basic $49; Pro $79; Org $119 min 3 seats) •
+      Scrap.io pricing — <a href="https://scrap.io/pricing" target="_blank" rel="noopener">https://scrap.io/pricing</a> (Basic $39/mo billed yearly, 10,000 export credits; Pro $79; Agency $159; Company $399 — monthly prices not captured live).<br>
+      <strong>All other prices</strong> are from the web index — secondary round-ups citing vendor pages, Oct–Nov 2026 — and are hedged as reported / estimated / unverified wherever the report flags them. Key index sources include Bullhorn (bullhorn.com), Haley Marketing (haleymarketing.com), Staffing Future (go.staffingfuture.com), Sense via G2 (g2.com/products/sense-sense/pricing), and Scrap.io's bar list page (scrap.io/bar-email-lists). Full per-category source lists are in the research report behind this page.<br>
+      Researched 15–16 Nov 2026 for Nocturnal Leads, Winter Haven, FL. Prices change — re-check the vendor pricing page before buying, especially Yelp, Lusha, and any quote-only platform.
+    </p>
+  </footer>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap" style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap">
+    <div><b style="color:white;font-family:'Bebas Neue',sans-serif;letter-spacing:.12em;font-size:1.2rem">NOCTURNAL LEADS</b><br>Verified Nightlife Venue Leads. Paid Access When The List Launches.</div>
+    <div style="line-height:2">
+      <a href="https://nocturnalstaffing.com/pages/talent-form.html">Talent Form</a> · <a href="https://nocturnalstaffing.com/pages/venue-form.html">Venue Form</a> · <a href="https://nocturnalstaffing.com/pages/recruiter-portal.html">Recruiter Portal</a> · <a href="https://nocturnalstaffing.com/pages/owner-portal.html">Owner Sign In</a><br>
+      Talk To A Human: <a href="tel:+18632880341">(863) 288-0341</a> · <a href="mailto:joshua.ellis.staffing@gmail.com">joshua.ellis.staffing@gmail.com</a><br>
+      <a href="https://nocturnalstaffing.com">nocturnalstaffing.com</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var t=document.querySelector('.nav-toggle'), n=document.getElementById('mobileNav');
+  if(!t||!n) return;
+  t.addEventListener('click', function(){
+    var open=n.classList.toggle('open');
+    t.setAttribute('aria-expanded', open?'true':'false');
+  });
+  n.addEventListener('click', function(e){
+    if(e.target.tagName==='A'){ n.classList.remove('open'); t.setAttribute('aria-expanded','false'); }
+  });
+})();
+</script>
+<script>
+(function(){
+  // Stack builder
+  var tools = [
+    {id:'apollo', name:'Apollo Basic', detail:'2,500 credits/mo • Verified filter + sequences', price:49},
+    {id:'scrap', name:'Scrap.io Basic', detail:'10,000 exports/mo • Live Google Maps bar data', price:39},
+    {id:'hunter', name:'Hunter Starter (annual)', detail:'2,000 credits/mo • Verification layer', price:34},
+    {id:'snov', name:'Snov Starter (annual)', detail:'1,000 credits • Find + verify + warm-up', price:29.25},
+    {id:'leadiq', name:'LeadIQ Pro (annual)', detail:'200 credits/mo • LinkedIn capture — weak fit', price:15},
+    {id:'lusha', name:'Lusha Starter (annual)', detail:'400 credits/mo • Reveal known contacts', price:37.45},
+    {id:'uplead', name:'UpLead Essentials (annual)', detail:'170 contacts/mo • Verified at export', price:74},
+    {id:'bullhorn', name:'Bullhorn Starter', detail:'1 user • ATS only, not a lead source', price:99},
+    {id:'bookyourdata', name:'BookYourData — 250 contacts', detail:'One-off, not monthly • Credits never expire', price:99, oneoff:true}
+  ];
+  var selected = {};
+  // Pre-select recommended stack
+  selected['scrap']=true; selected['apollo']=true; selected['hunter']=true;
+  var grid = document.getElementById('builderGrid');
+  tools.forEach(function(t){
+    var b = document.createElement('button');
+    b.type='button'; b.className='build-btn'; b.setAttribute('aria-pressed', selected[t.id] ? 'true':'false');
+    b.setAttribute('data-id', t.id);
+    b.innerHTML = '<span>'+t.name+'<small>'+t.detail+'</small></span><span class="amt">$'+(t.price%1?t.price.toFixed(2):t.price)+(t.oneoff?' once':'/mo')+'</span>';
+    b.addEventListener('click', function(){
+      selected[t.id]=!selected[t.id];
+      b.setAttribute('aria-pressed', selected[t.id]?'true':'false');
+      render();
+    });
+    grid.appendChild(b);
+  });
+  function render(){
+    var total=0, names=[];
+    tools.forEach(function(t){ if(selected[t.id]){ total+=t.price; names.push(t.name); } });
+    var fill=document.getElementById('meterFill');
+    var pct=Math.min(100, (total/200)*100);
+    fill.style.width=pct+'%';
+    fill.classList.toggle('over', total>200);
+    document.getElementById('builderTotal').textContent='$'+(total%1?total.toFixed(2):Math.round(total))+' / $200';
+    var label=document.getElementById('builderLabel');
+    var note=document.getElementById('builderNote');
+    if(names.length===0){ label.textContent='Nothing selected — start with the $0 stack above, or tap a paid tool.'; note.textContent=''; return; }
+    label.textContent = names.join(' + ');
+    if(total>200){ note.textContent='Over the $200 ceiling by $'+(total-200).toFixed(2)+' — drop a tool. Remember $200 buys one mid-tier tool, not an enterprise platform plus a data tool.'; }
+    else if(Math.abs(total-122)<0.01){ note.textContent='That\u2019s the recommended working stack: ~$122/mo billed annually, ~$78/mo headroom left. BookYourData, if selected, is a one-off on top of monthly.'; }
+    else { note.textContent='Under the ceiling with $'+(200-total).toFixed(2)+'/mo headroom. Annual-billing prices shown — monthly billing costs more. BookYourData counts here as a one-off $99, not a recurring charge.'; }
+  }
+  render();
+
+  // Filters
+  var btns=document.querySelectorAll('.filter-btn');
+  var cards=document.querySelectorAll('#platformGrid .card');
+  btns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      btns.forEach(function(b){b.classList.remove('active')});
+      btn.classList.add('active');
+      var f=btn.getAttribute('data-filter');
+      cards.forEach(function(c){
+        if(f==='all'){ c.classList.remove('hidden'); return; }
+        var tags=(c.getAttribute('data-tags')||'').split(' ');
+        c.classList.toggle('hidden', tags.indexOf(f)===-1);
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
