@@ -102,6 +102,28 @@ table.data-table td.num{font-family:"IBM Plex Mono",monospace}
 .filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
 .filters label{font-size:13px;font-weight:700;color:var(--ink2)}
 .filters select{margin-top:4px;background:var(--card);color:var(--ink);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;font-size:15px}
+
+/* Metro coverage map, Verified standard, Recently verified — added Nov 17 2026. Breakpoint-free: no width media queries. */
+.coverage-state{margin-top:22px}
+.coverage-state h3{margin:0 0 4px;font-size:17px}
+.coverage-state .state-count{color:var(--ink3);font-size:13px;margin:0 0 14px}
+.dot-grid{display:flex;flex-wrap:wrap;gap:18px 22px;align-items:flex-end}
+.metro-dot{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:92px;text-align:center}
+.metro-dot .bubble{width:var(--d,26px);height:var(--d,26px);border-radius:50%;background:var(--gold-bg);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--gold);font-size:13px}
+.metro-dot .m-name{font-size:13px;font-weight:700;color:var(--ink)}
+.metro-dot .m-count{font-size:12px;color:var(--ink3)}
+.checks{display:grid;gap:12px}
+.check-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.check-card .check-num{font-family:"IBM Plex Mono",monospace;font-size:28px;font-weight:600;color:var(--gold)}
+.check-card h3{margin:6px 0;font-size:18px}
+.check-card p{margin:0;color:var(--ink2);font-size:14px}
+.reverify-note{margin-top:18px;background:var(--teal-bg);border:1px solid rgba(45,212,191,.35);border-radius:var(--radius);padding:18px 20px;color:var(--ink2);font-size:15px}
+.reverify-note strong{color:var(--ink)}
+.recent-rows{display:grid;gap:12px}
+.recent-row{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.recent-row .r-date{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--gold);font-size:15px}
+.recent-row p{margin:6px 0 0;color:var(--ink2);font-size:15px}
+.recent-row p strong{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -284,6 +306,96 @@ function fRender(){
 ['fMetro','fTier','fEmail'].forEach(function(id){ document.getElementById(id).addEventListener('change', fRender); });
 fRender();
 </script>
+
+<section class="section" id="coverage">
+  <div class="section-head">
+    <div>
+      <p class="kicker">Coverage</p>
+      <h2>Metro Coverage Map</h2>
+      <p>70 records across 17 metros in 5 states, as of Nov 17, 2026. Metro names and counts only &mdash; no venue names, emails, or addresses. Dot size shows record count; Jacksonville groups Jacksonville with Jacksonville Beach.</p>
+    </div>
+  </div>
+  <div class="coverage-state">
+    <h3>Florida &mdash; 56 Records</h3>
+    <p class="state-count">6 metros</p>
+    <div class="dot-grid">
+      <div class="metro-dot"><span class="bubble" style="--d:64px">25</span><span class="m-name">Daytona Beach</span><span class="m-count">25 records</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:56px">17</span><span class="m-name">Jacksonville</span><span class="m-count">17 records</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:44px">7</span><span class="m-name">Fernandina Beach</span><span class="m-count">7 records</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:40px">5</span><span class="m-name">St. Augustine</span><span class="m-count">5 records</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Orlando</span><span class="m-count">1 record</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Tampa</span><span class="m-count">1 record</span></div>
+    </div>
+  </div>
+  <div class="coverage-state">
+    <h3>California &mdash; 11 Records</h3>
+    <p class="state-count">8 metros</p>
+    <div class="dot-grid">
+      <div class="metro-dot"><span class="bubble" style="--d:34px">3</span><span class="m-name">Long Beach</span><span class="m-count">3 records</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:30px">2</span><span class="m-name">San Diego</span><span class="m-count">2 records</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Anaheim</span><span class="m-count">1 record</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Banning</span><span class="m-count">1 record</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Encinitas</span><span class="m-count">1 record</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Fullerton</span><span class="m-count">1 record</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Huntington Beach</span><span class="m-count">1 record</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Upland</span><span class="m-count">1 record</span></div>
+    </div>
+  </div>
+  <div class="coverage-state">
+    <h3>New Mexico &mdash; 1 Records</h3>
+    <p class="state-count">1 metros</p>
+    <div class="dot-grid">
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Albuquerque</span><span class="m-count">1 record</span></div>
+    </div>
+  </div>
+  <div class="coverage-state">
+    <h3>Texas &mdash; 1 Records</h3>
+    <p class="state-count">1 metros</p>
+    <div class="dot-grid">
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">San Antonio</span><span class="m-count">1 record</span></div>
+    </div>
+  </div>
+  <div class="coverage-state">
+    <h3>Virginia &mdash; 1 Records</h3>
+    <p class="state-count">1 metros</p>
+    <div class="dot-grid">
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Arlington</span><span class="m-count">1 record</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="verified-standard">
+  <div class="section-head">
+    <div>
+      <p class="kicker">The Verified Standard</p>
+      <h2>How A Record Earns Verified Owner</h2>
+      <p>Five checks. Every one must pass before a record carries the Verified Owner tier.</p>
+    </div>
+  </div>
+  <div class="checks">
+    <div class="check-card"><div class="check-num">1</div><h3>It Exists And It Trades</h3><p>Licence active in the public record (FL ABT 4COP or the equivalent ABC record) or a live, current public presence &mdash; website or social posting in the last 90 days &mdash; with a matching address. Closed venues are removed, not sold.</p></div>
+    <div class="check-card"><div class="check-num">2</div><h3>The Contact Is Published Or Filed</h3><p>The email comes from the venue&rsquo;s own website or social pages, or the contact is named in a public filing. Never a guessed pattern presented as verified. Never a bought row resold as-is.</p></div>
+    <div class="check-card"><div class="check-num">3</div><h3>Two Independent Email Checks</h3><p>The email passes two independent verification checks (Hunter Verifier + Bouncer or ZeroBounce). One check is not enough. A catch-all result is never verified.</p></div>
+    <div class="check-card"><div class="check-num">4</div><h3>The Decision-Maker Is Named Where Findable</h3><p>Owner or GM name and role, from a filing, the venue&rsquo;s own site, or a public profile. Where no decision-maker can be found, the record is tiered down honestly.</p></div>
+    <div class="check-card"><div class="check-num">5</div><h3>A Human Signed Off</h3><p>A person checked the row, dated it, and noted the sources. No record ships on machine output alone.</p></div>
+  </div>
+  <p class="reverify-note"><strong>Re-verified every 90 days.</strong> Every record is re-verified at least every 90 days. A record that fails re-verification is retired or re-checked before it is sold again &mdash; never sold stale.</p>
+</section>
+
+<section class="section" id="recently-verified">
+  <div class="section-head">
+    <div>
+      <p class="kicker">Freshness</p>
+      <h2>Recently Verified</h2>
+      <p>Metro and date only &mdash; the latest verification waves across the store.</p>
+    </div>
+  </div>
+  <div class="recent-rows">
+    <div class="recent-row"><div class="r-date">November 17, 2026</div><p><strong>Daytona Beach, 25 records</strong></p></div>
+    <div class="recent-row"><div class="r-date">November 16, 2026</div><p><strong>Jacksonville, Fernandina Beach, St. Augustine and 3 more metros, 21 records</strong></p></div>
+    <div class="recent-row"><div class="r-date">November 15, 2026</div><p><strong>24 records across 14 metros</strong></p></div>
+  </div>
+</section>
 
 <section class="section" id="freshness">
   <div class="section-head">
