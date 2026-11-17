@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<title>Nocturnal Data — Owner Dashboard</title>
+<meta name="description" content="Owner-facing view of Nocturnal Data inventory: records by tier, freshness, emails, rings, and launch-gate progress.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080d; --bg2:#0d0d14; --card:#101018; --card2:#171722;
+  --ink:#f4f2ee; --ink2:#cbb8c2; --ink3:#9a8992;
+  --line:rgba(255,255,255,.12); --line2:rgba(255,255,255,.22);
+  --gold:#ffb81c; --gold-bg:rgba(255,184,28,.14);
+  --teal:#2dd4bf; --teal-bg:rgba(45,212,191,.12);
+  --red:#ff7a7a; --red-bg:rgba(255,107,107,.12);
+  --amber:#fcd34d; --amber-bg:rgba(252,211,77,.12);
+  --radius:18px; --shadow:0 8px 30px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Manrope",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+.mono{font-family:"IBM Plex Mono",monospace}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+@media(min-width:768px){.wrap{padding:0 32px}}
+.staged{position:sticky;top:0;z-index:10;background:#3a2a00;color:#ffe1a1;text-align:center;font-size:13px;font-weight:700;padding:9px 12px;border-bottom:1px solid rgba(255,184,28,.4)}
+header{padding:30px 0 8px}
+.brand{font-family:"Bebas Neue",sans-serif;font-size:30px;letter-spacing:.06em}
+.brand span{color:var(--gold)}
+h1{font-size:clamp(28px,4vw,40px);line-height:1.05;margin:14px 0 8px;font-weight:900}
+.lede{color:var(--ink2);font-size:16px;max-width:680px;margin:0}
+.section{padding:28px 0}
+.kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--gold);margin-bottom:8px}
+.grid{display:grid;gap:14px}
+@media(min-width:700px){.grid{grid-template-columns:1fr 1fr 1fr}}
+@media(min-width:1000px){.grid.four{grid-template-columns:1fr 1fr 1fr 1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.card .num{font-family:"IBM Plex Mono",monospace;font-size:34px;font-weight:600;color:var(--gold)}
+.card .num.ok{color:var(--teal)}
+.card .lbl{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-top:2px}
+.card p{margin:10px 0 0;color:var(--ink2);font-size:14px}
+.bar{height:10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);overflow:hidden;margin-top:14px}
+.bar i{display:block;height:100%;width:3.7%;background:var(--gold)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+th{color:var(--ink3);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+td.num{font-family:"IBM Plex Mono",monospace}
+.badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:4px 10px}
+.badge.ok{color:var(--teal);background:var(--teal-bg)}
+.badge.warn{color:var(--amber);background:var(--amber-bg)}
+.badge.bad{color:var(--red);background:var(--red-bg)}
+.two{display:grid;gap:14px}
+@media(min-width:820px){.two{grid-template-columns:1fr 1fr}}
+ul{margin:0;padding-left:18px;color:var(--ink2);font-size:14px}
+li{margin-bottom:6px}
+footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--ink3);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">NOCTURNAL <span>DATA</span> &middot; OWNER</div>
+  <h1>Data inventory</h1>
+  <p class="lede">Owner-facing view of the venue store. Counts are the store&rsquo;s real counts. No record details are shown here — this page is counts and health only.</p>
+</header>
+
+<section class="section">
+  <p class="kicker">Launch gate — Nov 16, 2026</p>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+      <div><span class="badge bad">Gate not met</span></div>
+      <div class="mono" style="color:var(--ink2)">37 / 1,000 records &middot; 3.7%</div>
+    </div>
+    <div class="bar"><i></i></div>
+    <p style="margin:12px 0 0;color:var(--ink2);font-size:14px">Gate needs BOTH: 1,000+ verified fresh venue records <strong style="color:var(--ink)">and</strong> the staffing engine&rsquo;s first paying venue. No sales, no buyers, no pricing until both hold.</p>
+  </div>
+</section>
+
+<section class="section">
+  <p class="kicker">Inventory</p>
+  <div class="grid four">
+    <div class="card"><div class="num">37</div><div class="lbl">Venue records</div><p>36 active, 1 held (The Renegade — score-only, no address/email/website).</p></div>
+    <div class="card"><div class="num">11</div><div class="lbl">Verified business emails</div><p>8 own-site, 3 public-listing. 67 on-file emails still unverified.</p></div>
+    <div class="card"><div class="num ok">0</div><div class="lbl">Stale (&gt;90 days)</div><p>All records verified Nov 14–15. First re-verification wave due Feb 12–13, 2027.</p></div>
+    <div class="card"><div class="num">346</div><div class="lbl">Venues tracked (agency CRM)</div><p>Name-only roster the store grows from. 309 still unjoined to city/state.</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="two">
+    <div class="card">
+      <p class="kicker">Records by tier</p>
+      <table>
+        <tr><th>Tier</th><th>Records</th><th>Share</th></tr>
+        <tr><td><strong>Verified Owner</strong></td><td class="num">8</td><td class="num">22%</td></tr>
+        <tr><td><strong>Verified Contact</strong></td><td class="num">3</td><td class="num">8%</td></tr>
+        <tr><td><strong>Candidate</strong></td><td class="num">26</td><td class="num">70%</td></tr>
+      </table>
+      <p style="margin-top:12px">70% of the store is candidates — no verified business email yet. Email verification is the bottleneck, not discovery.</p>
+    </div>
+    <div class="card">
+      <p class="kicker">Freshness</p>
+      <table>
+        <tr><th>Bucket</th><th>Records</th><th>Status</th></tr>
+        <tr><td>Fresh (&le;90 days)</td><td class="num">37</td><td><span class="badge ok">Healthy</span></td></tr>
+        <tr><td>Stale (&gt;90 days)</td><td class="num">0</td><td><span class="badge ok">None</span></td></tr>
+        <tr><td>Never-ship (&gt;180 days)</td><td class="num">0</td><td><span class="badge ok">None</span></td></tr>
+        <tr><td>Held / suppressed / test</td><td class="num">1</td><td><span class="badge warn">1 held</span></td></tr>
+      </table>
+      <p style="margin-top:12px">Next re-verification due: Feb 12, 2027 (The Renegade&rsquo;s date; the Nov 15 batch follows Feb 13).</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="two">
+    <div class="card">
+      <p class="kicker">Rings sourced</p>
+      <table>
+        <tr><th>Ring</th><th>Staged</th><th>Emails</th></tr>
+        <tr><td>Jacksonville + St. Augustine</td><td class="num">14</td><td class="num">6</td></tr>
+        <tr><td>Fernandina Beach (Run 1)</td><td class="num">7</td><td class="num">3</td></tr>
+        <tr><td>Layer 1 audit seed</td><td class="num">1</td><td class="num">0</td></tr>
+        <tr><td>Earlier hygiene batches</td><td class="num">15</td><td class="num">2</td></tr>
+      </table>
+      <p style="margin-top:12px">Next ring: Fernandina Beach remainder (9 candidates, Tue Nov 17 pass), then Daytona.</p>
+    </div>
+    <div class="card">
+      <p class="kicker">Free-stack quota</p>
+      <table>
+        <tr><th>Tool</th><th>Budget</th><th>Status</th></tr>
+        <tr><td>Foursquare (Layer A)</td><td class="num">500 calls/mo</td><td><span class="badge warn">Terms unchecked</span></td></tr>
+        <tr><td>Hunter (free)</td><td class="num">Free tier</td><td><span class="badge ok">Account live</span></td></tr>
+        <tr><td>Snov (free)</td><td class="num">Free tier</td><td><span class="badge ok">Account live</span></td></tr>
+        <tr><td>Google Places API</td><td class="num">—</td><td><span class="badge bad">Blocked</span></td></tr>
+      </table>
+      <p style="margin-top:12px">Foursquare storage/resale terms NOT yet checked — attorney question. No Foursquare-only record ships until it is answered.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="card">
+    <p class="kicker">Hygiene backlog (from the Layer 1 plan)</p>
+    <ul>
+      <li><strong>Done:</strong> structured store built (v2); scored-gap reconciliation; suppressions + test orgs stripped by rule; provenance per record.</li>
+      <li><strong>Partial:</strong> look-alikes — ABC Tampa/Orlando, Altitude San Diego, 1st Street Bar resolved; Hennessey&rsquo;s ×2, Hideaway ×3, 80s bars ×3, District ×5, Elite ×2 still open.</li>
+      <li><strong>Open:</strong> re-verify 67 on-file emails (0 of 67 done); join city/state to the 309 unjoined roster names; backfill The Renegade (held).</li>
+      <li><strong>Blocked on attorney:</strong> Foursquare storage/resale terms; Google Terms Wall; resale-of-enriched-data; CCPA sale disclosure — see <span class="mono">files/data-legal-questions-for-attorney.md</span>.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <p>Owner dashboard for Nocturnal Data — live Nov 16, 2026. Source of truth is <span class="mono">hidden_files/data-department-venue-store-v2.json</span>; regenerate this page after each Dara pass (or wire it to <span class="mono">data_store.py stats</span> at portal build).</p>
+  <p class="mono">Run: python3 hidden_files/data_store.py stats --as-of 2026-11-16 &nbsp;|&nbsp; Health: python3 hidden_files/data-health-check.py</p>
+</footer>
+</div>
+</body>
+</html>
