@@ -40,7 +40,7 @@ h1{font-size:clamp(28px,4vw,40px);line-height:1.05;margin:14px 0 8px;font-weight
 .card .lbl{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-top:2px}
 .card p{margin:10px 0 0;color:var(--ink2);font-size:14px}
 .bar{height:10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);overflow:hidden;margin-top:14px}
-.bar i{display:block;height:100%;width:3.7%;background:var(--gold)}
+.bar i{display:block;height:100%;width:4.5%;background:var(--gold)}
 table{width:100%;border-collapse:collapse;font-size:15px}
 th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
 th{color:var(--ink3);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
@@ -71,14 +71,14 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--ink3);fo
 <section class="section">
   <p class="kicker">As of Nov 16, 2026</p>
   <div class="grid">
-    <div class="card"><div class="num">37</div><div class="lbl">Venue records</div><p>Structured records in the store. Launch gate: 1,000+.</p></div>
-    <div class="card"><div class="num">11</div><div class="lbl">Verified business emails</div><p>Published on a venue&rsquo;s own site or a public listing.</p></div>
-    <div class="card"><div class="num">0</div><div class="lbl">Stale records (&gt;90 days)</div><p>Every record verified Nov 14–15, 2026. First re-verification wave due Feb 2027.</p></div>
+    <div class="card"><div class="num">45</div><div class="lbl">Venue records</div><p>Structured records in the store. Launch gate: 1,000+.</p></div>
+    <div class="card"><div class="num">14</div><div class="lbl">Verified business emails</div><p>Published on a venue&rsquo;s own site or a public listing.</p></div>
+    <div class="card"><div class="num">0</div><div class="lbl">Stale records (&gt;90 days)</div><p>Every record verified Nov 14–16, 2026. Last-verified date is stamped on every record in a sold list, and every record is re-verified at least every 90 days — a record past 90 days is re-checked before it ships. First re-verification wave due Feb 2027.</p></div>
   </div>
   <div class="card" style="margin-top:14px">
     <div class="lbl" style="font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)">Progress toward the 1,000-record launch gate</div>
     <div class="bar"><i></i></div>
-    <p style="margin:10px 0 0;color:var(--ink2);font-size:14px">37 of 1,000 records — 3.7%. Lists open when the gate is met.</p>
+    <p style="margin:10px 0 0;color:var(--ink2);font-size:14px">45 of 1,000 records — 4.5%. Lists open when the gate is met.</p>
   </div>
 </section>
 
@@ -86,9 +86,9 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--ink3);fo
   <p class="kicker">Records by verification tier</p>
   <table>
     <tr><th>Tier</th><th>Records</th><th>What it means</th></tr>
-    <tr><td><strong>Verified Owner</strong></td><td class="num">8</td><td>Business email published on the venue&rsquo;s own official site; address and website verified.</td></tr>
+    <tr><td><strong>Verified Owner</strong></td><td class="num">11</td><td>Business email published on the venue&rsquo;s own official site; address and website verified.</td></tr>
     <tr><td><strong>Verified Contact</strong></td><td class="num">3</td><td>Business email verified from a public listing or directory.</td></tr>
-    <tr><td><strong>Candidate</strong></td><td class="num">26</td><td>Identity verified from public sources; business email not yet verified.</td></tr>
+    <tr><td><strong>Candidate</strong></td><td class="num">31</td><td>Identity verified from public sources; business email not yet verified.</td></tr>
   </table>
 </section>
 
@@ -96,7 +96,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--ink3);fo
   <p class="kicker">Coverage by state</p>
   <table>
     <tr><th>State</th><th>Records</th></tr>
-    <tr><td>Florida</td><td class="num">23</td></tr>
+    <tr><td>Florida</td><td class="num">31</td></tr>
     <tr><td>California</td><td class="num">11</td></tr>
     <tr><td>New Mexico</td><td class="num">1</td></tr>
     <tr><td>Texas</td><td class="num">1</td></tr>
@@ -104,6 +104,44 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--ink3);fo
   </table>
   <p style="color:var(--ink3);font-size:13px">Counts are shown at state level only — never at a granularity that could identify a venue.</p>
 </section>
+
+<section class="section">
+  <p class="kicker">Filter before you pay</p>
+  <h2 style="font-size:22px;margin:0 0 6px">See what a territory holds — before you pay</h2>
+  <p style="color:var(--ink2);font-size:15px;margin:0 0 16px">Filter by metro, tier, and verified email. You see matching <strong>counts only</strong> — venue names, emails, addresses, websites, and fit scores stay locked until payment.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+    <label style="font-size:13px;font-weight:700;color:var(--ink2)">Metro<br><select id="fMetro" style="margin-top:4px;background:var(--card);color:var(--ink);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;font-size:15px"><option value="__all">All metros (45)</option><option value="Jacksonville (metro)">Jacksonville (metro) (17)</option><option value="Albuquerque">Albuquerque (1)</option><option value="Anaheim">Anaheim (1)</option><option value="Arlington">Arlington (1)</option><option value="Banning">Banning (1)</option><option value="Encinitas">Encinitas (1)</option><option value="Fernandina Beach">Fernandina Beach (7)</option><option value="Fullerton">Fullerton (1)</option><option value="Huntington Beach">Huntington Beach (1)</option><option value="Long Beach">Long Beach (3)</option><option value="Orlando">Orlando (1)</option><option value="San Antonio">San Antonio (1)</option><option value="San Diego">San Diego (2)</option><option value="St. Augustine">St. Augustine (5)</option><option value="Tampa">Tampa (1)</option><option value="Upland">Upland (1)</option></select></label>
+    <label style="font-size:13px;font-weight:700;color:var(--ink2)">Tier<br><select id="fTier" style="margin-top:4px;background:var(--card);color:var(--ink);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;font-size:15px"><option value="__all">All tiers</option><option value="vo">Verified Owner</option><option value="vc">Verified Contact</option><option value="c">Candidate</option></select></label>
+    <label style="font-size:13px;font-weight:700;color:var(--ink2)">Verified email<br><select id="fEmail" style="margin-top:4px;background:var(--card);color:var(--ink);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;font-size:15px"><option value="__all">Any</option><option value="yes">Yes — has verified email</option><option value="no">No — email not yet verified</option></select></label>
+  </div>
+  <div class="card" id="fOut" aria-live="polite"></div>
+  <p style="color:var(--ink3);font-size:13px">Counts are the store&rsquo;s real counts, from data_store.py stats, as of Nov 16, 2026. Metro counts group Jacksonville with Jacksonville Beach. A sold list is a dated snapshot — active records only, held / suppressed / test stripped, nothing older than 180 days.</p>
+</section>
+<script>
+var FDATA = {"Arlington": {"total": 1, "vo": 1, "vc": 0, "c": 0}, "San Antonio": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Encinitas": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Fullerton": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "San Diego": {"total": 2, "vo": 1, "vc": 0, "c": 1}, "Albuquerque": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Anaheim": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Orlando": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Tampa": {"total": 1, "vo": 1, "vc": 0, "c": 0}, "Upland": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Long Beach": {"total": 3, "vo": 0, "vc": 0, "c": 3}, "Banning": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Huntington Beach": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Jacksonville (metro)": {"total": 17, "vo": 4, "vc": 1, "c": 12}, "St. Augustine": {"total": 5, "vo": 2, "vc": 1, "c": 2}, "Fernandina Beach": {"total": 7, "vo": 2, "vc": 1, "c": 4}};
+function fRender(){
+  var m = document.getElementById('fMetro').value,
+      t = document.getElementById('fTier').value,
+      e = document.getElementById('fEmail').value;
+  var agg = {total:0, vo:0, vc:0, c:0};
+  Object.keys(FDATA).forEach(function(k){ if (m === '__all' || k === m) { var d = FDATA[k]; agg.total += d.total; agg.vo += d.vo; agg.vc += d.vc; agg.c += d.c; } });
+  var tierCount = t === '__all' ? agg.total : agg[t];
+  // Verified Owner and Verified Contact always carry a verified business email; Candidates never do.
+  var emailYes = t === '__all' ? agg.vo + agg.vc : (t === 'c' ? 0 : agg[t]);
+  var match = e === 'yes' ? emailYes : (e === 'no' ? tierCount - emailYes : tierCount);
+  var tierName = t === '__all' ? 'all tiers' : (t === 'vo' ? 'Verified Owner' : t === 'vc' ? 'Verified Contact' : 'Candidate');
+  var metroName = m === '__all' ? 'all metros' : m;
+  var emailName = e === '__all' ? 'any email status' : (e === 'yes' ? 'with a verified email' : 'without a verified email yet');
+  document.getElementById('fOut').innerHTML =
+    '<div class="num">' + match + '</div><div class="lbl">Records match</div>' +
+    '<p>' + metroName + ' &middot; ' + tierName + ' &middot; ' + emailName + '.</p>' +
+    '<p>Breakdown for ' + metroName + ': Verified Owner ' + (e === 'no' ? 0 : agg.vo) + ' &middot; Verified Contact ' + (e === 'no' ? 0 : agg.vc) + ' &middot; Candidate ' + (e === 'yes' ? 0 : agg.c) + ' &middot; with verified email ' + emailYes + '.</p>' +
+    '<p>Record details stay locked until payment — join the waitlist below and a paying buyer receives the dated snapshot extract for the matching territory.</p>';
+}
+['fMetro','fTier','fEmail'].forEach(function(id){ document.getElementById(id).addEventListener('change', fRender); });
+fRender();
+</script>
+
 
 <section class="section">
   <div class="locked">
