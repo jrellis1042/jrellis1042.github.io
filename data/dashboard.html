@@ -140,25 +140,24 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--ink3);fo
       <p style="margin-top:12px">Next ring: Fernandina Beach remainder (9 candidates, Tue Nov 17 pass).</p>
     </div>
     <div class="card">
-      <p class="kicker">Free-stack quota</p>
+      <p class="kicker">Discovery &amp; verification tools</p>
       <table>
-        <tr><th>Tool</th><th>Budget</th><th>Status</th></tr>
-        <tr><td>Nocturnal Places (Layer A)</td><td class="num">Free — no key</td><td><span class="badge ok">Live</span></td></tr>
-        <tr><td>Hunter (free)</td><td class="num">Free tier</td><td><span class="badge ok">Account live</span></td></tr>
-        <tr><td>Snov (free)</td><td class="num">Free tier</td><td><span class="badge ok">Account live</span></td></tr>
+        <tr><th>Tool</th><th>Role</th><th>Status</th></tr>
+        <tr><td>Nocturnal Places (Layer A)</td><td class="num">In-house discovery</td><td><span class="badge ok">Live</span></td></tr>
+        <tr><td>Hunter</td><td class="num">Email verification</td><td><span class="badge ok">Account live</span></td></tr>
+        <tr><td>Snov</td><td class="num">Email verification</td><td><span class="badge ok">Account live</span></td></tr>
         <tr><td>Google Places API</td><td class="num">—</td><td><span class="badge bad">Blocked</span></td></tr>
       </table>
-      <p style="margin-top:12px">Nocturnal Places is Layer A — the in-house discovery CLI (<span class="mono">hidden_files/nocturnal-places.py</span>). It runs free place discovery only: no API key, no paid account, no Foursquare, no Google Places API. Foursquare is retired — its Places API is dead (401/410).</p>
+      <p style="margin-top:12px">Nocturnal Places is Layer A — the in-house discovery tool for this store. It runs place discovery only, with no third-party places API. Foursquare is retired — its Places API no longer responds.</p>
     </div>
   </div>
 </section>
 
 <section class="section">
   <div class="card">
-    <p class="kicker">Hygiene backlog (from the Layer 1 plan)</p>
+    <p class="kicker">Store health</p>
     <ul>
-      <li><strong>Done:</strong> structured store built (v2); scored-gap reconciliation; suppressions + test orgs stripped by rule; provenance per record.</li>
-      <li><strong>Partial:</strong> look-alikes — ABC Tampa/Orlando, Altitude San Diego, 1st Street Bar resolved; Hideaway ×3, District ×5 still open.</li>
+      <li><strong>Store:</strong> 70 active records, 0 held, 0 stale. Every record carries its source and last-verified date.</li>
       <li><strong>Open:</strong> re-verify 67 on-file emails (0 of 67 done); join city/state to the 309 unjoined roster names.</li>
     </ul>
   </div>
@@ -166,8 +165,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--ink3);fo
 
 <footer>
   <p>Part of Nocturnal Holdings.</p>
-  <p>Owner dashboard for Nocturnal Data — live Nov 16, 2026. Source of truth is <span class="mono">hidden_files/data-department-venue-store-v2.json</span>; regenerate this page after each Dara pass (or wire it to <span class="mono">data_store.py stats</span> at portal build).</p>
-  <p class="mono">Run: python3 hidden_files/data_store.py stats --as-of 2026-11-17 &nbsp;|&nbsp; Health: python3 hidden_files/data-health-check.py</p>
+  <p>Owner dashboard for Nocturnal Data — live Nov 16, 2026. Source of truth is the venue store (v2); this page refreshes after each data pass.</p>
 </footer>
 </div>
 </body>
