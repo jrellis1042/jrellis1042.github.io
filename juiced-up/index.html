@@ -363,6 +363,17 @@
       .mascot-band-copy h2{ font-size:clamp(26px,3vw,36px); text-transform:uppercase; }
       .mascot-band-copy p{ margin-top:14px; color:var(--ink-dim); font-size:clamp(16px,1.7vw,18.5px); max-width:54ch; }
 
+      /* ---------- Promoters — Tyjay & Crystal ---------- */
+      .promoters{ padding:clamp(40px,5vw,60px) 0; background:var(--bg); border-bottom:1px solid var(--line); }
+      .promoters .sec-head h2{ font-size:clamp(26px,3vw,36px); text-transform:uppercase; }
+      .promoters .lede{ margin-top:12px; color:var(--ink-dim); font-size:clamp(16px,1.7vw,18.5px); max-width:54ch; }
+      .promoters-grid{ display:flex; gap:clamp(20px,3vw,32px); flex-wrap:wrap; margin-top:clamp(28px,4vw,40px); }
+      .promoter-card{ flex:1 1 320px; min-width:min(100%,280px); background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:clamp(24px,3vw,32px); }
+      .promoter-mark{ width:64px; height:64px; border-radius:50%; border:2px solid var(--gold); background:var(--panel-2); color:var(--gold); display:flex; align-items:center; justify-content:center; font-family:"Archivo",sans-serif; font-weight:800; font-size:30px; line-height:1; }
+      .promoter-card h3{ margin-top:18px; font-size:clamp(22px,2.4vw,26px); text-transform:uppercase; }
+      .promoter-title{ margin-top:6px; color:var(--gold); font-weight:700; font-size:14px; letter-spacing:.12em; text-transform:uppercase; }
+      .promoter-card p{ margin-top:12px; color:var(--ink-dim); font-size:clamp(15px,1.6vw,17px); max-width:48ch; }
+
       /* ---------- Floating astronaut helper ---------- */
       .astro-helper{ position:fixed; right:16px; bottom:20px; z-index:60; transition:opacity .3s ease; }
       .astro-helper.astro-hidden{ opacity:0; pointer-events:none; }
@@ -453,6 +464,31 @@
 
 
       
+
+      <!-- 3b · Promoters — Tyjay & Crystal -->
+      <section class="promoters" id="promoters-team">
+        <div class="wrap">
+          <div class="sec-head">
+            <span class="kicker">The People Behind The Push</span>
+            <h2>Promoters &amp; Brand Ambassadors</h2>
+            <p class="lede">The people moving the rooms with us.</p>
+          </div>
+          <div class="promoters-grid">
+            <article class="promoter-card">
+              <div class="promoter-mark" aria-hidden="true">T</div>
+              <h3>Tyjay</h3>
+              <div class="promoter-title">Promoter / Brand Ambassador</div>
+              <p>New York. Promoting since the club days — with Juiced Up from the start.</p>
+            </article>
+            <article class="promoter-card">
+              <div class="promoter-mark" aria-hidden="true">C</div>
+              <h3>Crystal Gayle</h3>
+              <div class="promoter-title">Promoter / Brand Ambassador</div>
+              <p>Promoting together with Rashad from the start.</p>
+            </article>
+          </div>
+        </div>
+      </section>
 
       <!-- 4 · Services -->
       <section id="services">
