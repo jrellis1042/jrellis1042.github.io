@@ -124,6 +124,19 @@ header nav a.active{color:var(--gold)}
 .finale .kicker{color:var(--gold);font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;font-weight:600;margin:0 0 8px}
 .finale h2{font-family:"Anton",sans-serif;font-weight:400;font-size:clamp(1.5rem,4vw,2.1rem);line-height:1.05;margin:0 0 10px;text-transform:uppercase}
 .finale p{color:var(--ink-dim);margin:0 0 18px}
+/* ---- proof rules / faq / inquiry ---- */
+.proof{margin-top:34px}
+.proof h2{font-family:"Anton",sans-serif;font-weight:400;font-size:clamp(1.4rem,3.5vw,1.9rem);margin:0;text-transform:uppercase}
+.proof .rev-sub{color:var(--ink-dim);margin:6px 0 16px}
+.rules-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.rule-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.rule-card b{display:block;margin-bottom:4px;color:var(--gold-soft)}
+.rule-card p{margin:0;color:var(--ink-dim);font-size:.92rem}
+.faq details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:10px}
+.faq summary{font-weight:700;cursor:pointer;font-size:.95rem;color:var(--ink)}
+.faq p{color:var(--ink-dim);font-size:.92rem;margin:10px 0 0}
+.btn-inquiry{display:inline-flex;align-items:center;gap:8px;margin-left:12px;background:transparent;border:1px solid var(--gold);color:var(--gold);font-weight:700;font-size:.95rem;padding:12px 18px;border-radius:10px;min-height:44px;text-decoration:none}
+.btn-inquiry:hover{border-color:var(--gold-soft);color:var(--gold-soft)}
 .btn-run{display:inline-flex;align-items:center;gap:8px;min-width:118px;background:var(--red);
   border:1px solid var(--red-deep);color:#fff;font-weight:700;font-size:.95rem;
   padding:12px 18px;border-radius:10px;min-height:44px}
@@ -151,7 +164,6 @@ footer p{margin:0 0 8px}
   <nav>
     <a href="index.html">Home</a>
     <a href="services.html">Services</a>
-    <a href="showcase.html">Showcase</a>
     <a href="billboard.html" class="active">Billboard</a>
   </nav>
 </header>
@@ -190,6 +202,25 @@ footer p{margin:0 0 8px}
   <div class="grid" id="grid"></div>
 </section>
 
+<section class="proof" aria-label="What lands here">
+  <h2>What lands here</h2>
+  <p class="rev-sub">The billboard fills in as real campaigns complete. Nothing here is invented, staged, or borrowed from anyone else&rsquo;s night.</p>
+  <div class="rules-grid">
+    <div class="rule-card"><b>Real campaigns only</b><p>Only campaigns that actually ran, for a real venue or event, appear here. No mock campaigns, no concept work presented as done work.</p></div>
+    <div class="rule-card"><b>Real results only</b><p>If a campaign&rsquo;s results are shown, they are the real numbers from that night &mdash; never rounded up, never borrowed, never guessed.</p></div>
+    <div class="rule-card"><b>Real words only</b><p>Testimonials appear only when a real client says them, in their own words, with their permission. Until then, this page stays silent.</p></div>
+  </div>
+</section>
+
+<section class="proof faq" aria-label="How proof works">
+  <h2>How proof works</h2>
+  <p class="rev-sub">Questions, answered straight.</p>
+  <details><summary>When will campaigns appear here?</summary><p>As real campaigns complete. Each entry shows the venue, the night, and the creative from that campaign &mdash; nothing before it runs.</p></details>
+  <details><summary>Can we see concept work?</summary><p>No. Only campaigns that actually ran appear here. No mock campaigns, no concept work presented as done work.</p></details>
+  <details><summary>Will results be shown?</summary><p>Only the real numbers from that night &mdash; never rounded up, never borrowed, never guessed. If results cannot be shown honestly, they are not shown.</p></details>
+  <details><summary>Can a campaign be listed before it runs?</summary><p>No. This page shows finished work only. Nights that are coming up live in the inquiry conversation, not here.</p></details>
+</section>
+
 <section class="finale" aria-label="Finale">
   <img class="mascot-img" id="mascotImg" alt="Juiced Up mascot with gold grill and sunglasses holding a cup and cash">
   <div class="copy">
@@ -197,6 +228,7 @@ footer p{margin:0 0 8px}
     <h2>Juiced Up, every night</h2>
     <p>The mascot closes the show. Nine real nights, one billboard &mdash; run it back from the top whenever you&rsquo;re ready.</p>
     <button class="btn-run" id="runBackBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Run it back</button>
+    <a class="btn-inquiry" href="https://docs.google.com/forms/d/e/1FAIpQLSdTcG6eWMWMGLFMpbTb4Pwqjt_oXhKVLxyOeyNNTc2SwVmVhw/viewform" target="_blank" rel="noopener">Start an inquiry &rarr;</a>
   </div>
 </section>
 </main>
