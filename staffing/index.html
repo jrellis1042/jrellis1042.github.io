@@ -274,6 +274,36 @@ section[id]{scroll-margin-top:148px}
 .night-step p{margin:0;color:#cfc9d6;font-size:.93rem}
 .referral-note{margin-top:14px;padding:14px 16px;border:1px dashed var(--gold);border-radius:14px;background:rgba(255,184,28,.06);color:#f4f2ee}
 .referral-note b{color:var(--gold)}
+
+/* MERGED FROM HIRE PAGE 2026-11-17 — breakpoint-free by design (mobile = desktop) */
+.doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:28px}
+.door{border-radius:18px;padding:28px;border:1px solid var(--line);position:relative;overflow:hidden;display:flex;flex-direction:column}
+.door .tag{display:inline-block;align-self:flex-start;font-size:.72rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:999px;margin-bottom:16px}
+.door h3{margin:0 0 10px;font-size:1.5rem;color:white}
+.door p{flex:1;margin:0 0 20px}
+.door-venue{background:linear-gradient(160deg,#2a0f22,#161118)}
+.door-venue .tag{background:var(--pink);color:white}
+.door-talent{background:linear-gradient(160deg,#2a2108,#161118)}
+.door-talent .tag{background:var(--gold);color:#1a1200}
+.door-recruiter{background:linear-gradient(160deg,#082723,#161118)}
+.door-recruiter .tag{background:var(--teal);color:#062723}
+.nightline{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+.night-step{background:#101018;border:1px solid #23232e;border-radius:16px;padding:18px}
+.night-step .when{font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.night-step h3{font-size:1.05rem;margin:8px 0 6px}
+.night-step p{margin:0;color:#cfc9d6;font-size:.93rem}
+.mock-card{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin-bottom:10px}
+.mock-card b{color:white;display:block;font-size:1rem}
+.mock-card span{color:var(--muted);font-size:.88rem}
+.mock-card .tag{display:inline-block;margin-top:8px;background:var(--pink);color:white;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px}
+.mock-card .tag.gold{background:var(--gold);color:#1a1200}
+.mock-card .tag.teal{background:var(--teal);color:#062723}
+.checks{list-style:none;padding:0;margin:24px 0 0}
+.checks li{padding:10px 0 10px 34px;position:relative;color:var(--muted);line-height:1.5}
+.checks li::before{content:"◆";position:absolute;left:6px;color:var(--pink)}
+.checks li b{color:white}
+.samples{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:14px}
+/* END MERGED-FROM-HIRE CSS */
 </style>
 </head>
 <body>
@@ -362,6 +392,36 @@ section[id]{scroll-margin-top:148px}
   </div>
 </nav>
 
+
+<!-- MERGED FROM HIRE PAGE 2026-11-17: THREE DOORS -->
+<section id="doors" style="padding-top:20px">
+  <div class="wrap">
+    <span class="eyebrow">One House, Three Doors</span>
+    <h2>Pick Your Door. The Night Is Open.</h2>
+    <div class="doors">
+      <div class="door door-venue">
+        <span class="tag">Get Staffed</span>
+        <h3>For Venues</h3>
+        <p>Post a shift, review verified talent, hire direct. One request covers the whole weekend &mdash; and the next time a bartender calls out, you already have the crew.</p>
+        <a class="btn btn-pink" href="/pages/venue-form.html">Register Your Venue</a>
+        <a class="btn btn-ghost" href="/staffing/request-staff.html" style="margin-left:10px">Post A Shift &rarr;</a>
+      </div>
+      <div class="door door-talent" id="door-talent">
+        <span class="tag">Get Work</span>
+        <h3>For Talent</h3>
+        <p>Join the Rotation, get verified, and get picked for the nights that pay. Your first year is free after confirmed registration &mdash; the early ones set the standard.</p>
+        <p><b>Bring A Venue, Earn $25.</b> Refer a venue that becomes payment-active and earn $25 &mdash; the venue names you when it registers.</p>
+        <a class="btn btn-gold" href="/pages/talent-form.html" style="background:var(--gold);color:#1a1200">Join The Rotation</a>
+      </div>
+      <div class="door door-recruiter">
+        <span class="tag">Get Paid</span>
+        <h3>For Recruiters</h3>
+        <p>Bring venues and talent to the Rotation and earn when they get moving &mdash; including $25 when a venue you refer becomes a paying partner.</p>
+        <a class="btn btn-ghost" href="/pages/recruiter-portal.html">Become A Recruiter</a>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- LIVE NUMBERS -->
 <section style="padding-top:54px">
@@ -460,6 +520,21 @@ function bbFill(id,people,off){var t=document.getElementById(id);if(!t)return;va
       </div>
     </div>
     <div class="card" style="margin-top:14px">
+      <p class="eyebrow">Samples — What A Posting Looks Like</p>
+      <h3>Sample Posts From A Weekend</h3>
+      <p>Examples of what a venue post and a verified profile look like — labelled samples, not live postings.</p>
+      <div class="samples">
+        <div>
+          <div class="mock-card"><b>Friday Night &mdash; Main Bar</b><span>2 Bartenders &middot; 1 Barback &middot; Door Staff</span><span class="tag">Sample Post</span></div>
+          <div class="mock-card"><b>Saturday Night &mdash; VIP Section</b><span>2 VIP Hosts &middot; Bottle Service</span><span class="tag gold">Sample Post</span></div>
+        </div>
+        <div>
+          <div class="mock-card"><b>Bartender &middot; Verified</b><span>High-Volume Bar &middot; Nights And Weekends</span><span class="tag">Sample Profile</span></div>
+          <div class="mock-card"><b>VIP Host &middot; Verified</b><span>Bottle Service &middot; Guest Experience</span><span class="tag teal">Sample Profile</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
       <h3>Get Alerts When A Shift Opens In Your City</h3>
       <p>One email when a shift opens in your city. Alerts only — no spam, no list-selling.</p>
       <form class="alerts-form" id="alertsForm">
@@ -484,6 +559,18 @@ function bbFill(id,people,off){var t=document.getElementById(id);if(!t)return;va
       <article class="step"><div class="n">2</div><h3>Get Verified</h3><p>Verification is required for everyone. Talent is verified before claiming, and your venue is confirmed before postings go live — so the people on your floor are checked, not just claimed.</p></article>
       <article class="step"><div class="n">3</div><h3>Post Shifts</h3><p>Post the role, the night, and what the position needs. Screened candidates come back to you, interviews are set up on Zoom, and verified talent claims your live posting.</p></article>
       <article class="step"><div class="n">4</div><h3>Confirm Payment</h3><p>Both sides confirm the same details up front: role, date, time, place, dress code, and agreed pay. You hire and pay the worker directly; Nocturnal recruits, verifies, and confirms the record.</p></article>
+    </div>
+
+    <div style="margin-top:34px">
+      <p class="eyebrow">By The Clock</p>
+      <h3 style="font-size:1.5rem;margin:.2em 0">Your Friday Night, Covered</h3>
+      <p style="max-width:640px">The process, by the clock. No promises about speed &mdash; just the steps every placement follows.</p>
+      <div class="nightline">
+        <div class="night-step"><span class="when">Thursday &mdash; Post It</span><h3>Tell Us What You Need</h3><p>One request covers the whole weekend &mdash; roles, nights, and headcount. No reposting the same shift five times.</p></div>
+        <div class="night-step"><span class="when">Friday &mdash; Matched</span><h3>Verified Talent, Confirmed</h3><p>Verified people from the Rotation are matched to your room and confirm before the night starts. Claiming opens when your first payment is active.</p></div>
+        <div class="night-step"><span class="when">Friday Night &mdash; Checked In</span><h3>Arrivals Confirmed</h3><p>The worker checks in on arrival and the venue confirms it. If a no-show happens, the named backup gets the offer first.</p></div>
+        <div class="night-step"><span class="when">After The Night &mdash; Signed Off</span><h3>Both Sides Confirm</h3><p>Both sides confirm hours worked and completion, and rate the experience. The placement counts only when both sides sign off satisfied.</p></div>
+      </div>
     </div>
 
     <div style="margin-top:34px" class="scorecard" id="scorecard">
@@ -558,6 +645,15 @@ function bbFill(id,people,off){var t=document.getElementById(id);if(!t)return;va
         <div class="card" style="margin-top:16px"><h3>Reserve Membership</h3><p>Priority rescue queue and first claim on top-ranked talent from day one.</p></div>
         <div class="card" style="margin-top:12px"><h3>Placements, Done Direct</h3><p>You hire directly and pay your hire directly. No hourly markup, no spread — and every placement carries a 30-day replacement guarantee.</p></div>
         <div class="card" style="margin-top:12px"><h3>Premium Placements</h3><p>Top-ranked, Diamond-tier talent for the nights that define your room. Introductions are covered for 12 months under the venue agreement.</p></div>
+        <p class="eyebrow" style="margin-top:26px">The Friday Night Rescue</p>
+      <h3 style="font-size:1.5rem;margin:.2em 0">Never Scramble For Staff Again</h3>
+      <p>When a bartender calls out on a Friday night, you do not need a group chat and a prayer. You need verified talent on call &mdash; people who already know the room, the rush and the regulars.</p>
+      <ul class="checks">
+        <li><b>Verified Talent Only</b> &mdash; Checked before, during and after every placement.</li>
+        <li><b>One Request Covers The Weekend</b> &mdash; Roles, nights and headcount in a single post.</li>
+        <li><b>Hire Direct</b> &mdash; No middleman on the floor. Your crew, your call.</li>
+        <li><b>Built For The Night</b> &mdash; Nightlife only. Not a general job board wearing a bow tie.</li>
+      </ul>
       </div>
     </div>
 
@@ -646,6 +742,13 @@ function bbFill(id,people,off){var t=document.getElementById(id);if(!t)return;va
     <details><summary>What Does The 30-Day Replacement Guarantee Cover?</summary><p>Every placement carries a 30-day replacement guarantee — if the hire doesn't work out, we replace them at no additional fee. Introductions are covered for 12 months under the venue agreement.</p></details>
     <details><summary>How Does The $25 Talent Referral Work?</summary><p>Any registered talent in their first year after confirmed registration earns $25 for every venue they refer that becomes payment-active. The venue names you, or uses your referral code, when it registers. One incentive per venue, no self-referrals — and it is paid only after Nocturnal receives the venue's payment. There is also a $10 bonus when a talent you refer completes verification.</p></details>
     <details><summary>What Happens If Someone No-Shows?</summary><p>Every placement carries a named backup. If a no-show happens, the backup gets the offer first — and either side can flag an issue with one tap, the moment it happens. The night is covered by the system, not by luck.</p></details>
+    <details><summary>How Does Nocturnal Work For Venues?</summary><p>Register your venue, post the shifts you need covered, review verified talent from the Rotation, then interview and hire direct. You stay in charge of who works your room.</p></details>
+    <details><summary>How Do I Post A Shift?</summary><p>Tell us the roles, the nights and the headcount on the <a href="/staffing/request-staff.html" style="color:var(--gold);font-weight:800">request-staff page</a> &mdash; one post can cover the whole weekend, no reposting the same shift five times. A request creates no account; register your venue when you are ready for claiming.</p></details>
+    <details><summary>What Does It Cost?</summary><p>Registration is free. Placement options are shared after you register, shaped around your room and your nights &mdash; never as a bare price list up front.</p></details>
+    <details><summary>Where Does The Talent Come From?</summary><p>From the Rotation &mdash; verified nightlife workers across the country, starting with Florida&rsquo;s I-4 Corridor. Every member is checked before they are ever shown to a venue.</p></details>
+    <details><summary>How Fast Can I Get Staff?</summary><p>Post your shift and review verified profiles right away. The fastest rescues are the ones posted before the weekend &mdash; Friday night at 8:40 PM is already late.</p></details>
+    <details><summary>How Do Recruiters Get Paid?</summary><p>Recruiters earn when the venues and talent they bring get moving &mdash; including $25 when a venue they refer becomes a paying partner. Bring the room, get paid when the room pays.</p></details>
+    <details><summary>How Is Nocturnal Different From Other Hiring Sites?</summary><p>Not Indeed. Not ZipRecruiter. Not Monster. Not Snagajob. We&rsquo;re the crew you didn&rsquo;t know you needed until Friday at 8:40 PM &mdash; nightlife only. No general job board, no endless applications from people who have never worked a bar. Just verified people who know the night.</p></details>
   </div>
 </section>
 
