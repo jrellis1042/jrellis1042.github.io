@@ -167,6 +167,27 @@ h1 .pg-glow,h2 .pg-glow,h3 .pg-glow{font-style:italic}
 .badge-live{background:var(--live);color:#fff}
 .badge-vetted{background:color-mix(in srgb,var(--teal) 20%, transparent);color:var(--teal);border:1px solid var(--teal)}
 .badge-venue{background:color-mix(in srgb,var(--gold) 18%, transparent);color:var(--gold);border:1px solid var(--gold)}
+/* ---------- VERIFIED BADGE — Nocturnal's own check (neon gradient, not Meta's blue) ---------- */
+.v-check{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#ff2d95,#a855f7 50%,#00f5d4);color:#fff;font-size:11px;font-weight:900;line-height:1;vertical-align:-3px;margin-left:6px;box-shadow:0 0 10px rgba(255,45,149,.55),0 0 14px rgba(0,245,212,.35);flex:none}
+.v-badge{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:3px 10px 3px 4px;border-radius:99px;vertical-align:2px;margin-left:6px;color:#fff;background:linear-gradient(90deg,rgba(255,45,149,.32),rgba(0,245,212,.20));border:1px solid rgba(255,45,149,.65);box-shadow:0 0 12px rgba(255,45,149,.28);white-space:nowrap}
+.v-badge .v-check{margin-left:0;width:16px;height:16px;font-size:10px;vertical-align:0}
+/* ---------- TIER LOCK — subscriber-only features ---------- */
+#anthemGate{position:relative}
+.tier-lock{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;background:rgba(11,6,22,.88);border:1px solid rgba(255,45,149,.5);border-radius:14px;padding:22px}
+.tier-lock .lock-ico{font-size:1.6rem}
+.tier-lock h4{margin:0;font-size:1.05rem;color:#fff}
+.tier-lock p{margin:0;font-size:.88rem;color:var(--muted);max-width:430px}
+/* ---------- TOP 16 — locked crew slots ---------- */
+.crew-locked{opacity:.8;border-style:dashed!important}
+.crew-locked .avatar{background:#1a1426!important;color:var(--muted)!important}
+/* ---------- PERK COMPARISON TABLE ---------- */
+.perk-table{width:100%;border-collapse:collapse;font-size:.9rem}
+.perk-table th,.perk-table td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
+.perk-table th{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.perk-table th:nth-child(2),.perk-table td:nth-child(2){text-align:center}
+.perk-table th:nth-child(3),.perk-table td:nth-child(3){text-align:center;color:var(--teal)}
+.perk-table td b{color:#fff}
+@media (max-width:820px){.perk-table{font-size:.82rem}.perk-table th,.perk-table td{padding:8px 6px}}
 .post-body{padding:10px 16px 0;font-size:.96rem;color:var(--ink2)}
 .post-body b{color:var(--ink)}
 .post-img{margin-top:12px;width:100%;height:340px;object-fit:cover}
@@ -637,7 +658,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
       <div class="card card-p">
         <div class="mini-profile">
           <div class="avatar" id="myAvatar">?</div>
-          <div class="who"><b id="myName">Your Profile</b><span id="myRole">Not registered yet</span></div>
+          <div class="who"><b id="myName">Your Profile</b><span class="v-check" id="myNameVerified" style="display:none" title="Verified — Juice+ subscriber">✓</span><span id="myRole">Not registered yet</span></div>
         </div>
         <div class="progress"><i id="profileBar" style="width:15%"></i></div>
         <p class="progress-note" id="profileNote">Profile 15% — add your name, role and city to go live in The Feed.</p>
@@ -758,7 +779,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
         <article class="card post" data-type="night">
           <div class="post-head">
             <div class="avatar">LF</div>
-            <div class="grow"><b>Juiced Up LaFlair</b><span class="badge badge-vetted">Vetted Mover</span><span>Promoter · I-4 Corridor · posted a Night</span></div>
+            <div class="grow"><b>Juiced Up LaFlair <span class="v-check" title="Verified — Juiced Up member">✓</span></b><span class="badge badge-vetted">Vetted Mover</span><span>Promoter · I-4 Corridor · posted a Night</span></div>
             <button class="follow-btn" type="button">Follow</button>
           </div>
           <p class="post-body">The biggest night of the year gets its own page — lineup, room, table talk and the countdown, all in one place. <b>Thanksgiving Eve</b> is not a regular Wednesday. RSVP and your crew sees you coming.</p>
@@ -801,7 +822,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
         <article class="card post" data-type="room">
           <div class="post-head">
             <div class="avatar pink">BR</div>
-            <div class="grow"><b>Juiced Up Braat</b><span class="badge badge-vetted">Vetted Mover</span><span>Bottle Service · in the Bottle Service live chat room</span></div>
+            <div class="grow"><b>Juiced Up Braat <span class="v-check" title="Verified — Juiced Up member">✓</span></b><span class="badge badge-vetted">Vetted Mover</span><span>Bottle Service · in the Bottle Service live chat room</span></div>
             <button class="follow-btn" type="button">Follow</button>
           </div>
           <p class="post-body">Live chat rooms are where the scene actually talks — in real time. In the <b>Bottle Service live chat room</b> we're trading section etiquette, big-night prep and what a real VIP presentation looks like — sparklers up, timing right, every time.</p>
@@ -833,7 +854,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
         <article class="card post" data-type="room">
           <div class="post-head">
             <div class="avatar gold">SH</div>
-            <div class="grow"><b>Juiced Up Shad</b><span class="badge badge-vetted">Co-Owner</span><span>Juiced Up Promotions · behind the bar</span></div>
+            <div class="grow"><b>Juiced Up Shad <span class="v-check" title="Verified — Juiced Up member">✓</span></b><span class="badge badge-vetted">Co-Owner</span><span>Juiced Up Promotions · behind the bar</span></div>
             <button class="follow-btn" type="button">Follow</button>
           </div>
           <p class="post-body">Everybody in the scene lives here — not just promoters. Bartenders, bottle girls, DJs, VIPs, the crowd, even the haters. If the night is your world, your profile belongs on <span class="pg-glow-soft">Viral Club</span>.</p>
@@ -865,14 +886,14 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
       </div>
       <div class="card card-p">
         <h3>Movers To Follow</h3>
-        <div class="list-row"><div class="avatar" style="width:38px;height:38px;font-size:.8rem">LF</div><div class="grow"><b>Juiced Up LaFlair</b><span>Promoter · I-4 Corridor</span></div><button class="follow-btn" type="button">Follow</button></div>
-        <div class="list-row"><div class="avatar pink" style="width:38px;height:38px;font-size:.8rem">BR</div><div class="grow"><b>Juiced Up Braat</b><span>Bottle service · Recruiter</span></div><button class="follow-btn" type="button">Follow</button></div>
-        <div class="list-row"><div class="avatar teal" style="width:38px;height:38px;font-size:.8rem">TJ</div><div class="grow"><b>JuicedUp Tyjay</b><span>Promoter · New York</span></div><button class="follow-btn" type="button">Follow</button></div>
-        <div class="list-row"><div class="avatar lime" style="width:38px;height:38px;font-size:.8rem">GD</div><div class="grow"><b>JuicedUp Goldie</b><span>Brand ambassador</span></div><button class="follow-btn" type="button">Follow</button></div>
+        <div class="list-row"><div class="avatar" style="width:38px;height:38px;font-size:.8rem">LF</div><div class="grow"><b>Juiced Up LaFlair <span class="v-check" title="Verified — Juiced Up member">✓</span></b><span>Promoter · I-4 Corridor</span></div><button class="follow-btn" type="button">Follow</button></div>
+        <div class="list-row"><div class="avatar pink" style="width:38px;height:38px;font-size:.8rem">BR</div><div class="grow"><b>Juiced Up Braat <span class="v-check" title="Verified — Juiced Up member">✓</span></b><span>Bottle service · Recruiter</span></div><button class="follow-btn" type="button">Follow</button></div>
+        <div class="list-row"><div class="avatar teal" style="width:38px;height:38px;font-size:.8rem">TJ</div><div class="grow"><b>JuicedUp Tyjay <span class="v-check" title="Verified — Juiced Up member">✓</span></b><span>Promoter · New York</span></div><button class="follow-btn" type="button">Follow</button></div>
+        <div class="list-row"><div class="avatar lime" style="width:38px;height:38px;font-size:.8rem">GD</div><div class="grow"><b>JuicedUp Goldie <span class="v-check" title="Verified — Juiced Up member">✓</span></b><span>Brand ambassador</span></div><button class="follow-btn" type="button">Follow</button></div>
       </div>
       <div class="card card-p" style="background:linear-gradient(160deg,color-mix(in srgb,var(--juice) 16%, var(--surface)),var(--surface))">
         <h3>Juice+ Membership</h3>
-        <p style="font-size:.88rem;color:var(--muted);margin:0 0 12px">Your profile is free to start — and stays free. Juice+ puts you first — priority in briefs, a verified mover badge, and your live pushed to followers first.</p>
+        <p style="font-size:.88rem;color:var(--muted);margin:0 0 12px">Your profile is free to start — and stays free. Juice+ Verified puts you first — the verified badge, your profile anthem, a Top 16 crew, and your live pushed to followers first. Juiced Up members are verified automatically.</p>
         <a class="btn btn-juice btn-sm" href="#plans" style="width:100%">See The Upgrade</a>
       </div>
     </aside>
@@ -915,7 +936,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
         <button type="button" data-disc-cat="promoters">Promoters</button>
       </div>
       <p class="disc-results" id="discResults" role="status">Showing everything — type to search, or tap a category. No sign-in needed.</p>
-      <p>The front door — no sign-in needed. Search your favorite videos, music, people, rooms, and nights above, or browse the six searchable sections below. Every rail is set to your city first — switch city and the whole tab re-skins to that night. Every card is a one-tap door: into a room, onto a profile, or straight into the play. Discover &rarr; Connect &rarr; Stream.</p>
+      <p>The front door — no sign-in needed. Search your favorite videos, music, people, rooms, and nights above, or browse the six searchable sections below. Every rail is set to your city first — switch city and the whole tab re-skins to that night. Every card is a one-tap door: into a room, onto a profile, or straight into the play. Discover &rarr; Connect &rarr; Stream. Verified profiles rank first in Trending Tonight and across Discover.</p>
       <div class="disc-city" role="group" aria-label="Choose your city">
         <span class="disc-city-label">Your city:</span>
         <button type="button" class="on" data-city="Winter Haven" onclick="setDiscoverCity(this)">Winter Haven</button>
@@ -1067,11 +1088,11 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
       <p>The Juiced Up crew — the promoters and ambassadors who move rooms for a living — are the founding pages of <span class="pg-glow-soft">Viral Club</span>.</p>
     </div>
     <div class="crew">
-      <div class="crew-card"><div class="avatar">LF</div><h3>Juiced Up LaFlair</h3><p>Promoter · I-4 Corridor. The room starts where he points.</p><button class="follow-btn" type="button">Follow</button></div>
-      <div class="crew-card"><div class="avatar gold">SH</div><h3>Juiced Up Shad</h3><p>Co-Owner, Juiced Up Promotions · Brand ambassador.</p><button class="follow-btn" type="button">Follow</button></div>
-      <div class="crew-card"><div class="avatar pink">BR</div><h3>Juiced Up Braat</h3><p>Brand ambassador · Bottle service royalty.</p><button class="follow-btn" type="button">Follow</button></div>
-      <div class="crew-card"><div class="avatar teal">TJ</div><h3>JuicedUp Tyjay</h3><p>Brand ambassador · New York's plug on the platform.</p><button class="follow-btn" type="button">Follow</button></div>
-      <div class="crew-card"><div class="avatar lime">GD</div><h3>JuicedUp Goldie</h3><p>Brand ambassador · First face at the door, last one on the floor.</p><button class="follow-btn" type="button">Follow</button></div>
+      <div class="crew-card"><div class="avatar">LF</div><h3>Juiced Up LaFlair <span class="v-check" title="Verified — Juiced Up member">✓</span></h3><p>Promoter · I-4 Corridor. The room starts where he points.</p><button class="follow-btn" type="button">Follow</button></div>
+      <div class="crew-card"><div class="avatar gold">SH</div><h3>Juiced Up Shad <span class="v-check" title="Verified — Juiced Up member">✓</span></h3><p>Co-Owner, Juiced Up Promotions · Brand ambassador.</p><button class="follow-btn" type="button">Follow</button></div>
+      <div class="crew-card"><div class="avatar pink">BR</div><h3>Juiced Up Braat <span class="v-check" title="Verified — Juiced Up member">✓</span></h3><p>Brand ambassador · Bottle service royalty.</p><button class="follow-btn" type="button">Follow</button></div>
+      <div class="crew-card"><div class="avatar teal">TJ</div><h3>JuicedUp Tyjay <span class="v-check" title="Verified — Juiced Up member">✓</span></h3><p>Brand ambassador · New York's plug on the platform.</p><button class="follow-btn" type="button">Follow</button></div>
+      <div class="crew-card"><div class="avatar lime">GD</div><h3>JuicedUp Goldie <span class="v-check" title="Verified — Juiced Up member">✓</span></h3><p>Brand ambassador · First face at the door, last one on the floor.</p><button class="follow-btn" type="button">Follow</button></div>
     </div>
   </section>
 
@@ -1139,7 +1160,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
     <div class="sec-head">
       <div class="kicker">Your Profile, Your Way</div>
       <h2>Make Your Page Look — And Sound — Like You</h2>
-      <p>Back in the early social days, the best profiles felt personal the second you landed on them: a background that was unmistakably <i>theirs</i>, and a favorite song playing as you arrived. <span class="pg-glow-soft">Viral Club</span> brings that feeling back — the safe, built-in way. Pick a background, pick an accent, pick your anthem. No code to paste, nothing to break.</p>
+      <p>Back in the early social days, the best profiles felt personal the second you landed on them: a background that was unmistakably <i>theirs</i>, and a favorite song playing as you arrived. <span class="pg-glow-soft">Viral Club</span> brings that feeling back — the safe, built-in way. Pick a background, pick an accent, pick your anthem. No code to paste, nothing to break. Backgrounds are free for everybody — your profile anthem is a Juice+ Verified perk.</p>
     </div>
     <div class="studio-grid">
       <div class="card card-p" style="border-radius:20px">
@@ -1161,6 +1182,13 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
           <input type="color" id="accentColor" value="#ff2d95" style="width:56px;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);padding:4px;cursor:pointer" />
           <span style="font-size:.84rem;color:var(--muted)">Your accent lights up your avatar ring, buttons and glow on your page.</span>
         </div>
+        <div id="anthemGate">
+          <div class="tier-lock" id="anthemLock">
+            <div class="lock-ico">🔒</div>
+            <h4>Your Profile Anthem — Juice+ Verified Only</h4>
+            <p>Your song playing when someone visits your page is a subscriber perk. Upgrade below, or register as a Juiced Up member and you're verified automatically.</p>
+            <button class="btn btn-juice btn-sm upgrade-btn" type="button">Upgrade To Juice+ Verified</button>
+          </div>
         <h3 style="font-size:1.15rem;margin-top:26px">2 · Pick Your Anthem</h3>
         <p style="font-size:.88rem;color:var(--muted);margin:6px 0 0">Your favorite song — your profile anthem. It starts playing when someone visits your page, and the player bar stays on screen so a visitor can pause, mute or stop it instantly.</p>
         <div class="anthem-list" id="anthemList">
@@ -1187,6 +1215,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
         <div class="anthem-embed" id="anthemEmbedWrap" hidden></div>
         <p class="anthem-custom-fine">Links play from their source (YouTube / Spotify) when someone visits your page. Uploads play from the file on this device, for this visit only. If a browser holds autoplay, the player bar stays on screen with Play / Pause, Mute and Stop always visible — press Play.</p>
       </div>
+        </div>
         <p style="font-size:.8rem;color:var(--muted);margin:14px 0 0">Song titles above are sample placeholders showing how the anthem picker works — your anthem comes from your own link or upload: any artist, any song.</p>
       </div>
       <div>
@@ -1194,7 +1223,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
           <div class="profile-cover" id="profileCover"></div>
           <div class="profile-body">
             <div class="avatar">YP</div>
-            <h3>Your Name Here <span class="badge badge-vetted">Sample Profile</span></h3>
+            <h3>Your Name Here <span class="badge badge-vetted">Sample Profile</span><span class="v-badge" id="previewVerified" hidden><span class="v-check">✓</span>Verified</span></h3>
             <p class="role-line">Promoter · Your City · This preview updates as you pick</p>
             <p style="font-size:.92rem;color:var(--ink2);margin:10px 0 0">“This is my page — my background, my accent, my anthem. When you land here, you know whose room you just walked into.”</p>
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
@@ -1221,19 +1250,31 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
     <div class="sec-head">
       <div class="kicker">Your Profile · Top 8 Crew</div>
       <h2>Top 8 Crew &amp; Shout Wall</h2>
-      <p>Your people, your promoters, your rooms — the eight that matter most, on your profile for everybody to see. And the Shout Wall: quick shouts on a profile or a room, the way the old walls worked.</p>
+      <p>Your people, your promoters, your rooms — the eight that matter most, on your profile for everybody to see. Juice+ Verified members get a Top 16 — eight more crew slots. And the Shout Wall: quick shouts on a profile or a room, the way the old walls worked.</p>
     </div>
     <div class="top8-grid">
-      <div class="crew-card"><div class="avatar">LF</div><h3>Juiced Up LaFlair</h3><p>Promoter · I-4 Corridor.</p><button class="follow-btn" type="button">Follow</button></div>
-      <div class="crew-card"><div class="avatar gold">SH</div><h3>Juiced Up Shad</h3><p>Co-Owner, Juiced Up Promotions.</p><button class="follow-btn" type="button">Follow</button></div>
-      <div class="crew-card"><div class="avatar pink">BR</div><h3>Juiced Up Braat</h3><p>Brand ambassador · Bottle service.</p><button class="follow-btn" type="button">Follow</button></div>
-      <div class="crew-card"><div class="avatar teal">TJ</div><h3>JuicedUp Tyjay</h3><p>Brand ambassador · New York.</p><button class="follow-btn" type="button">Follow</button></div>
-      <div class="crew-card"><div class="avatar lime">GD</div><h3>JuicedUp Goldie</h3><p>Brand ambassador · Door &amp; floor.</p><button class="follow-btn" type="button">Follow</button></div>
+      <div class="crew-card"><div class="avatar">LF</div><h3>Juiced Up LaFlair <span class="v-check" title="Verified — Juiced Up member">✓</span></h3><p>Promoter · I-4 Corridor.</p><button class="follow-btn" type="button">Follow</button></div>
+      <div class="crew-card"><div class="avatar gold">SH</div><h3>Juiced Up Shad <span class="v-check" title="Verified — Juiced Up member">✓</span></h3><p>Co-Owner, Juiced Up Promotions.</p><button class="follow-btn" type="button">Follow</button></div>
+      <div class="crew-card"><div class="avatar pink">BR</div><h3>Juiced Up Braat <span class="v-check" title="Verified — Juiced Up member">✓</span></h3><p>Brand ambassador · Bottle service.</p><button class="follow-btn" type="button">Follow</button></div>
+      <div class="crew-card"><div class="avatar teal">TJ</div><h3>JuicedUp Tyjay <span class="v-check" title="Verified — Juiced Up member">✓</span></h3><p>Brand ambassador · New York.</p><button class="follow-btn" type="button">Follow</button></div>
+      <div class="crew-card"><div class="avatar lime">GD</div><h3>JuicedUp Goldie <span class="v-check" title="Verified — Juiced Up member">✓</span></h3><p>Brand ambassador · Door &amp; floor.</p><button class="follow-btn" type="button">Follow</button></div>
       <div class="crew-card"><div class="avatar">SP</div><h3>Sample Promoter</h3><p>Your crew slot — sample.</p><button class="follow-btn" type="button">Follow</button></div>
       <div class="crew-card"><div class="avatar">SD</div><h3>Sample DJ</h3><p>Your crew slot — sample.</p><button class="follow-btn" type="button">Follow</button></div>
       <div class="crew-card"><div class="avatar">SH</div><h3>Sample Host</h3><p>Your crew slot — sample.</p><button class="follow-btn" type="button">Follow</button></div>
     </div>
     <p class="sample-note" role="note" style="margin-top:14px"><b>Sample crew — illustrative only.</b> The five Juiced Up crew pages are the founding pages of Viral Club; the three sample slots show where your own Top 8 fills in.</p>
+    <p id="top8ExtraNote" style="font-size:.88rem;color:var(--muted);margin:12px 0 10px">Juice+ Verified members get a Top 16 — eight more crew slots on your profile.</p>
+    <div class="top8-grid" id="top8Extra">
+      <div class="crew-card crew-locked" data-slot-name="Sample Promoter" data-slot-role="Your crew slot — Top 16."><div class="avatar">🔒</div><h3>Verified Only</h3><p>Top 16 slot — Juice+ Verified.</p><button class="follow-btn" type="button" disabled>Locked</button></div>
+      <div class="crew-card crew-locked" data-slot-name="Sample DJ" data-slot-role="Your crew slot — Top 16."><div class="avatar">🔒</div><h3>Verified Only</h3><p>Top 16 slot — Juice+ Verified.</p><button class="follow-btn" type="button" disabled>Locked</button></div>
+      <div class="crew-card crew-locked" data-slot-name="Sample Host" data-slot-role="Your crew slot — Top 16."><div class="avatar">🔒</div><h3>Verified Only</h3><p>Top 16 slot — Juice+ Verified.</p><button class="follow-btn" type="button" disabled>Locked</button></div>
+      <div class="crew-card crew-locked" data-slot-name="Sample Mover" data-slot-role="Your crew slot — Top 16."><div class="avatar">🔒</div><h3>Verified Only</h3><p>Top 16 slot — Juice+ Verified.</p><button class="follow-btn" type="button" disabled>Locked</button></div>
+      <div class="crew-card crew-locked" data-slot-name="Sample Selector" data-slot-role="Your crew slot — Top 16."><div class="avatar">🔒</div><h3>Verified Only</h3><p>Top 16 slot — Juice+ Verified.</p><button class="follow-btn" type="button" disabled>Locked</button></div>
+      <div class="crew-card crew-locked" data-slot-name="Sample Hype" data-slot-role="Your crew slot — Top 16."><div class="avatar">🔒</div><h3>Verified Only</h3><p>Top 16 slot — Juice+ Verified.</p><button class="follow-btn" type="button" disabled>Locked</button></div>
+      <div class="crew-card crew-locked" data-slot-name="Sample Dancer" data-slot-role="Your crew slot — Top 16."><div class="avatar">🔒</div><h3>Verified Only</h3><p>Top 16 slot — Juice+ Verified.</p><button class="follow-btn" type="button" disabled>Locked</button></div>
+      <div class="crew-card crew-locked" data-slot-name="Sample Regular" data-slot-role="Your crew slot — Top 16."><div class="avatar">🔒</div><h3>Verified Only</h3><p>Top 16 slot — Juice+ Verified.</p><button class="follow-btn" type="button" disabled>Locked</button></div>
+    </div>
+
     <div class="card card-p shout-wall" style="margin-top:18px">
       <h3>Shout Wall</h3>
       <p class="shout-sub">Leave a shout on the room. Quick, loud, gone by morning — the way the wall always worked.</p>
@@ -1246,6 +1287,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
         <input id="shoutText" type="text" placeholder="Shout something to the room…" aria-label="Write a shout" maxlength="140" />
         <button class="btn btn-juice btn-sm" type="submit">Shout It</button>
       </form>
+      <p id="shoutLimitNote" style="font-size:.82rem;color:var(--muted);margin:10px 0 0">Free: 140 characters per shout · Juice+ Verified: 280.</p>
       <p class="sample-note" style="margin-top:10px">Sample shouts — illustrative only. Your shout shows on this page for this visit.</p>
     </div>
   </section>
@@ -1267,8 +1309,8 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
   <section id="plans">
     <div class="sec-head">
       <div class="kicker">Membership</div>
-      <h2>Free To Start. Juice+ When You're Ready To Move First.</h2>
-      <p>Registration and your profile are free — that's the door, and it never closes. Juice+ is the upgrade for movers and venues who want to be seen first, pitched first, and badged as vetted.</p>
+      <h2>Free To Start. Juice+ Verified When You're Ready To Move First.</h2>
+      <p>Registration and your profile are free — that's the door, and it never closes. Juice+ Verified is the subscriber version: the verified badge, your profile anthem, a Top 16 crew, and priority across the platform. Juiced Up members are verified automatically when they register — no upgrade step.</p>
     </div>
     <div class="plans">
       <div class="plan">
@@ -1282,24 +1324,33 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
           <li>Join Live Chat Rooms and RSVP to Nights</li>
           <li>Go live to your followers</li>
           <li>Pitch open briefs</li>
+          <li>Built-in profile backgrounds — neon themes</li>
+          <li>Top 8 Crew</li>
+          <li>Shout Wall — 140 characters</li>
         </ul>
         <a class="btn btn-ghost" href="#register">Register Free</a>
       </div>
       <div class="plan hot">
-        <span class="flag">For Movers</span>
-        <h3>Juice+ Pro</h3>
+        <span class="flag">Verified · Subscriber</span>
+        <h3>Juice+ Verified <span class="v-badge"><span class="v-check">✓</span>Verified</span></h3>
         <div class="price">Juice+</div>
-        <div class="per">The membership upgrade · monthly or yearly — you pick your pace when you upgrade</div>
+        <div class="per">The verified subscriber version · monthly or yearly — you pick your pace when you upgrade</div>
         <ul>
           <li>Everything in Free</li>
-          <li>Vetted Mover badge on your page</li>
-          <li>Priority placement in brief pitches</li>
+          <li><b>Verified badge</b> on your page — Nocturnal's own check</li>
+          <li><b>Profile anthem</b> — your song plays on your page</li>
+          <li>Custom profile themes — every background, full accent control</li>
+          <li><b>Top 16 Crew</b> — eight more crew slots</li>
+          <li>Priority in Trending Tonight &amp; Discover</li>
+          <li>Shout Wall — <b>280 characters</b></li>
+          <li>Host Room Radio</li>
           <li>Your Live pushed to followers first</li>
+          <li>Priority placement in brief pitches</li>
           <li>First-party numbers: real reach, real counts on every campaign</li>
           <li>Content library with replay hosting</li>
           <li>Top Mover spotlight rotation</li>
         </ul>
-        <button class="btn btn-juice upgrade-btn" type="button">Upgrade To Juice+</button>
+        <button class="btn btn-juice upgrade-btn" type="button">Upgrade To Juice+ Verified</button>
       </div>
       <div class="plan">
         <h3>Venue Partner</h3>
@@ -1316,6 +1367,35 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
         </ul>
         <a class="btn btn-dark" href="#register">Register Your Venue</a>
       </div>
+    </div>
+    <div class="perk-table-wrap" style="margin-top:22px">
+      <h3 style="font-size:1.15rem;margin:0 0 4px">Free vs Juice+ Verified — Side By Side</h3>
+      <p style="font-size:.88rem;color:var(--muted);margin:0 0 14px">The free tier is the whole platform. The subscriber version adds the badge, the music and the priority — it never gates whether you can work, post or get booked.</p>
+      <table class="perk-table">
+        <thead><tr><th>What You Get</th><th>The Scene — Free</th><th>Juice+ Verified</th></tr></thead>
+        <tbody>
+          <tr><td>Full profile &amp; page</td><td>✓</td><td>✓</td></tr>
+          <tr><td>Post to The Night Feed</td><td>✓</td><td>✓</td></tr>
+          <tr><td>Follow movers, venues and rooms</td><td>✓</td><td>✓</td></tr>
+          <tr><td>Join Live Chat Rooms &amp; RSVP to Nights</td><td>✓</td><td>✓</td></tr>
+          <tr><td>Go live to your followers</td><td>✓</td><td>✓</td></tr>
+          <tr><td>Pitch open briefs</td><td>✓</td><td>✓</td></tr>
+          <tr><td>Built-in profile backgrounds</td><td>✓</td><td>✓</td></tr>
+          <tr><td><b>Verified badge</b> on your page</td><td>—</td><td><b>✓</b></td></tr>
+          <tr><td><b>Profile anthem</b> — your song plays on your page</td><td>—</td><td><b>✓</b></td></tr>
+          <tr><td>Custom profile themes — every background, full accent control</td><td>—</td><td><b>✓</b></td></tr>
+          <tr><td>Top 8 Crew → <b>Top 16 Crew</b></td><td>Top 8</td><td><b>Top 16</b></td></tr>
+          <tr><td>Priority in Trending Tonight &amp; Discover</td><td>—</td><td><b>✓</b></td></tr>
+          <tr><td>Shout Wall length</td><td>140 characters</td><td><b>280 characters</b></td></tr>
+          <tr><td>Host Room Radio</td><td>—</td><td><b>✓</b></td></tr>
+          <tr><td>Your Live pushed to followers first</td><td>—</td><td><b>✓</b></td></tr>
+          <tr><td>Priority placement in brief pitches</td><td>—</td><td><b>✓</b></td></tr>
+          <tr><td>First-party numbers on every campaign</td><td>—</td><td><b>✓</b></td></tr>
+          <tr><td>Content library with replay hosting</td><td>—</td><td><b>✓</b></td></tr>
+          <tr><td>Top Mover spotlight rotation</td><td>—</td><td><b>✓</b></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:.85rem;color:var(--muted);margin:12px 0 0">Juiced Up members: check the member box when you register and you're verified automatically — the subscriber version switches on with your profile. No upgrade step.</p>
     </div>
     <p class="upgrade-note" id="upgradeNote" style="display:none;margin-top:16px;background:color-mix(in srgb,var(--teal) 12%, var(--surface));border:1px solid var(--teal);border-radius:12px;padding:14px 18px;font-size:.92rem"></p>
   </section>
@@ -1344,9 +1424,10 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
           <div><label class="f" for="f-city">Your City</label><input class="in" id="f-city" placeholder="e.g. Lakeland, FL" /></div>
           <div class="full"><label class="f" for="f-bio">Your One-Line Intro</label><input class="in" id="f-bio" placeholder="What do you bring to the night?" /></div>
           <div class="full"><label class="f" for="f-email">Email</label><input class="in" id="f-email" type="email" required placeholder="you@email.com" autocomplete="email" /></div>
+          <div class="full"><label style="display:flex;gap:10px;align-items:flex-start;font-size:.9rem;color:var(--ink2);cursor:pointer"><input type="checkbox" id="f-juicedup" style="width:18px;height:18px;margin-top:2px;accent-color:#ff2d95;flex:none" /><span><b style="color:#fff">I'm a Juiced Up member.</b> Juiced Up members are verified automatically — check this and your subscriber version switches on with your profile. No upgrade step.</span></label></div>
           <div class="full" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
             <button class="btn btn-juice" type="submit">Create My Free Profile</button>
-            <span style="font-size:.82rem;color:var(--muted)">Free to register · Upgrade to Juice+ anytime</span>
+            <span style="font-size:.82rem;color:var(--muted)">Free to register · Juiced Up members are verified automatically</span>
           </div>
           <p id="regError" style="display:none;color:var(--live);font-size:.88rem;margin:0" class="full"></p>
         </form>
@@ -1375,7 +1456,9 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
       <details><summary>How does a promoter get paid?<span>+</span></summary><p>Per campaign, on terms you choose: a premium flat fee, a door split + percentage, or your own price that you set and negotiate. Pay lands after the night and the report. Venues always pay Juiced Up one flat fee — the venue never pays a commission or percentage.</p></details>
       <details><summary>How does Live work?<span>+</span></summary><p>Tap Go Live and your followers are notified instantly. They watch and interact while the night runs, and when you end the stream the replay is saved to your content library — so venues can see your work long after the night ends.</p></details>
       <details><summary>What are the Live Chat Rooms?<span>+</span></summary><p>Live chat rooms in two families: by job role — Bartender, VIP Host, Bottle Service, Door Staff, Barback, Venue Support, Promoter, DJ and Security — and by night — Friday Night, Saturday Night, VIP Section, The Dance Floor, Bottle Service Night, After Hours, Ladies Night and Throwback Night. Each room shows who is in it and the chat moving in real time. The chats on this template page are labelled samples showing how it works.</p></details>
-      <details><summary>Can I customize my profile background and song?<span>+</span></summary><p>Yes — that's the Profile Studio. Pick a built-in background (neon gradients, club photos or patterns), add a custom accent color, and pick your profile anthem — your favorite song that represents you when someone visits your page. The anthem player bar stays on screen with Play/Pause, Mute and Stop always visible, so a visitor can silence it instantly. Backgrounds are curated built-in choices only — no pasting code.</p></details>
+      <details><summary>Can I customize my profile background and song?<span>+</span></summary><p>Yes — that's the Profile Studio. Backgrounds are free for everybody: pick a built-in background (neon gradients, club photos or patterns) and add a custom accent color. Your profile anthem — your favorite song playing when someone visits your page — is a Juice+ Verified perk. The anthem player bar stays on screen with Play/Pause, Mute and Stop always visible, so a visitor can silence it instantly. Backgrounds are curated built-in choices only — no pasting code.</p></details>
+      <details><summary>What is the verified badge?<span>+</span></summary><p>The verified badge is Nocturnal's own check — a neon gradient mark next to your name that says this profile is a verified subscriber. It comes with the Juice+ Verified subscriber version, along with your profile anthem, a Top 16 crew, priority in Trending Tonight and Discover, longer shouts, and Room Radio hosting. Juiced Up members are verified automatically when they register.</p></details>
+      <details><summary>I'm a Juiced Up member — do I get the subscriber version?<span>+</span></summary><p>Yes — automatically. Check the Juiced Up member box when you create your profile and you're verified on the spot: the badge, your anthem, Top 16, the lot. No upgrade step, no extra step.</p></details>
       <details><summary>What does Juice do?<span>+</span></summary><p>Juice is the platform's mascot and floating helper — bottom corner, always around. Ask him about profiles, briefs, pitching, going live, live chat rooms, backgrounds and anthems, or the Juice+ upgrade and he'll walk you through it.</p></details>
     </div>
   </section>
@@ -1648,6 +1731,42 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
   "use strict";
   var $ = function(s, c){ return (c||document).querySelector(s); };
   var $$ = function(s, c){ return Array.prototype.slice.call((c||document).querySelectorAll(s)); };
+  /* ---------- TIERS: Free vs Juice+ Verified (Nov 18, 2026) ----------
+     Free is the whole platform. Juice+ Verified is the subscriber version:
+     verified badge, profile anthem, Top 16, Discover priority, 280-char
+     shouts, Room Radio hosting. Juiced Up members auto-verify at register.
+     Demo tier for this visit only — real accounts enforce server-side. */
+  var vcTier = "free";
+  document.body.setAttribute("data-tier", vcTier);
+  window.__vcTier = function(){ return vcTier; };
+  function promptUpgrade(){
+    var note2 = $("#upgradeNote");
+    if (note2){ note2.style.display = "block"; note2.innerHTML = "<b>Profile anthems are a Juice+ Verified perk.</b> Upgrade to switch your anthem on — or register as a Juiced Up member and you're verified automatically."; }
+    var plans = document.getElementById("plans");
+    if (plans) plans.scrollIntoView({ behavior: "smooth", block: "center" });
+    juiceSay("That one's for Verified subscribers — your profile anthem, the badge, Top 16 and the rest. Upgrade under Membership, or if you're Juiced Up, check the member box when you register and it switches on.");
+  }
+  window.__vcPromptUpgrade = promptUpgrade;
+  function setTier(tier){
+    vcTier = tier;
+    document.body.setAttribute("data-tier", tier);
+    var lock = $("#anthemLock"); if (lock) lock.style.display = (tier === "verified") ? "none" : "";
+    var pv = $("#previewVerified"); if (pv) pv.hidden = (tier !== "verified");
+    var mn = $("#myNameVerified"); if (mn) mn.style.display = (tier === "verified") ? "" : "none";
+    var st = $("#shoutText"); if (st) st.setAttribute("maxlength", tier === "verified" ? "280" : "140");
+    var sl = $("#shoutLimitNote"); if (sl) sl.textContent = tier === "verified" ? "Verified: 280 characters per shout — you're on the subscriber version." : "Free: 140 characters per shout · Juice+ Verified: 280.";
+    var te = $("#top8ExtraNote"); if (te) te.textContent = tier === "verified" ? "Top 16 unlocked — eight more crew slots on your profile, because you're verified." : "Juice+ Verified members get a Top 16 — eight more crew slots on your profile.";
+    if (tier === "verified"){
+      $$("#top8Extra .crew-locked").forEach(function(card){
+        card.classList.remove("crew-locked");
+        var nm = card.getAttribute("data-slot-name") || "Your Crew";
+        var av = card.querySelector(".avatar"); if (av) av.textContent = nm.split(" ").map(function(w){ return w.charAt(0); }).join("").slice(0,2).toUpperCase();
+        var h = card.querySelector("h3"); if (h) h.textContent = nm;
+        var p = card.querySelector("p"); if (p) p.textContent = card.getAttribute("data-slot-role") || "Top 16 slot — your crew.";
+        var b = card.querySelector("button"); if (b){ b.disabled = false; b.textContent = "Follow"; }
+      });
+    }
+  }
 
   /* ticker: duplicate for seamless loop */
   var t = $("#tickerTrack"); t.innerHTML += t.innerHTML;
@@ -1707,9 +1826,10 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
     }
     var ub = e.target.closest(".upgrade-btn");
     if (ub){
+      setTier("verified");
       var note2 = $("#upgradeNote");
       note2.style.display = "block";
-      note2.innerHTML = "<b>Juice+ is yours.</b> Your badge, pitch priority and live push switch on with your membership — monthly or yearly, your pick. Registration stays free either way; the upgrade never gates your work.";
+      note2.innerHTML = "<b>Juice+ Verified is yours.</b> Your badge, your anthem, Top 16 and priority switch on with your membership — monthly or yearly, your pick. Registration stays free either way; the upgrade never gates your work.";
       document.getElementById("plans").scrollIntoView({ behavior: "smooth", block: "center" });
     }
   });
@@ -1784,6 +1904,8 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
     var role = $("#f-role").value, city = $("#f-city").value.trim() || "Your City";
     var handle = $("#f-handle").value.trim() || ("@" + name.replace(/\s+/g,"").toLowerCase());
     myProfile = { name: name, role: role };
+    var isJuicedUp = !!($("#f-juicedup") && $("#f-juicedup").checked);
+    if (isJuicedUp) setTier("verified");
     $("#myName").textContent = name;
     $("#myRole").textContent = role + " · " + city;
     $("#myAvatar").textContent = initials(name);
@@ -1792,12 +1914,12 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
     $("#profileNote").textContent = "Profile 100% — you're live in The Feed. Post your first move.";
     var bio = $("#f-bio").value.trim();
     $("#regSuccessText").innerHTML = "";
-    $("#regSuccessText").textContent = name + " (" + handle + ") — " + role + " · " + city + (bio ? " · “" + bio + "”" : "") + " Your page is live, your first post is in The Feed, and Juice is in the corner whenever you need him.";
+    $("#regSuccessText").textContent = name + " (" + handle + ") — " + role + " · " + city + (bio ? " · “" + bio + "”" : "") + (isJuicedUp ? " You're verified — Juiced Up member, so your subscriber version is on: the badge, your anthem, Top 16, the lot." : " Your page is live, your first post is in The Feed, and Juice is in the corner whenever you need him.");
     $("#regSuccess").classList.add("show");
     /* welcome post */
     $("#composerText").value = "Just joined Viral Club. " + (bio || "Ready to move rooms.") + " — " + role + ", " + city + ". Let's work.";
     publishPost();
-    juiceSay("That's you in the Feed now, " + name.split(" ")[0] + ". Profile's live, followers can find you, and briefs that fit your role will land here. Want the vetted badge and pitch priority? That's Juice+ — say the word.");
+    juiceSay(isJuicedUp ? ("That's you in the Feed now, " + name.split(" ")[0] + ". You're verified — Juiced Up member, so your subscriber version is on: the badge, your anthem, Top 16, the lot. Your page sounds like you now.") : ("That's you in the Feed now, " + name.split(" ")[0] + ". Profile's live, followers can find you, and briefs that fit your role will land here. Want the verified badge and your anthem? That's Juice+ — say the word."));
     openJuice();
   });
 
@@ -1832,11 +1954,11 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
     if (s.indexOf("venue") > -1 || s.indexOf("book") > -1)
       return "Venue side: register free, post a brief, and watch vetted movers pitch it. You pick, Juiced Up books it in writing — one flat fee named in the agreement, paid before the campaign runs, and a report lands within two business days. No commission, no percentage, ever.";
     if (s.indexOf("juice+") > -1 || s.indexOf("upgrade") > -1 || s.indexOf("subscription") > -1 || s.indexOf("pay") > -1 || s.indexOf("price") > -1 || s.indexOf("cost") > -1)
-      return "Free gets you in and keeps you working — Juice+ never gates your gigs. The upgrade adds the Vetted Mover badge, priority placement when you pitch briefs, your Live pushed to followers first, and real first-party numbers on every campaign. Monthly or yearly — you pick your pace when you upgrade.";
+      return "Free gets you in and keeps you working — Juice+ never gates your gigs. The Juice+ Verified subscriber version adds the verified badge, your profile anthem, a Top 16 crew, priority in Trending Tonight and Discover, 280-character shouts and Room Radio hosting — plus pitch priority, your Live pushed first, and real first-party numbers. Monthly or yearly — you pick your pace when you upgrade. Juiced Up members are verified automatically when they register.";
     if (s.indexOf("live") > -1 || s.indexOf("stream") > -1)
       return "Tap Go Live in the composer and your followers get tapped the second you're on. Chat runs while the room runs. When you wrap, the replay saves to your content library — that's your proof of work for the next brief.";
     if (s.indexOf("anthem") > -1 || s.indexOf("song") > -1 || s.indexOf("background") > -1 || s.indexOf("custom") > -1 || s.indexOf("myspace") > -1)
-      return "That's the Profile Studio — scroll to Make Your Page Look And Sound Like You. Pick a built-in background (gradients, club photos, patterns), dial in a custom accent color, and pick your anthem. Your anthem shows in a player bar that stays on screen with Play/Pause, Mute and Stop always visible — visitors are never trapped listening. In this preview nothing autoplays; press Play to try it.";
+      return "That's the Profile Studio — scroll to Make Your Page Look And Sound Like You. Backgrounds are free for everybody: pick a built-in background (gradients, club photos, patterns) and dial in a custom accent color. Your profile anthem — your song playing when someone visits your page — is a Juice+ Verified perk. Once you're verified, your anthem shows in a player bar that stays on screen with Play/Pause, Mute and Stop always visible — visitors are never trapped listening.";
     if (s.indexOf("room") > -1 || s.indexOf("chat") > -1)
       return "Rooms are now LIVE CHAT ROOMS. By role: Bartender, VIP Host, Bottle Service, Door Staff, Barback, Venue Support, Promoter, DJ and Security. By night: Friday Night, Saturday Night, VIP Section, The Dance Floor, Bottle Service Night, After Hours, Ladies Night and Throwback Night. Tap Enter Chat on any room to preview it up top — the chats shown are samples, clearly labelled, so you can see how it feels.";
     if (s.indexOf("night") > -1 || s.indexOf("event") > -1 || s.indexOf("thanksgiving") > -1)
@@ -1985,6 +2107,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
     o.connect(g); g.connect(gainNode); o.start(); o.stop(audioCtx.currentTime + 0.45);
   }
   function startAnthem(){
+    if (vcTier === "free"){ promptUpgrade(); return; }
     if (window.__vcCustomAnthem && window.__vcCustomAnthem.active && window.__vcPlayCustom){ window.__vcPlayCustom(); return; }
     if (!ensureAudio()) return;
     stopSeq();
@@ -2038,6 +2161,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
   var anthemAutoTried = false;
   function tryAutoplay(){
     if (anthemAutoTried || isPlaying) return;
+    if (vcTier === "free") return; /* profile anthems are a Verified subscriber perk — no autoplay on the Free tier */
     anthemAutoTried = true;
     if (!ensureAudio()) return;
     /* Browsers block sound before a user gesture: if the context is still
@@ -2137,6 +2261,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
     var pt = $("#previewAnthemTitle"); if (pt && current) pt.textContent = "Anthem: " + current.title.split(" — ")[0];
   }
   window.__vcPlayCustom = function(){
+    if (window.__vcTier && window.__vcTier() === "free"){ if (window.__vcPromptUpgrade) window.__vcPromptUpgrade(); return; }
     if (!current) return;
     var needBuild = !wrap || wrap.hidden || !wrap.firstChild;
     if (needBuild) buildEmbed();
