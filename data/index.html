@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
+<!-- DATA GATE (staged 2026-11-18): the front door is the login page. Logged-out visitors are sent to login.html; login.html sets sessionStorage 'data-session' and returns here. Real auth (Supabase Auth) replaces this front-end flag before go-live. -->
+<script>(function(){try{if(!sessionStorage.getItem('data-session')){window.location.replace('login.html');}}catch(e){}})();</script>
 <link rel="icon" href="data:,">
 <title>Nocturnal Data — Verified Nightlife Venue Data</title>
 <meta name="description" content="Nocturnal Data sells verified nightlife venue records and aggregated market reports. Venue and business data only. Pay before access.">
