@@ -126,8 +126,12 @@
         <input class="in" id="li-pass" type="password" required placeholder="Your password" autocomplete="current-password" />
       </div>
       <button class="btn btn-login" type="submit">Log In</button>
+      <p class="note" id="li-error" style="display:none"></p>
       <a class="forgot" href="#" id="forgotLink">Forgot Password?</a>
-      <p class="note" id="forgotNote">Password resets arrive with real accounts. New here? Use <b>Join Juiced Up</b> below — one inquiry puts you at the front of the line for when campaigns resume.</p>
+      <p class="note" id="forgotNote">Forgot Password? sends a reset link to your email. New here? Use <b>Join Juiced Up</b> below — one inquiry puts you at the front of the line for when campaigns resume.</p>
+      <p class="note" id="laneNote" style="display:none"></p>
+      <button class="btn btn-login" id="addLaneBtn" type="button" style="display:none">Add Access</button>
+      <a class="backlink" href="#" id="laneLogout" style="display:none">Log out</a>
       <div class="div">or</div>
       <button class="btn btn-join" type="button" id="showJoin">Join Juiced Up</button>
       <p class="fine"><b>Campaigns paused — inquiries open.</b> One inquiry starts the conversation.<br/>Nightlife Promoters, venues, DJs, and the crowd — this is your house.</p>
@@ -139,9 +143,43 @@
     <p class="sub">Tell us about your room, your night, or the crowd you move. One inquiry puts you at the front of the line for when campaigns resume.</p>
     <form id="joinForm" novalidate>
       <div class="row2"><div class="field"><label class="f" for="j-name">Your Name</label><input class="in" id="j-name" type="text" required placeholder="Your full name" autocomplete="name" /></div><div class="field"><label class="f" for="j-role">Your Role</label><select class="in" id="j-role"><option>Nightlife Promoter</option><option>Venue Owner Or Manager</option><option>Brand</option><option>DJ</option><option>The Crowd — I Just Love The Night</option></select></div></div><div class="row2"><div class="field"><label class="f" for="j-city">Your City</label><input class="in" id="j-city" type="text" placeholder="e.g. Winter Haven, FL" /></div><div class="field"><label class="f" for="j-night">Your Night</label><input class="in" id="j-night" type="text" placeholder="Date, theme, lineup — or leave it open" /></div></div><div class="field"><label class="f" for="j-email">Email</label><input class="in" id="j-email" type="email" required placeholder="you@email.com" autocomplete="email" /></div><div class="field"><label class="f" for="j-pass">Create A Password</label><input class="in" id="j-pass" type="password" required placeholder="Choose a password" autocomplete="new-password" /></div>
+      <p class="note" id="j-error" style="display:none"></p>
       <button class="btn btn-join" type="submit">Join Juiced Up</button>
       <p class="fine">No commitment until you agree it — the fee for your night is talked through in the inquiry, never posted here.</p>
       <a class="backlink" href="#" id="showLogin">Already have an account? Log in</a>
+    </form>
+  </div>
+
+  <div class="card hidden" id="resetCard">
+    <h2>Reset Your Password</h2>
+    <p class="sub">Enter the email on your account and we will send a reset link.</p>
+    <form id="resetForm" novalidate>
+      <div class="field">
+        <label class="f" for="r-email">Email</label>
+        <input class="in" id="r-email" type="email" required placeholder="you@email.com" autocomplete="email" />
+      </div>
+      <p class="note" id="r-error" style="display:none"></p>
+      <p class="note" id="resetSent" style="display:none"></p>
+      <button class="btn btn-login" type="submit" id="resetBtn">Send Reset Link</button>
+      <a class="backlink" href="#" id="showLoginFromReset">Back to log in</a>
+    </form>
+  </div>
+
+  <div class="card hidden" id="newPassCard">
+    <h2>Choose A New Password</h2>
+    <p class="sub">Your reset link checked out — pick a new password.</p>
+    <form id="newPassForm" novalidate>
+      <div class="field">
+        <label class="f" for="np-pass">New Password</label>
+        <input class="in" id="np-pass" type="password" required placeholder="At least 6 characters" autocomplete="new-password" />
+      </div>
+      <div class="field">
+        <label class="f" for="np-pass2">Repeat New Password</label>
+        <input class="in" id="np-pass2" type="password" required placeholder="Repeat your new password" autocomplete="new-password" />
+      </div>
+      <p class="note" id="np-error" style="display:none"></p>
+      <button class="btn btn-login" type="submit" id="newPassBtn">Set New Password</button>
+      <a class="backlink" href="#" id="showLoginFromNewPass">Back to log in</a>
     </form>
   </div>
 </div>
@@ -154,50 +192,361 @@
 </footer>
 
 <script>
+/* NOCTURNAL AUTH v1 (2026-11-19) — real Supabase Auth, email + password, over GoTrue REST.
+   No external scripts: the pages stay self-contained. The key below is Supabase's public
+   anon key (already published on the staffing page's pageview log); the service key is never in a page. */
+var NocturnalAuth = (function(){
+  var CFG = { url: 'https://mkyrzikeqpqncgemlsds.supabase.co', anon: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1reXJ6aWtlcXBxbmNnZW1sc2RzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzNjU0MjcsImV4cCI6MjEwNzk0MTQyN30.N1v7Ndd8hjDDkYCzu5kvQU3St3_mkzNpxwlZVy_SD4g', store: 'nocturnal-auth-v1' };
+  function headers(token){
+    return { 'apikey': CFG.anon, 'Authorization': 'Bearer ' + (token || CFG.anon), 'Content-Type': 'application/json' };
+  }
+  function api(path, method, body, token){
+    var opts = { method: method, headers: headers(token) };
+    if (body) opts.body = JSON.stringify(body);
+    return fetch(CFG.url + path, opts).then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(j){ return { status: r.status, body: j }; });
+    }).catch(function(){ throw new Error('network'); });
+  }
+  function errMsg(r){
+    var b = r.body || {};
+    if (b.msg) return b.msg;
+    if (b.error_description) return b.error_description;
+    if (b.message) return b.message;
+    return 'Something went wrong. Please try again.';
+  }
+  function saveSession(d){
+    try {
+      var s = { access_token: d.access_token, refresh_token: d.refresh_token || null,
+        expires_at: d.expires_at || (Date.now() + (d.expires_in || 3600) * 1000), user: d.user || null };
+      localStorage.setItem(CFG.store, JSON.stringify(s));
+      return s;
+    } catch (e) { return null; }
+  }
+  function loadSession(){
+    try { var s = JSON.parse(localStorage.getItem(CFG.store) || 'null'); return (s && s.access_token) ? s : null; }
+    catch (e) { return null; }
+  }
+  function clearSession(){ try { localStorage.removeItem(CFG.store); } catch (e) {} }
+  function storageOK(){
+    try { localStorage.setItem('__na_test', '1'); localStorage.removeItem('__na_test'); return true; }
+    catch (e) { return false; }
+  }
+  function lanesOf(user){
+    var m = (user && user.user_metadata) || {};
+    if (Array.isArray(m.lanes) && m.lanes.length) return m.lanes.slice();
+    if (m.lane) return [m.lane];
+    return [];
+  }
+  function refresh(sess){
+    return api('/auth/v1/token?grant_type=refresh_token', 'POST', { refresh_token: sess.refresh_token }).then(function(r){
+      if (r.status !== 200 || !r.body.access_token) { clearSession(); return null; }
+      return saveSession(r.body);
+    });
+  }
+  function getValidSession(){
+    var s = loadSession();
+    if (!s) return Promise.resolve(null);
+    if (s.expires_at && s.expires_at > Date.now() + 60000) return Promise.resolve(s);
+    if (!s.refresh_token) { clearSession(); return Promise.resolve(null); }
+    return refresh(s).catch(function(){ clearSession(); return null; });
+  }
+  function getUser(token){
+    return api('/auth/v1/user', 'GET', null, token).then(function(r){
+      if (r.status !== 200 || !r.body.id) return null;
+      return r.body;
+    });
+  }
+  function signUp(email, password, metadata){
+    return api('/auth/v1/signup', 'POST', { email: email, password: password, data: metadata }).then(function(r){
+      if (r.status !== 200 || !r.body.access_token) return { ok: false, error: errMsg(r) };
+      return { ok: true, session: saveSession(r.body) };
+    });
+  }
+  function signIn(email, password){
+    return api('/auth/v1/token?grant_type=password', 'POST', { email: email, password: password }).then(function(r){
+      if (r.status !== 200 || !r.body.access_token) return { ok: false, error: errMsg(r) };
+      return { ok: true, session: saveSession(r.body) };
+    });
+  }
+  function signOut(){
+    var s = loadSession();
+    clearSession();
+    if (s && s.access_token) api('/auth/v1/logout', 'POST', {}, s.access_token).catch(function(){});
+  }
+  function requestReset(email, redirectTo){
+    return api('/auth/v1/recover', 'POST', { email: email, redirect_to: redirectTo }).then(function(r){
+      return { ok: r.status === 200, error: r.status === 200 ? null : errMsg(r) };
+    });
+  }
+  function updatePassword(token, password){
+    return api('/auth/v1/user', 'PUT', { password: password }, token).then(function(r){
+      if (r.status !== 200 || !r.body.id) return { ok: false, error: errMsg(r) };
+      return { ok: true, user: r.body };
+    });
+  }
+  function addLane(sess, lane){
+    var lanes = lanesOf(sess.user);
+    if (lanes.indexOf(lane) === -1) lanes.push(lane);
+    return api('/auth/v1/user', 'PUT', { data: { lanes: lanes } }, sess.access_token).then(function(r){
+      if (r.status !== 200 || !r.body.id) return { ok: false, error: errMsg(r) };
+      var s = loadSession() || sess;
+      s.user = r.body;
+      saveSession(s);
+      return { ok: true };
+    });
+  }
+  function friendly(err){
+    if (err && err.message) err = err.message;
+    if (!err) return '';
+    if (err === 'network') return 'Could not reach the sign-in server. Check your connection and try again.';
+    return String(err);
+  }
+  return { getValidSession: getValidSession, loadSession: loadSession, saveSession: saveSession,
+    clearSession: clearSession, storageOK: storageOK, lanesOf: lanesOf, getUser: getUser,
+    signUp: signUp, signIn: signIn, signOut: signOut, requestReset: requestReset,
+    updatePassword: updatePassword, addLane: addLane, friendly: friendly };
+})();
 (function(){
-  // Already signed in? Go straight inside.
-  try { if (sessionStorage.getItem('juicedup-session')) { window.location.replace('index.html'); return; } } catch (e) {}
+  var B = { key: 'juiced-up', name: 'Juiced Up', lanes: ['talent', 'venue', 'buyer', 'member'], primaryLane: null, laneLabel: 'venues, promoters, brands and the crowd', loginUrl: 'https://nocturnalstaffing.com/juiced-up/login.html' };
   var loginCard = document.getElementById('loginCard');
   var joinCard = document.getElementById('joinCard');
-  function enter(profile){
-    try {
-      sessionStorage.setItem('juicedup-session', '1');
-      if (profile) sessionStorage.setItem('juicedup-profile', JSON.stringify(profile));
-    } catch (e) {}
-    window.location.href = 'index.html';
+  var resetCard = document.getElementById('resetCard');
+  var newPassCard = document.getElementById('newPassCard');
+  function show(card){
+    [loginCard, joinCard, resetCard, newPassCard].forEach(function(c){ if (c) c.classList.add('hidden'); });
+    if (card) card.classList.remove('hidden');
+    window.scrollTo(0, 0);
+  }
+  function showMsg(id, msg){
+    var e = document.getElementById(id);
+    if (!e) return;
+    e.textContent = msg || '';
+    e.style.display = msg ? 'block' : 'none';
+  }
+  function laneOK(sess){
+    var lanes = NocturnalAuth.lanesOf(sess.user);
+    return B.lanes.some(function(l){ return lanes.indexOf(l) !== -1; });
+  }
+  function showLaneNote(sess){
+    var email = (sess.user && sess.user.email) || '';
+    showMsg('laneNote', 'You are signed in as ' + email + '. This door is for ' + B.laneLabel + '.');
+    var btn = document.getElementById('addLaneBtn');
+    if (btn) { btn.style.display = 'block'; btn.textContent = B.primaryLane ? ('Add ' + B.name + ' Access') : 'Pick Your Lane'; }
+    var lo = document.getElementById('laneLogout');
+    if (lo) lo.style.display = 'block';
+    show(loginCard);
+  }
+  function hideLaneNote(){
+    showMsg('laneNote', '');
+    var btn = document.getElementById('addLaneBtn');
+    if (btn) btn.style.display = 'none';
+    var lo = document.getElementById('laneLogout');
+    if (lo) lo.style.display = 'none';
+  }
+  function enter(){ window.location.href = 'index.html'; }
+  function hashParams(){
+    var h = (location.hash || '').replace(/^#/, '');
+    var o = {};
+    h.split('&').forEach(function(p){
+      var kv = p.split('=');
+      if (kv[0]) { try { o[kv[0]] = decodeURIComponent(kv[1] || ''); } catch (e) { o[kv[0]] = kv[1] || ''; } }
+    });
+    return o;
+  }
+  var hp = hashParams();
+  if (hp.access_token) {
+    history.replaceState(null, '', location.pathname + location.search);
+    if (hp.type === 'recovery') {
+      window.__naRecovery = hp;
+      show(newPassCard);
+      var np = document.getElementById('np-pass');
+      if (np) np.focus();
+    } else {
+      NocturnalAuth.getUser(hp.access_token).then(function(user){
+        if (!user) { showMsg('li-error', 'That sign-in link has expired. Log in with your password, or use Forgot Password? for a fresh link.'); show(loginCard); return; }
+        var s = NocturnalAuth.saveSession({ access_token: hp.access_token, refresh_token: hp.refresh_token || null, expires_in: parseInt(hp.expires_in || '3600', 10), user: user });
+        if (s && laneOK(s)) enter(); else if (s) showLaneNote(s); else show(loginCard);
+      }).catch(function(){ showMsg('li-error', 'That sign-in link could not be checked. Log in with your password.'); show(loginCard); });
+    }
+  } else {
+    NocturnalAuth.getValidSession().then(function(sess){
+      if (!sess) return;
+      if (laneOK(sess)) { window.location.replace('index.html'); return; }
+      showLaneNote(sess);
+    }).catch(function(){});
+  }
+  if (!NocturnalAuth.storageOK()) {
+    showMsg('li-error', 'Your browser is blocking sign-in storage, so staying signed in will not work here. Allow storage for this site and try again.');
   }
   document.getElementById('loginForm').addEventListener('submit', function(ev){
     ev.preventDefault();
     var email = document.getElementById('li-email').value.trim();
+    var pass = document.getElementById('li-pass').value;
+    var btn = ev.target.querySelector('button[type="submit"]');
     if (!email) { document.getElementById('li-email').focus(); return; }
-    enter({ email: email });
+    if (!pass) { showMsg('li-error', 'Enter your password.'); document.getElementById('li-pass').focus(); return; }
+    showMsg('li-error', ''); hideLaneNote();
+    if (btn) btn.disabled = true;
+    NocturnalAuth.signIn(email, pass).then(function(res){
+      if (btn) btn.disabled = false;
+      if (!res.ok) {
+        var m = NocturnalAuth.friendly(res.error);
+        if (/invalid login credentials/i.test(m)) m += ' Check your email and password, or use Forgot Password? for a reset link.';
+        showMsg('li-error', m);
+        return;
+      }
+      if (laneOK(res.session)) enter(); else showLaneNote(res.session);
+    }).catch(function(e){
+      if (btn) btn.disabled = false;
+      showMsg('li-error', NocturnalAuth.friendly(e && e.message));
+    });
   });
   document.getElementById('joinForm').addEventListener('submit', function(ev){
     ev.preventDefault();
     var name = document.getElementById('j-name').value.trim();
     var email = document.getElementById('j-email').value.trim();
+    var pass = document.getElementById('j-pass').value;
+    var btn = ev.target.querySelector('button[type="submit"]');
     if (!name) { document.getElementById('j-name').focus(); return; }
     if (!email) { document.getElementById('j-email').focus(); return; }
-    enter({
-      name: name,
-      role: document.getElementById('j-role').value,
-      city: document.getElementById('j-city').value.trim(),
-      night: document.getElementById('j-night').value.trim(),
-      email: email
+    if (!pass || pass.length < 6) { showMsg('j-error', 'Choose a password of at least 6 characters.'); document.getElementById('j-pass').focus(); return; }
+    var meta;
+    try { meta = function(){
+  var roleMap = { 'Nightlife Promoter': 'member', 'Venue Owner Or Manager': 'venue', 'Brand': 'buyer', 'DJ': 'talent', 'The Crowd — I Just Love The Night': 'member' };
+  var role = (function(){ var el = document.getElementById('j-role'); return el ? el.value : ''; })();
+  var lane = roleMap[role] || 'member';
+  return { lane: lane, lanes: [lane], business: 'juiced-up',
+    name: document.getElementById('j-name').value.trim(), role: role,
+    city: (document.getElementById('j-city') || {value:''}).value.trim(),
+    night: (document.getElementById('j-night') || {value:''}).value.trim() };
+}(); } catch (e) { showMsg('j-error', 'Something is missing on the form. Check the fields and try again.'); return; }
+    if (!meta || !meta.lane) { showMsg('j-error', 'Pick your lane and try again.'); return; }
+    showMsg('j-error', '');
+    if (btn) btn.disabled = true;
+    NocturnalAuth.signUp(email, pass, meta).then(function(res){
+      if (btn) btn.disabled = false;
+      if (res.ok) { enter(); return; }
+      var m = NocturnalAuth.friendly(res.error);
+      if (/already registered/i.test(m)) {
+        NocturnalAuth.signIn(email, pass).then(function(r2){
+          if (!r2.ok) {
+            showMsg('j-error', 'An account already exists for that email — log in instead.');
+            var li = document.getElementById('li-email'); if (li) li.value = email;
+            show(loginCard);
+            return;
+          }
+          NocturnalAuth.addLane(r2.session, meta.lane).then(function(r3){
+            if (!r3.ok) { showMsg('j-error', 'Signed in, but access could not be added: ' + NocturnalAuth.friendly(r3.error)); return; }
+            enter();
+          }).catch(function(e){ showMsg('j-error', 'Signed in, but access could not be added: ' + NocturnalAuth.friendly(e && e.message)); });
+        }).catch(function(e){ showMsg('j-error', NocturnalAuth.friendly(e && e.message)); });
+        return;
+      }
+      showMsg('j-error', m);
+    }).catch(function(e){
+      if (btn) btn.disabled = false;
+      showMsg('j-error', NocturnalAuth.friendly(e && e.message));
     });
   });
   document.getElementById('showJoin').addEventListener('click', function(){
-    loginCard.classList.add('hidden'); joinCard.classList.remove('hidden');
-    document.getElementById('j-name').focus(); window.scrollTo(0, 0);
+    show(joinCard);
+    document.getElementById('j-name').focus();
   });
   document.getElementById('showLogin').addEventListener('click', function(ev){
     ev.preventDefault();
-    joinCard.classList.add('hidden'); loginCard.classList.remove('hidden');
-    document.getElementById('li-email').focus(); window.scrollTo(0, 0);
+    show(loginCard);
+    document.getElementById('li-email').focus();
   });
   document.getElementById('forgotLink').addEventListener('click', function(ev){
     ev.preventDefault();
-    document.getElementById('forgotNote').style.display = 'block';
+    var li = document.getElementById('li-email');
+    var re = document.getElementById('r-email');
+    if (re && li && li.value) re.value = li.value;
+    showMsg('r-error', ''); showMsg('resetSent', '');
+    show(resetCard);
+    if (re) re.focus();
+  });
+  document.getElementById('showLoginFromReset').addEventListener('click', function(ev){
+    ev.preventDefault();
+    show(loginCard);
+    document.getElementById('li-email').focus();
+  });
+  document.getElementById('resetForm').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var email = document.getElementById('r-email').value.trim();
+    var btn = document.getElementById('resetBtn');
+    if (!email) { document.getElementById('r-email').focus(); return; }
+    showMsg('r-error', '');
+    if (btn) btn.disabled = true;
+    NocturnalAuth.requestReset(email, B.loginUrl).then(function(res){
+      if (btn) btn.disabled = false;
+      if (!res.ok) {
+        var m = NocturnalAuth.friendly(res.error);
+        if (/only request this after/i.test(m)) m = 'A reset link was already sent recently — check your inbox, or wait a minute and try again.';
+        if (/invalid/i.test(m)) m = 'That email address does not look right. Check it and try again.';
+        showMsg('r-error', m);
+        return;
+      }
+      showMsg('resetSent', 'If an account exists for ' + email + ', a reset link is on its way. It expires in an hour — check your inbox (and spam).');
+      var f = document.getElementById('resetForm');
+      if (f) { var els = f.querySelectorAll('input, button[type="submit"]'); for (var i = 0; i < els.length; i++) els[i].disabled = true; }
+    }).catch(function(e){
+      if (btn) btn.disabled = false;
+      showMsg('r-error', NocturnalAuth.friendly(e && e.message));
+    });
+  });
+  document.getElementById('showLoginFromNewPass').addEventListener('click', function(ev){
+    ev.preventDefault();
+    show(loginCard);
+    document.getElementById('li-email').focus();
+  });
+  document.getElementById('newPassForm').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var p1 = document.getElementById('np-pass').value;
+    var p2 = document.getElementById('np-pass2').value;
+    var btn = document.getElementById('newPassBtn');
+    if (!p1 || p1.length < 6) { showMsg('np-error', 'Choose a password of at least 6 characters.'); document.getElementById('np-pass').focus(); return; }
+    if (p1 !== p2) { showMsg('np-error', 'The two passwords do not match.'); document.getElementById('np-pass2').focus(); return; }
+    var hp2 = window.__naRecovery;
+    if (!hp2 || !hp2.access_token) { showMsg('np-error', 'The reset link is missing. Request a fresh link from the log-in page.'); return; }
+    showMsg('np-error', '');
+    if (btn) btn.disabled = true;
+    NocturnalAuth.updatePassword(hp2.access_token, p1).then(function(res){
+      if (btn) btn.disabled = false;
+      if (!res.ok) {
+        showMsg('np-error', 'That reset link has expired or was already used. Request a fresh link from the log-in page.');
+        return;
+      }
+      var s = NocturnalAuth.saveSession({ access_token: hp2.access_token, refresh_token: hp2.refresh_token || null, expires_in: parseInt(hp2.expires_in || '3600', 10), user: res.user });
+      if (s && laneOK(s)) enter();
+      else if (s) showLaneNote(s);
+      else show(loginCard);
+    }).catch(function(e){
+      if (btn) btn.disabled = false;
+      showMsg('np-error', NocturnalAuth.friendly(e && e.message));
+    });
+  });
+  var addBtn = document.getElementById('addLaneBtn');
+  if (addBtn) addBtn.addEventListener('click', function(){
+    if (!B.primaryLane) { show(joinCard); document.getElementById('j-name').focus(); return; }
+    var sess = NocturnalAuth.loadSession();
+    if (!sess) return;
+    addBtn.disabled = true;
+    NocturnalAuth.addLane(sess, B.primaryLane).then(function(res){
+      addBtn.disabled = false;
+      if (!res.ok) { showMsg('laneNote', 'Could not add access: ' + NocturnalAuth.friendly(res.error)); return; }
+      enter();
+    }).catch(function(e){
+      addBtn.disabled = false;
+      showMsg('laneNote', 'Could not add access: ' + NocturnalAuth.friendly(e && e.message));
+    });
+  });
+  var laneLo = document.getElementById('laneLogout');
+  if (laneLo) laneLo.addEventListener('click', function(ev){
+    ev.preventDefault();
+    NocturnalAuth.signOut();
+    hideLaneNote();
+    showMsg('li-error', '');
   });
 })();
 </script>
