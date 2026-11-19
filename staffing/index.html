@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
+<!-- STAFFING GATE (staged 2026-11-18): the front door is the login page. Logged-out visitors are sent to login.html; login.html sets sessionStorage 'staffing-session' and returns here. Real auth (Supabase Auth) replaces this front-end flag before go-live. -->
+<script>(function(){try{if(!sessionStorage.getItem('staffing-session')){window.location.replace('login.html');}}catch(e){}})();</script>
 <meta name="description" content="Nocturnal Staffing Agency — verified nightlife staffing, registering talent and venues in all 50 states. Bartenders, barbacks, door staff, VIP hosts, bottle service, venue support staff and other nightlife roles, verified before, during and after every placement. Placements launch first across Florida's I-4 corridor.">
 <link rel="icon" href="data:,">
 <title>Nocturnal Staffing Agency — Nightlife Staffing, Verified</title>
