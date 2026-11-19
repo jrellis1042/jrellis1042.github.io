@@ -268,6 +268,23 @@ function closeView(){
   document.getElementById('reset').classList.add('hidden');
   document.getElementById('login').classList.remove('hidden');
 }
+/* Owner gate: this portal is owners only. A session counts as owner when
+   user_metadata.owner === true OR user_metadata.lanes includes 'owner'.
+   A non-owner is refused the view but NOT signed out — their tokens may be
+   shared with a business-page session, and signing out would log them out
+   there too. */
+var OWNER_ONLY_MSG = 'This portal is for Nocturnal owners only. Your account does not have owner access. If you should have it, ask an owner to add it to your account.';
+function isOwner(user){
+  if(!user) return false;
+  var md = user.user_metadata || {};
+  if(md.owner === true) return true;
+  var lanes = md.lanes || [];
+  return Array.isArray(lanes) && lanes.indexOf('owner') !== -1;
+}
+function openOwnerView(user, msgEl){
+  if(!isOwner(user)){ show(msgEl || msg, OWNER_ONLY_MSG, 'err'); return false; }
+  openView(); loadOwner(); return true;
+}
 function renderTicker(c){
   var claim = c.claimingOpen ? 'CLAIMING IS OPEN' : 'CLAIMING OPENS WHEN YOUR FIRST PAYMENT IS ACTIVE';
   var seg = '<b>'+c.combined+'</b> REGISTERED \u2014 '+claim+'&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;THE ROTATION IS GROWING&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;FOUNDING MEMBERSHIP: 60 DAYS FREE FOR NEW VENUES&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;IN: NEW YORK CITY, ORLANDO, JACKSONVILLE, COLUMBUS&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;CLOSE TO: TAMPA, LOS ANGELES, BOSTON, WASHINGTON DC&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;STATES: FLORIDA \u2022 NEW YORK \u2022 OHIO \u2022 CALIFORNIA \u2022 MASSACHUSETTS \u2022 VIRGINIA&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;BARTENDERS \u2022 VIP HOSTS \u2022 BOTTLE SERVICE \u2022 BARBACKS \u2022 DOOR STAFF \u2022 VENUE SUPPORT&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;VERIFIED BEFORE, DURING AND AFTER EVERY PLACEMENT&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;HIRE DIRECT \u2014 NO MIDDLEMAN&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;YOU DIDN\u2019T KNOW YOU NEEDED US UNTIL FRIDAY AT 8:40 PM&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;REGISTRATION IS FREE \u2014 NATIONWIDE&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;PLACEMENTS LAUNCH FIRST ON FLORIDA\u2019S I-4 CORRIDOR&nbsp;&nbsp;<i class="tsep">\u25c6</i>&nbsp;&nbsp;';
@@ -795,8 +812,8 @@ document.getElementById('go').addEventListener('click', async function(){
   try{
     var res = await sb.auth.signInWithPassword({ email: email, password: pw });
     if(res.error){ show(msg, res.error.message === 'Invalid login credentials' ? 'That password didn\u2019t match. Try again, or use \u201cForgot password?\u201d to set a new one.' : res.error.message, 'err'); return; }
+    if(!openOwnerView(res.data.user)){ return; }
     show(msg, 'Signed in.', 'ok');
-    openView(); loadOwner();
   }catch(e){ show(msg, 'Sign-in hit a problem. Try again.', 'err'); }
 });
 document.getElementById('out').addEventListener('click', async function(){
@@ -824,8 +841,10 @@ document.getElementById('setpw').addEventListener('click', async function(){
     var res = await sb.auth.updateUser({ password: pw1 });
     if(res.error){ show(msg2, res.error.message, 'err'); return; }
     try{ history.replaceState(null, '', window.location.pathname); }catch(e){}
+    var u = res.data && res.data.user;
+    if(!u){ var gu = await sb.auth.getUser(); u = gu.data && gu.data.user; }
+    if(!openOwnerView(u, msg2)){ return; }
     show(msg2, 'Password set — you are signed in.', 'ok');
-    openView(); loadOwner();
   }catch(e){ show(msg2, 'Could not set the password. Try the email link again.', 'err'); }
 });
 (function init(){
@@ -836,13 +855,32 @@ document.getElementById('setpw').addEventListener('click', async function(){
   }
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   refreshTicker(); setInterval(refreshTicker, 60000);
-  sb.auth.getSession().then(function(res){
+  sb.auth.getSession().then(async function(res){
     if(isRecovery && res.data && res.data.session){
       document.getElementById('login').classList.add('hidden');
       document.getElementById('reset').classList.remove('hidden');
       return;
     }
-    if(res.data && res.data.session){ openView(); loadOwner(); }
+    var sess = res.data && res.data.session;
+    if(!sess){
+      /* Session unification: adopt a NocturnalAuth session from a business
+         page (localStorage 'nocturnal-auth-v1', a standard GoTrue session
+         JSON) so an owner signed in there is not asked to sign in again
+         here. Any failure falls through silently to the sign-in form —
+         the working sign-in is never broken to chase this. */
+      try{
+        var raw = null;
+        try{ raw = window.localStorage.getItem('nocturnal-auth-v1'); }catch(e){}
+        if(raw){
+          var na = JSON.parse(raw);
+          if(na && na.access_token && na.refresh_token){
+            var adopted = await sb.auth.setSession({ access_token: na.access_token, refresh_token: na.refresh_token });
+            if(adopted.data && adopted.data.session){ sess = adopted.data.session; }
+          }
+        }
+      }catch(e){ /* fall through to the sign-in form */ }
+    }
+    if(sess){ openOwnerView(sess.user); }
   });
 })();
 </script>
