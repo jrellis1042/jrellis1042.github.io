@@ -4,8 +4,140 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark" />
-    <!-- LEADS GATE (staged 2026-11-18): the front door is the login page. Logged-out visitors are sent to login.html; login.html sets sessionStorage 'leads-session' and returns here. Real auth (Supabase Auth) replaces this front-end flag before go-live. -->
-    <script>(function(){try{if(!sessionStorage.getItem('leads-session')){window.location.replace('login.html');}}catch(e){}})();</script>
+<!-- LEADS GATE (2026-11-19): real Supabase Auth. No valid session for this business's lanes sends the visitor to login.html. -->
+<script>
+/* NOCTURNAL AUTH v1 (2026-11-19) — real Supabase Auth, email + password, over GoTrue REST.
+   No external scripts: the pages stay self-contained. The key below is Supabase's public
+   anon key (already published on the staffing page's pageview log); the service key is never in a page. */
+var NocturnalAuth = (function(){
+  var CFG = { url: 'https://mkyrzikeqpqncgemlsds.supabase.co', anon: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1reXJ6aWtlcXBxbmNnZW1sc2RzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzNjU0MjcsImV4cCI6MjEwNzk0MTQyN30.N1v7Ndd8hjDDkYCzu5kvQU3St3_mkzNpxwlZVy_SD4g', store: 'nocturnal-auth-v1' };
+  function headers(token){
+    return { 'apikey': CFG.anon, 'Authorization': 'Bearer ' + (token || CFG.anon), 'Content-Type': 'application/json' };
+  }
+  function api(path, method, body, token){
+    var opts = { method: method, headers: headers(token) };
+    if (body) opts.body = JSON.stringify(body);
+    return fetch(CFG.url + path, opts).then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(j){ return { status: r.status, body: j }; });
+    }).catch(function(){ throw new Error('network'); });
+  }
+  function errMsg(r){
+    var b = r.body || {};
+    if (b.msg) return b.msg;
+    if (b.error_description) return b.error_description;
+    if (b.message) return b.message;
+    return 'Something went wrong. Please try again.';
+  }
+  function saveSession(d){
+    try {
+      var s = { access_token: d.access_token, refresh_token: d.refresh_token || null,
+        expires_at: d.expires_at || (Date.now() + (d.expires_in || 3600) * 1000), user: d.user || null };
+      localStorage.setItem(CFG.store, JSON.stringify(s));
+      return s;
+    } catch (e) { return null; }
+  }
+  function loadSession(){
+    try { var s = JSON.parse(localStorage.getItem(CFG.store) || 'null'); return (s && s.access_token) ? s : null; }
+    catch (e) { return null; }
+  }
+  function clearSession(){ try { localStorage.removeItem(CFG.store); } catch (e) {} }
+  function storageOK(){
+    try { localStorage.setItem('__na_test', '1'); localStorage.removeItem('__na_test'); return true; }
+    catch (e) { return false; }
+  }
+  function lanesOf(user){
+    var m = (user && user.user_metadata) || {};
+    if (Array.isArray(m.lanes) && m.lanes.length) return m.lanes.slice();
+    if (m.lane) return [m.lane];
+    return [];
+  }
+  function refresh(sess){
+    return api('/auth/v1/token?grant_type=refresh_token', 'POST', { refresh_token: sess.refresh_token }).then(function(r){
+      if (r.status !== 200 || !r.body.access_token) { clearSession(); return null; }
+      return saveSession(r.body);
+    });
+  }
+  function getValidSession(){
+    var s = loadSession();
+    if (!s) return Promise.resolve(null);
+    if (s.expires_at && s.expires_at > Date.now() + 60000) return Promise.resolve(s);
+    if (!s.refresh_token) { clearSession(); return Promise.resolve(null); }
+    return refresh(s).catch(function(){ clearSession(); return null; });
+  }
+  function getUser(token){
+    return api('/auth/v1/user', 'GET', null, token).then(function(r){
+      if (r.status !== 200 || !r.body.id) return null;
+      return r.body;
+    });
+  }
+  function signUp(email, password, metadata){
+    return api('/auth/v1/signup', 'POST', { email: email, password: password, data: metadata }).then(function(r){
+      if (r.status !== 200 || !r.body.access_token) return { ok: false, error: errMsg(r) };
+      return { ok: true, session: saveSession(r.body) };
+    });
+  }
+  function signIn(email, password){
+    return api('/auth/v1/token?grant_type=password', 'POST', { email: email, password: password }).then(function(r){
+      if (r.status !== 200 || !r.body.access_token) return { ok: false, error: errMsg(r) };
+      return { ok: true, session: saveSession(r.body) };
+    });
+  }
+  function signOut(){
+    var s = loadSession();
+    clearSession();
+    if (s && s.access_token) api('/auth/v1/logout', 'POST', {}, s.access_token).catch(function(){});
+  }
+  function requestReset(email, redirectTo){
+    return api('/auth/v1/recover', 'POST', { email: email, redirect_to: redirectTo }).then(function(r){
+      return { ok: r.status === 200, error: r.status === 200 ? null : errMsg(r) };
+    });
+  }
+  function updatePassword(token, password){
+    return api('/auth/v1/user', 'PUT', { password: password }, token).then(function(r){
+      if (r.status !== 200 || !r.body.id) return { ok: false, error: errMsg(r) };
+      return { ok: true, user: r.body };
+    });
+  }
+  function addLane(sess, lane){
+    var lanes = lanesOf(sess.user);
+    if (lanes.indexOf(lane) === -1) lanes.push(lane);
+    return api('/auth/v1/user', 'PUT', { data: { lanes: lanes } }, sess.access_token).then(function(r){
+      if (r.status !== 200 || !r.body.id) return { ok: false, error: errMsg(r) };
+      var s = loadSession() || sess;
+      s.user = r.body;
+      saveSession(s);
+      return { ok: true };
+    });
+  }
+  function friendly(err){
+    if (err && err.message) err = err.message;
+    if (!err) return '';
+    if (err === 'network') return 'Could not reach the sign-in server. Check your connection and try again.';
+    return String(err);
+  }
+  return { getValidSession: getValidSession, loadSession: loadSession, saveSession: saveSession,
+    clearSession: clearSession, storageOK: storageOK, lanesOf: lanesOf, getUser: getUser,
+    signUp: signUp, signIn: signIn, signOut: signOut, requestReset: requestReset,
+    updatePassword: updatePassword, addLane: addLane, friendly: friendly };
+})();
+(function(){
+  var LANES = ['buyer'];
+  function goLogin(){ try { window.location.replace('login.html'); } catch (e) { window.location.href = 'login.html'; } }
+  function laneOK(sess){ var lanes = NocturnalAuth.lanesOf(sess.user); return LANES.some(function(l){ return lanes.indexOf(l) !== -1; }); }
+  function wireSignOut(){
+    var el = document.getElementById('nocturnal-signout');
+    if (el) el.addEventListener('click', function(ev){ ev.preventDefault(); NocturnalAuth.signOut(); window.location.replace('login.html'); });
+  }
+  function onReady(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
+  var sess = NocturnalAuth.loadSession();
+  if (!sess) { goLogin(); return; }
+  if (!laneOK(sess)) { goLogin(); return; }
+  NocturnalAuth.getValidSession().then(function(s){
+    if (!s || !laneOK(s)) { goLogin(); return; }
+    onReady(wireSignOut);
+  }).catch(function(){ goLogin(); });
+})();
+</script>
     <link rel="icon" href="data:," />
     <title>Nocturnal Leads — Verified Venue Lead Batches</title>
     <meta name="description" content="Nocturnal Leads sells verified venue-record batches to the businesses that sell to nightlife venues. One buyer per metro, 30-day exclusivity, replace-or-credit guarantee." />
@@ -331,6 +463,8 @@ Classes are hs- namespaced: the live pages already use .topbar (staffing/request
       <a href="#faq">FAQ</a>
       <div class="hs-menu-div"></div>
       <a class="cta" href="https://docs.google.com/forms/d/e/1FAIpQLSdXhBval0Pa24IYtwje2LO6CcUpA_nmR4lMll1v071vzkH6WA/viewform" target="_blank" rel="noopener">Join the Waitlist →</a>
+      <div class="hs-menu-div"></div>
+      <a href="#" id="nocturnal-signout">Log Out</a>
     </nav>
   </div>
   <div class="hs-switcher" role="group" aria-label="House Switcher">
