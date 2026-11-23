@@ -161,21 +161,21 @@
 <div id="dataData" class="hidden" role="tabpanel">
 <h2>Data Department — Plans &amp; Development</h2>
 <p class="muted">The department builds in the background, layer by layer. Dara owns it — venue data products, buyer terms, and market intelligence. Content here is baked from the department plan; a plan change means a redeploy.</p>
-<h3>Where We Are</h3>
-<p><b>Layer 1 — Foundation: DONE.</b> Audit, product definition, buyer-terms outline, hygiene backlog, proposed launch gates. No storefront, no launch, no sales.</p>
-<p><b>Layer 2 — Packaging / storefront: not started.</b> Needs the structured venue store, a verification pass, a sample list, pricing (Rashad's call), and an attorney read on the buyer terms.</p>
-<p><b>Layer 3 — Intelligence reports: not started.</b> Needs Layer 2's store plus snapshot history trend data (history started November 14, 2026).</p>
-<h3>The Audit, Honestly</h3>
-<p><b>325 real venue orgs</b> in the CRM — but the records are name-only: <b>0 addresses, 0 cities, 0 states, 0 websites, 0 contact persons</b> on file. <b>67 verified business emails (21%)</b> found in outreach notes. The engine headline says 251 venues scored, but per-segment counters sum to 199 — a <b>52-record gap to reconcile</b> before any sale. <b>Nothing is sellable today as a ready product.</b> The list is real and fresh (123 venues added in the last 30 days), but it is not a product yet.</p>
 <p id="dataLive" class="muted">Live numbers load with the snapshot…</p>
+<h3>Where We Are</h3>
+<p><b>Layer 1 — Foundation: DONE.</b> Audit, product definition, buyer-terms outline, hygiene backlog, proposed launch gates. Storefront now live at /data/; no launch, no sales yet.</p>
+<p><b>Layer 2 — Packaging / storefront: LIVE.</b> The structured venue store exists (148 verified records) and the storefront is live at /data/ with the sample list and buyer terms on the page. Still owed: pricing (Rashad's call) and an attorney read on the buyer terms.</p>
+<p><b>Layer 3 — Intelligence reports: READY TO START.</b> Layer 2's store exists and snapshot history runs from November 14, 2026. No intelligence report built yet.</p>
+<h3>The Store Today — November 22, 2026</h3>
+<p>The structured venue store holds <b>148 verified venue records</b>: <b>24 Verified Owner / 10 Verified Contact / 114 Candidate</b>, with <b>34 verified business emails</b> — <b>148 / 1,000 toward the launch gate (14.8%)</b>. Every record verified within 90 days; nothing older than 180 days without re-verification ships. <b>No batch sold yet</b> — the launch gate (1,000 records plus the first paying venue) is not met, so nothing ships today. The store itself is real, verified, and growing.</p>
 <h3>What We Will Sell</h3>
 <p><b>Unit 1 — Venue lead lists</b> (by city / region / venue type): business name, city, state, venue type, verified business email, fit score, last-verified date, source. No phone numbers in v1. No suppressed contacts, ever. Sold as a dated snapshot.</p>
 <p><b>Unit 2 — Aggregated demand reports:</b> no per-venue rows. Short-staffed cities, hard-to-fill roles, territory coverage, trend lines. This is the first unit that can ship — it contains no contact data at all.</p>
 <p><b>Unit 3 (later) — Enrichment / verification:</b> a buyer brings their own venue list; Nocturnal verifies contacts and scores against its coverage.</p>
 <h3>Hygiene Backlog — 8 Items Before Any Sale</h3>
-<p>1. Join city + state to every venue record from verified sources — no invented geography. 2. Build one structured venue store. 3. Reconcile the 199-vs-251 scored gap. 4. Resolve the ~8 look-alike venue groups. 5. Strip the 9 suppressed addresses and the 2 test orgs from any product extract — permanently. 6. Re-verify the 67 on-file emails before any sale. 7. Backfill addresses/websites from public sources only. 8. Record provenance per record.</p>
+<p>1. Join city + state to every venue record from verified sources — no invented geography. 2. Build one structured venue store — DONE (v2, 148 verified records). 3. Reconcile the 199-vs-251 scored gap — DONE: the structured store is the single source of truth; the old engine headline is not used for sales. 4. Resolve the ~8 look-alike venue groups. 5. Strip the 9 suppressed addresses and the 2 test orgs from any product extract — permanently. 6. Re-verify the on-file emails before any sale — the store carries 34 verified business emails (verified Nov 15–22, 2026); re-verification runs on the 90-day cadence. 7. Backfill addresses/websites from public sources only. 8. Record provenance per record.</p>
 <h3>Proposed Launch Gates (Proposals — Not Decided)</h3>
-<p>1. <b>1,000+ verified fresh venue records</b> in the structured store (today: 325 names, 67 emails, 1 structured score). 2. <b>The staffing engine's first paying venue</b> — the core business comes first. 3. Hygiene backlog cleared. 4. Attorney read on the buyer terms. 5. Pricing approved by Rashad.</p>
+<p>1. <b>1,000+ verified fresh venue records</b> in the structured store (today: 148 verified records — 24 Verified Owner, 10 Verified Contact, 114 Candidate, 34 verified emails; 14.8% of the gate). 2. <b>The staffing engine's first paying venue</b> — the core business comes first. 3. Hygiene backlog cleared. 4. Attorney read on the buyer terms. 5. Pricing approved by Rashad.</p>
 <div class="data-boundary"><h3>Hard Boundary — Talent Data Is Never For Sale</h3><p><b>Talent PII is never for sale.</b> No talent names, emails, phones, or dates of birth in any data product, ever, without explicit opt-in consent (none exists today). Only venue and business data is in scope. Any step that would touch talent records is skipped.</p></div>
 <h3>Dara's Lane</h3>
 <p>Dara — Data Department (named November 14, 2026) — owns the data products, dataset hygiene, buyer terms, and intelligence reports. Venue/business data only; talent PII never for sale.</p>
@@ -189,7 +189,7 @@
 <h3>Your Suggestions</h3>
 <div id="suggestList"><p class="muted">Loading your suggestions…</p></div>
 </div>
-<p class="muted">Plan written November 15, 2026. This tab refreshes when the plan updates — a plan change means a redeploy.</p>
+<p class="muted">Plan written November 15, 2026; Data tab refreshed November 22, 2026 to the live store (148 records). This tab refreshes when the plan updates — a plan change means a redeploy.</p>
 </div>
 <div id="trustData" class="hidden" role="tabpanel">
 <h2>Family Trust — Nocturnal Holdings</h2>
