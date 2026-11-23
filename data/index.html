@@ -479,19 +479,19 @@ Classes are hs- namespaced: the live pages already use .topbar (staffing/request
     <div>
       <p class="kicker">Buyer Preview</p>
       <h2>See what a territory holds &mdash; before you pay</h2>
-      <p>Filter by metro, tier, and verified email. You see matching <strong>counts only</strong> &mdash; venue names, emails, addresses, websites, and fit scores stay locked until payment. The store holds 85 venue records, 25 with a verified business email, and 0 stale records &mdash; every record verified Nov 15&ndash;18, 2026.</p>
+      <p>Filter by metro, tier, and verified email. You see matching <strong>counts only</strong> &mdash; venue names, emails, addresses, websites, and fit scores stay locked until payment. The store holds 148 venue records, 34 with a verified business email, and 0 stale records &mdash; every record verified Nov 15&ndash;22, 2026.</p>
     </div>
   </div>
   <div class="filters">
-    <label>Metro<br><select id="fMetro"><option value="__all">All metros (85)</option><option value="Jacksonville (metro)">Jacksonville (metro) (26)</option><option value="Albuquerque">Albuquerque (1)</option><option value="Anaheim">Anaheim (1)</option><option value="Arlington">Arlington (1)</option><option value="Banning">Banning (1)</option><option value="Daytona Beach">Daytona Beach (25)</option><option value="Encinitas">Encinitas (1)</option><option value="Fernandina Beach">Fernandina Beach (13)</option><option value="Fullerton">Fullerton (1)</option><option value="Huntington Beach">Huntington Beach (1)</option><option value="Long Beach">Long Beach (3)</option><option value="Orlando">Orlando (1)</option><option value="San Antonio">San Antonio (1)</option><option value="San Diego">San Diego (2)</option><option value="St. Augustine">St. Augustine (5)</option><option value="Tampa">Tampa (1)</option><option value="Upland">Upland (1)</option></select></label>
+    <label>Metro<br><select id="fMetro"><option value="__all">All metros (148)</option><option value="Jacksonville (metro)">Jacksonville (metro) (26)</option><option value="Albuquerque">Albuquerque (1)</option><option value="Anaheim">Anaheim (1)</option><option value="Arlington">Arlington (1)</option><option value="Banning">Banning (1)</option><option value="Daytona (metro)">Daytona (metro) (53)</option><option value="Daytona Beach Shores">Daytona Beach Shores (2)</option><option value="Encinitas">Encinitas (1)</option><option value="Fernandina Beach">Fernandina Beach (13)</option><option value="Fullerton">Fullerton (1)</option><option value="Huntington Beach">Huntington Beach (1)</option><option value="Lakeland">Lakeland (13)</option><option value="Long Beach">Long Beach (3)</option><option value="New Smyrna Beach">New Smyrna Beach (1)</option><option value="Orange City">Orange City (1)</option><option value="Orlando">Orlando (1)</option><option value="Ponce Inlet">Ponce Inlet (1)</option><option value="Port Orange">Port Orange (1)</option><option value="San Antonio">San Antonio (1)</option><option value="San Diego">San Diego (2)</option><option value="St. Augustine">St. Augustine (8)</option><option value="Tampa">Tampa (1)</option><option value="Upland">Upland (1)</option><option value="Winter Haven">Winter Haven (13)</option></select></label>
     <label>Tier<br><select id="fTier"><option value="__all">All tiers</option><option value="vo">Verified Owner</option><option value="vc">Verified Contact</option><option value="c">Candidate</option></select></label>
     <label>Verified email<br><select id="fEmail"><option value="__all">Any</option><option value="yes">Yes — has verified email</option><option value="no">No — email not yet verified</option></select></label>
   </div>
   <div class="preview-card" id="fOut" aria-live="polite"></div>
-  <p style="color:var(--ink3);font-size:13px">Counts are the store&rsquo;s real counts, from data_store.py stats, as of Nov 22, 2026. Metro counts group Jacksonville with Jacksonville Beach. A sold list is a dated snapshot &mdash; active records only, held / suppressed / test stripped, nothing older than 180 days.</p>
+  <p style="color:var(--ink3);font-size:13px">Counts are the store&rsquo;s real counts, from data_store.py stats, as of Nov 22, 2026. Metro counts group Jacksonville with Jacksonville Beach, Neptune Beach, and Atlantic Beach, and Daytona Beach with Ormond Beach. A sold list is a dated snapshot &mdash; active records only, held / suppressed / test stripped, nothing older than 180 days.</p>
 </section>
 <script>
-var FDATA = {"Arlington": {"total": 1, "vo": 1, "vc": 0, "c": 0}, "San Antonio": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Encinitas": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Fullerton": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "San Diego": {"total": 2, "vo": 1, "vc": 0, "c": 1}, "Albuquerque": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Anaheim": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Orlando": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Tampa": {"total": 1, "vo": 1, "vc": 0, "c": 0}, "Upland": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Long Beach": {"total": 3, "vo": 0, "vc": 0, "c": 3}, "Banning": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Huntington Beach": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Jacksonville (metro)": {"total": 26, "vo": 6, "vc": 2, "c": 18}, "St. Augustine": {"total": 5, "vo": 2, "vc": 1, "c": 2}, "Fernandina Beach": {"total": 13, "vo": 3, "vc": 1, "c": 9}, "Daytona Beach": {"total": 25, "vo": 6, "vc": 1, "c": 18}};
+var FDATA = {"Jacksonville (metro)": {"total": 26, "vo": 6, "vc": 2, "c": 18}, "Albuquerque": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Anaheim": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Arlington": {"total": 1, "vo": 1, "vc": 0, "c": 0}, "Banning": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Daytona (metro)": {"total": 53, "vo": 8, "vc": 3, "c": 42}, "Daytona Beach Shores": {"total": 2, "vo": 0, "vc": 0, "c": 2}, "Encinitas": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Fernandina Beach": {"total": 13, "vo": 3, "vc": 1, "c": 9}, "Fullerton": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Huntington Beach": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Lakeland": {"total": 13, "vo": 2, "vc": 2, "c": 9}, "Long Beach": {"total": 3, "vo": 0, "vc": 0, "c": 3}, "New Smyrna Beach": {"total": 1, "vo": 0, "vc": 1, "c": 0}, "Orange City": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Orlando": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Ponce Inlet": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Port Orange": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "San Antonio": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "San Diego": {"total": 2, "vo": 1, "vc": 0, "c": 1}, "St. Augustine": {"total": 8, "vo": 2, "vc": 1, "c": 5}, "Tampa": {"total": 1, "vo": 1, "vc": 0, "c": 0}, "Upland": {"total": 1, "vo": 0, "vc": 0, "c": 1}, "Winter Haven": {"total": 13, "vo": 0, "vc": 0, "c": 13}};
 function fRender(){
   var m = document.getElementById('fMetro').value,
       t = document.getElementById('fTier').value,
@@ -520,18 +520,25 @@ fRender();
     <div>
       <p class="kicker">Coverage</p>
       <h2>Metro Coverage Map</h2>
-      <p>148 records across 24 metros in 5 states, as of Nov 22, 2026. Metro names and counts only &mdash; no venue names, emails, or addresses. Dot size shows record count; Jacksonville groups Jacksonville with Jacksonville Beach.</p>
+      <p>148 records across 24 metros in 5 states, as of Nov 22, 2026. Metro names and counts only &mdash; no venue names, emails, or addresses. Dot size shows record count; Jacksonville groups Jacksonville with Jacksonville Beach, Neptune Beach, and Atlantic Beach; Daytona groups Daytona Beach with Ormond Beach.</p>
     </div>
   </div>
   <div class="coverage-state">
-    <h3>Florida &mdash; 71 Records</h3>
-    <p class="state-count">6 metros</p>
+    <h3>Florida &mdash; 134 Records</h3>
+    <p class="state-count">13 metros</p>
     <div class="dot-grid">
-      <div class="metro-dot"><span class="bubble" style="--d:64px">25</span><span class="m-name">Daytona Beach</span><span class="m-count">25 records</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:87px">53</span><span class="m-name">Daytona</span><span class="m-count">53 records</span></div>
       <div class="metro-dot"><span class="bubble" style="--d:65px">26</span><span class="m-name">Jacksonville</span><span class="m-count">26 records</span></div>
       <div class="metro-dot"><span class="bubble" style="--d:51px">13</span><span class="m-name">Fernandina Beach</span><span class="m-count">13 records</span></div>
-      <div class="metro-dot"><span class="bubble" style="--d:40px">5</span><span class="m-name">St. Augustine</span><span class="m-count">5 records</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:51px">13</span><span class="m-name">Lakeland</span><span class="m-count">13 records</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:51px">13</span><span class="m-name">Winter Haven</span><span class="m-count">13 records</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:43px">8</span><span class="m-name">St. Augustine</span><span class="m-count">8 records</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:30px">2</span><span class="m-name">Daytona Beach Shores</span><span class="m-count">2 records</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">New Smyrna Beach</span><span class="m-count">1 record</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Orange City</span><span class="m-count">1 record</span></div>
       <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Orlando</span><span class="m-count">1 record</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Ponce Inlet</span><span class="m-count">1 record</span></div>
+      <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Port Orange</span><span class="m-count">1 record</span></div>
       <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Tampa</span><span class="m-count">1 record</span></div>
     </div>
   </div>
@@ -550,22 +557,22 @@ fRender();
     </div>
   </div>
   <div class="coverage-state">
-    <h3>New Mexico &mdash; 1 Records</h3>
-    <p class="state-count">1 metros</p>
+    <h3>New Mexico &mdash; 1 Record</h3>
+    <p class="state-count">1 metro</p>
     <div class="dot-grid">
       <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Albuquerque</span><span class="m-count">1 record</span></div>
     </div>
   </div>
   <div class="coverage-state">
-    <h3>Texas &mdash; 1 Records</h3>
-    <p class="state-count">1 metros</p>
+    <h3>Texas &mdash; 1 Record</h3>
+    <p class="state-count">1 metro</p>
     <div class="dot-grid">
       <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">San Antonio</span><span class="m-count">1 record</span></div>
     </div>
   </div>
   <div class="coverage-state">
-    <h3>Virginia &mdash; 1 Records</h3>
-    <p class="state-count">1 metros</p>
+    <h3>Virginia &mdash; 1 Record</h3>
+    <p class="state-count">1 metro</p>
     <div class="dot-grid">
       <div class="metro-dot"><span class="bubble" style="--d:26px">1</span><span class="m-name">Arlington</span><span class="m-count">1 record</span></div>
     </div>
@@ -600,8 +607,8 @@ fRender();
   </div>
   <div class="recent-rows">
     <div class="recent-row"><div class="r-date">November 18, 2026</div><p><strong>Jacksonville metro, 9 records</strong></p></div>     <div class="recent-row"><div class="r-date">November 17, 2026</div><p><strong>Daytona Beach and Fernandina Beach, 31 records</strong></p></div>
-    <div class="recent-row"><div class="r-date">November 16, 2026</div><p><strong>Jacksonville, Fernandina Beach, St. Augustine and 4 more metros, 24 records</strong></p></div>
-    <div class="recent-row"><div class="r-date">November 15, 2026</div><p><strong>21 records across 14 metros</strong></p></div>
+    <div class="recent-row"><div class="r-date">November 16, 2026</div><p><strong>Jacksonville, Fernandina Beach, St. Augustine and 3 more metros, 24 records</strong></p></div>
+    <div class="recent-row"><div class="r-date">November 15, 2026</div><p><strong>21 records across 13 metros</strong></p></div>
   </div>
 </section>
 
@@ -630,7 +637,7 @@ fRender();
       <p>Counts are shown at state level only — never at a granularity that could identify a venue.</p>
       <table class="data-table" style="margin-top:14px">
         <tr><th>State</th><th>Records</th></tr>
-        <tr><td>Florida</td><td class="num">71</td></tr>
+        <tr><td>Florida</td><td class="num">134</td></tr>
         <tr><td>California</td><td class="num">11</td></tr>
         <tr><td>New Mexico</td><td class="num">1</td></tr>
         <tr><td>Texas</td><td class="num">1</td></tr>
