@@ -1614,7 +1614,7 @@ startTimer();
               <input type="email" id="newsEmail" name="email" placeholder="Your email" autocomplete="email" aria-label="Your email" />
               <button class="btn btn-solid" type="submit">Subscribe</button>
             </form>
-            <p class="news-note" id="newsNote">Straight with you: the updates list opens when campaigns resume. <a id="newsInquiryLink" href="https://docs.google.com/forms/d/e/1FAIpQLSdTcG6eWMWMGLFMpbTb4Pwqjt_oXhKVLxyOeyNNTc2SwVmVhw/viewform" target="_blank" rel="noopener">Start an inquiry</a> now and you'll be first to hear — and the inquiry is where pricing gets talked through.</p>
+            <p class="news-note" id="newsNote">The updates list is open — <a id="newsUpdatesLink" href="https://docs.google.com/forms/d/e/1FAIpQLSf5OI9P7WVbYeM9IBuggu9xaCJm90Rwh2YMSMaP8oDeMim6hg/viewform" target="_blank" rel="noopener">join the list</a> and you'll hear it first when the next night is set and campaigns resume. Talking pricing or booking a night? <a id="newsInquiryLink" href="https://docs.google.com/forms/d/e/1FAIpQLSdTcG6eWMWMGLFMpbTb4Pwqjt_oXhKVLxyOeyNNTc2SwVmVhw/viewform" target="_blank" rel="noopener">Start an inquiry</a> — that's where pricing gets talked through.</p>
           </div>
         </div>
       </section>
@@ -1725,11 +1725,11 @@ startTimer();
           e.preventDefault();
           var name = document.getElementById('newsName').value.trim();
           var email = document.getElementById('newsEmail').value.trim();
-          var link = document.getElementById('newsInquiryLink');
+          var link = document.getElementById('newsUpdatesLink');
           if (link && (name || email)) {
-            var url = 'https://docs.google.com/forms/d/e/1FAIpQLSdTcG6eWMWMGLFMpbTb4Pwqjt_oXhKVLxyOeyNNTc2SwVmVhw/viewform?usp=pp_url';
-            if (name) url += '&entry.388834015=' + encodeURIComponent(name);
-            if (email) url += '&entry.2086877788=' + encodeURIComponent(email);
+            var url = 'https://docs.google.com/forms/d/e/1FAIpQLSf5OI9P7WVbYeM9IBuggu9xaCJm90Rwh2YMSMaP8oDeMim6hg/viewform?usp=pp_url';
+            if (name) url += '&entry.682283907=' + encodeURIComponent(name);
+            if (email) url += '&entry.1999465577=' + encodeURIComponent(email);
             link.href = url;
           }
           document.getElementById('newsNote').classList.add('show');
