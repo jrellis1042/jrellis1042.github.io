@@ -1772,6 +1772,408 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
 
   /* composer */
   var myProfile = null;
+
+  /* ---------- VIRAL CLUB REAL BACKEND (2026-11-26, fix 4 leg 2) ----------
+     Raw fetch() to Supabase REST, same style as NocturnalAuth above — no CDN
+     script, no supabase-js, the page stays self-contained. Reads/writes only
+     the page's own vc_* tables (profiles, rooms, messages, posts, likes,
+     follows, shouts). Tables do NOT exist yet — Rashad runs
+     hidden_files/supabase-viral-club-tables.sql in the Supabase dashboard.
+     Until then every call below degrades honestly: a "being set up" note in
+     the affected area + its composer disabled. Sample preview copy is NEVER
+     presented as real data, and no seed messages/posts/shouts are invented.
+     Signed-out visitors never reach this code — the gate above redirects
+     them to login.html, so the labelled sample preview is untouched. */
+  var VC_REST = "https://mkyrzikeqpqncgemlsds.supabase.co/rest/v1";
+  var VC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1reXJ6aWtlcXBxbmNnZW1sc2RzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzNjU0MjcsImV4cCI6MjEwNzk0MTQyN30.N1v7Ndd8hjDDkYCzu5kvQU3St3_mkzNpxwlZVy_SD4g"; /* public anon key, same as NocturnalAuth CFG above */
+  var VC_SETUP = "Viral Club backend is being set up — check back soon.";
+  var vcSession = null, vcUserId = null, vcProfile = null;
+  var vcBackend = { profiles: null, rooms: null, messages: null, posts: null, shouts: null, likes: null, follows: null };
+  var vcRoomsByName = {}, vcRoomIds = {}, vcProfilesById = {};
+  var vcCurrentRoomId = null, vcNewestMsgId = null, vcMsgTimer = null, vcAccentT = null;
+  var vcMyLikes = {}, vcLikeCounts = {}, vcMyFollows = {}, vcSetupShown = {};
+  function vcRest(path, method, body, prefer){
+    var h = { "apikey": VC_ANON, "Authorization": "Bearer " + (vcSession && vcSession.access_token ? vcSession.access_token : VC_ANON), "Content-Type": "application/json" };
+    if (prefer) h["Prefer"] = prefer;
+    var opts = { method: method || "GET", headers: h };
+    if (body !== undefined && body !== null) opts.body = JSON.stringify(body);
+    return fetch(VC_REST + path, opts).then(function(r){
+      return r.text().then(function(t){
+        var j = null; try { j = JSON.parse(t); } catch (e) {}
+        return { status: r.status, body: j, text: t };
+      });
+    });
+  }
+  /* Tables-not-existing-yet looks like: REST 404, PostgREST PGRST205
+     ("Could not find the table"), or "relation … does not exist". */
+  function vcMissing(res){
+    if (!res) return true;
+    if (res.status === 404) return true;
+    var b = res.body || {};
+    if (b.code === "PGRST205" || b.code === "PGRST204") return true;
+    if (typeof b.message === "string" && /relation .* does not exist|Could not find the table/i.test(b.message)) return true;
+    return false;
+  }
+  function vcSetupNote(area, anchor, disable){
+    if (vcSetupShown[area]) return;
+    vcSetupShown[area] = true;
+    vcBackend[area] = false;
+    console.log("[ViralClub] backend not ready (" + area + "): " + VC_SETUP);
+    var n = document.createElement("p");
+    n.className = "vc-setup-note";
+    n.setAttribute("role", "note");
+    n.style.cssText = "font-size:.9rem;color:var(--muted);margin:10px 0;padding:10px 12px;border:1px dashed var(--muted);border-radius:10px";
+    n.textContent = VC_SETUP;
+    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(n, anchor);
+    (disable || []).forEach(function(el){ if (el) el.disabled = true; });
+  }
+  function vcDefaultName(user){
+    var m = (user && user.user_metadata) || {};
+    if (m.name) return m.name;
+    var pre = ((user && user.email) || "").split("@")[0].replace(/[._-]+/g, " ").trim();
+    return pre ? pre.charAt(0).toUpperCase() + pre.slice(1) : "Club Member";
+  }
+  function vcTimeAgo(iso){
+    var t = new Date(iso).getTime(); if (!t) return "Just now";
+    var s = Math.floor((Date.now() - t) / 1000);
+    if (s < 60) return "Just now";
+    if (s < 3600) return Math.floor(s / 60) + "m ago";
+    if (s < 86400) return Math.floor(s / 3600) + "h ago";
+    return Math.floor(s / 86400) + "d ago";
+  }
+  /* ----- profiles: load or upsert the caller's row, then apply it ----- */
+  function vcLoadProfile(){
+    return vcRest("/vc_profiles?id=eq." + vcUserId + "&select=*").then(function(res){
+      if (vcMissing(res)){ vcSetupNote("profiles", $("#profileNote"), []); return null; }
+      if (res.status !== 200 || !Array.isArray(res.body)) return null;
+      vcBackend.profiles = true;
+      if (res.body.length){ vcProfile = res.body[0]; return vcProfile; }
+      return vcUpsertProfile();
+    }).catch(function(){ return null; });
+  }
+  function vcUpsertProfile(){
+    var user = vcSession.user, m = (user && user.user_metadata) || {};
+    var handle = m.handle || ("@" + ((user.email || "member").split("@")[0].replace(/[^a-z0-9]/gi, "").toLowerCase()));
+    var juiced = !!m.juicedup_member;
+    var row = { id: vcUserId, display_name: vcDefaultName(user), handle: handle, role: m.role || null, city: m.city || null, bio: null, is_juiced_up_member: juiced, is_verified: juiced };
+    return vcRest("/vc_profiles?on_conflict=id", "POST", row, "resolution=merge-duplicates,return=representation").then(function(res){
+      if (vcMissing(res)){ vcSetupNote("profiles", $("#profileNote"), []); return null; }
+      if ((res.status === 409 || res.status === 400) && row.handle){
+        row.handle = null; /* handle taken — retry with no handle rather than failing the profile */
+        return vcRest("/vc_profiles?on_conflict=id", "POST", row, "resolution=merge-duplicates,return=representation").then(function(r2){
+          if (r2.status === 201 || r2.status === 200){ vcProfile = (r2.body && r2.body[0]) || row; vcBackend.profiles = true; return vcProfile; }
+          return null;
+        });
+      }
+      if (res.status === 201 || res.status === 200){ vcProfile = (res.body && res.body[0]) || row; vcBackend.profiles = true; return vcProfile; }
+      return null;
+    }).catch(function(){ return null; });
+  }
+  function vcSaveProfile(patch){
+    if (!vcSession || !vcProfile || vcBackend.profiles === false) return;
+    vcRest("/vc_profiles?id=eq." + vcUserId, "PATCH", patch, "return=minimal").then(function(res){
+      if (vcMissing(res)) vcBackend.profiles = false;
+      else if (res.status === 200 || res.status === 204){ for (var k in patch) vcProfile[k] = patch[k]; }
+    }).catch(function(){});
+  }
+  /* Anthem hooks used by the custom-anthem script below (separate IIFE):
+     save a link anthem to the profile (device-only blob: uploads are never
+     persisted); clearing a custom anthem restores the sample default. */
+  window.__vcSaveAnthem = function(c){
+    if (!c) return;
+    if (!c.src || c.src.indexOf("blob:") === 0) return;
+    var kind = (c.kind === "audio") ? "link" : c.kind;
+    if (["youtube", "spotify", "link"].indexOf(kind) === -1) return;
+    vcSaveProfile({ anthem_title: c.title, anthem_artist: c.artist || null, anthem_song: c.song || null, anthem_src: c.src, anthem_kind: kind });
+  };
+  window.__vcClearProfileAnthem = function(){
+    vcSaveProfile({ anthem_title: "Neon Skyline — Sample Track by DJ Nova (Sample)", anthem_artist: null, anthem_song: null, anthem_src: null, anthem_kind: "sample" });
+  };
+  function vcApplyProfile(){
+    if (!vcProfile) return;
+    var name = vcProfile.display_name || vcDefaultName(vcSession.user);
+    var role = vcProfile.role || "The Scene";
+    myProfile = { name: name, role: role };
+    var mn = $("#myName"); if (mn) mn.textContent = name;
+    var mr = $("#myRole"); if (mr) mr.textContent = role + (vcProfile.city ? " · " + vcProfile.city : "");
+    var ma = $("#myAvatar"); if (ma) ma.textContent = initials(name);
+    var ca = $("#composerAvatar"); if (ca) ca.textContent = initials(name);
+    if (vcProfile.is_verified) setTier("verified");
+    if (vcProfile.background && typeof bgStyles !== "undefined" && bgStyles[vcProfile.background]){
+      var pc = $("#profileCover"); if (pc) pc.style.background = bgStyles[vcProfile.background];
+    }
+    if (vcProfile.accent){
+      var pp = $("#profilePreview"); if (pp) pp.style.setProperty("--preview-accent", vcProfile.accent);
+      var ac = $("#accentColor"); if (ac) ac.value = vcProfile.accent;
+    }
+    if (vcProfile.anthem_kind === "sample" && vcProfile.anthem_title){
+      anthemTitle = vcProfile.anthem_title;
+      var pat = $("#previewAnthemTitle"); if (pat) pat.textContent = "Anthem: " + anthemTitle.split(" — ")[0];
+      var fat = $("#fixedAnthemTitle"); if (fat) fat.textContent = anthemTitle;
+      $$("#anthemList .anthem-opt").forEach(function(x){ x.classList.toggle("on", x.getAttribute("data-anthem") === anthemTitle); });
+    } else if (vcProfile.anthem_kind && vcProfile.anthem_src && window.__vcLoadCustomAnthem){
+      var c = { kind: vcProfile.anthem_kind, title: vcProfile.anthem_title || "Your Anthem", artist: vcProfile.anthem_artist || "", song: vcProfile.anthem_song || "", src: vcProfile.anthem_src };
+      try { localStorage.setItem("vc-anthem-custom", JSON.stringify(c)); } catch (e) {}
+      window.__vcLoadCustomAnthem(c);
+    }
+  }
+  /* ----- rooms ----- */
+  function vcLoadRooms(){
+    return vcRest("/vc_rooms?select=*&order=sort_order").then(function(res){
+      if (vcMissing(res)){ vcBackend.rooms = false; return []; }
+      if (res.status !== 200 || !Array.isArray(res.body)) return [];
+      vcBackend.rooms = true;
+      res.body.forEach(function(r){ vcRoomsByName[r.name] = r; vcRoomIds[r.id] = r; });
+      return res.body;
+    }).catch(function(){ return []; });
+  }
+  /* ----- display names for message/post/shout authors (vc_profiles has no
+     FK from vc_messages, so batch-load by id and cache) ----- */
+  function vcNamesFor(userIds){
+    var missing = userIds.filter(function(id, i, a){ return a.indexOf(id) === i && !vcProfilesById[id]; });
+    if (!missing.length) return Promise.resolve();
+    return vcRest("/vc_profiles?id=in.(" + missing.join(",") + ")&select=id,display_name,handle,role").then(function(res){
+      if (res.status === 200 && Array.isArray(res.body)) res.body.forEach(function(p){ vcProfilesById[p.id] = p; });
+    }).catch(function(){});
+  }
+  /* ----- room chat: load latest 50 (oldest first), poll every 15s ----- */
+  function vcLoadMessages(roomName){
+    var room = vcRoomsByName[roomName];
+    if (!room) return Promise.resolve(false);
+    vcCurrentRoomId = room.id;
+    return vcRest("/vc_messages?room_id=eq." + room.id + "&select=*&order=created_at.desc&limit=50").then(function(res){
+      if (vcCurrentRoomId !== room.id) return false; /* user switched rooms while loading */
+      if (vcMissing(res)){ vcBackend.messages = false; vcSetupNote("messages", $("#chatForm"), [$("#chatInput"), $("#chatForm button[type=submit]")]); return false; }
+      if (res.status !== 200 || !Array.isArray(res.body)) return false;
+      vcBackend.messages = true;
+      var rows = res.body.slice().reverse();
+      return vcNamesFor(rows.map(function(m){ return m.user_id; })).then(function(){
+        if (vcCurrentRoomId !== room.id) return false;
+        var box = $("#chatMessages"); box.innerHTML = "";
+        if (!rows.length){
+          var empty = document.createElement("p");
+          empty.style.cssText = "color:var(--muted);font-size:.9rem;padding:8px 2px";
+          empty.textContent = "No messages yet — start the conversation.";
+          box.appendChild(empty);
+        }
+        rows.forEach(function(m){ vcAddChatBubble(m); });
+        if (rows.length) vcNewestMsgId = rows[rows.length - 1].id;
+        $("#chatTyping").textContent = "Live — messages from members in this room.";
+        var ol = $("#chatOnlineList"); if (ol) ol.innerHTML = "";
+        var pill = document.querySelector(".chat-stage .sample-pill"); if (pill) pill.textContent = "Live";
+        var oh = document.querySelector(".chat-online h4"); if (oh) oh.textContent = "In This Room";
+        var on = document.querySelector(".chat-online p"); if (on) on.textContent = "Live presence isn't tracked yet — the chat above is real.";
+        return true;
+      });
+    }).catch(function(){ return false; });
+  }
+  function vcAddChatBubble(m){
+    var p = vcProfilesById[m.user_id] || {};
+    var name = (vcUserId && m.user_id === vcUserId) ? "You" : (p.display_name || "Member");
+    addChatBubble(name, m.body, m.user_id === vcUserId);
+  }
+  function vcStartMsgPoll(){
+    if (vcMsgTimer) clearInterval(vcMsgTimer);
+    vcMsgTimer = setInterval(function(){
+      if (document.hidden || !vcCurrentRoomId || vcBackend.messages === false) return;
+      var room = vcRoomIds[vcCurrentRoomId];
+      if (!room) return;
+      vcRest("/vc_messages?room_id=eq." + room.id + "&select=*&order=created_at.desc&limit=50").then(function(res){
+        if (vcMissing(res)){ vcBackend.messages = false; return; }
+        if (res.status !== 200 || !Array.isArray(res.body) || !res.body.length) return;
+        if (res.body[0].id === vcNewestMsgId) return;
+        vcLoadMessages(room.name);
+      }).catch(function(){});
+    }, 15000);
+  }
+  function vcSendMessage(text){
+    if (!vcCurrentRoomId || !vcUserId) return Promise.resolve(false);
+    return vcRest("/vc_messages", "POST", { room_id: vcCurrentRoomId, user_id: vcUserId, body: text.slice(0, 1000) }, "return=representation").then(function(res){
+      if (vcMissing(res)){ vcBackend.messages = false; vcSetupNote("messages", $("#chatForm"), [$("#chatInput"), $("#chatForm button[type=submit]")]); return false; }
+      if (res.status === 201 || res.status === 200){ vcLoadMessages(vcRoomIds[vcCurrentRoomId].name); return true; }
+      return false;
+    }).catch(function(){ return false; });
+  }
+  /* ----- Night Feed: real posts above the labelled samples ----- */
+  function vcPostArticle(p){
+    var prof = vcProfilesById[p.user_id] || {};
+    var name = prof.display_name || "Member";
+    var role = prof.role || "The Scene";
+    var art = document.createElement("article");
+    art.className = "card post"; art.setAttribute("data-type", p.type || "night");
+    art.setAttribute("data-vc-post-id", p.id);
+    var liked = !!vcMyLikes[p.id], count = vcLikeCounts[p.id] || 0;
+    art.innerHTML = '<div class="post-head"><div class="avatar">' + initials(name) + '</div><div class="grow"><b></b><span></span></div></div><p class="post-body"></p><div class="post-actions"><button type="button" class="like-btn' + (liked ? " liked" : "") + '">♥ Like' + (count ? " (" + count + ")" : "") + '</button><button type="button">💬 Comment</button><button type="button">↗ Send To A Friend</button></div>';
+    art.querySelector(".post-head b").textContent = name + " · " + role;
+    art.querySelector(".post-head span").textContent = vcTimeAgo(p.created_at) + " · in The Night Feed";
+    art.querySelector(".post-body").textContent = p.body;
+    var lb = art.querySelector(".like-btn");
+    lb.addEventListener("click", function(){ vcToggleLike(p.id, lb); });
+    if (vcUserId && p.user_id !== vcUserId){
+      var fb = document.createElement("button");
+      fb.className = "follow-btn" + (vcMyFollows[p.user_id] ? " following" : "");
+      fb.type = "button";
+      fb.textContent = vcMyFollows[p.user_id] ? "Following" : "Follow";
+      fb.addEventListener("click", function(e){ e.stopPropagation(); vcToggleFollow(p.user_id, fb); });
+      art.querySelector(".post-head").appendChild(fb);
+    }
+    return art;
+  }
+  function vcLoadFeed(){
+    return vcRest("/vc_posts?select=*&order=created_at.desc&limit=20").then(function(res){
+      if (vcMissing(res)){ vcBackend.posts = false; vcSetupNote("posts", $("#feedList"), [$("#composerText"), $("#postBtn")]); return false; }
+      if (res.status !== 200 || !Array.isArray(res.body)) return false;
+      vcBackend.posts = true;
+      var rows = res.body;
+      return vcNamesFor(rows.map(function(p){ return p.user_id; })).then(function(){
+        return vcLoadLikes(rows.map(function(p){ return p.id; }));
+      }).then(function(){
+        return vcLoadMyFollows();
+      }).then(function(){
+        var list = $("#feedList");
+        var wrap = document.getElementById("vcRealFeed");
+        if (!wrap){ wrap = document.createElement("div"); wrap.id = "vcRealFeed"; wrap.style.cssText = "display:flex;flex-direction:column;gap:18px"; list.insertBefore(wrap, list.firstChild); }
+        wrap.innerHTML = "";
+        rows.forEach(function(p){ wrap.appendChild(vcPostArticle(p)); });
+        return true;
+      });
+    }).catch(function(){ return false; });
+  }
+  function vcLoadLikes(postIds){
+    if (!postIds.length) return Promise.resolve();
+    return vcRest("/vc_post_likes?post_id=in.(" + postIds.join(",") + ")&select=post_id,user_id&limit=500").then(function(res){
+      if (vcMissing(res)){ vcBackend.likes = false; return; }
+      if (res.status !== 200 || !Array.isArray(res.body)) return;
+      vcLikeCounts = {}; vcMyLikes = {};
+      res.body.forEach(function(l){
+        vcLikeCounts[l.post_id] = (vcLikeCounts[l.post_id] || 0) + 1;
+        if (l.user_id === vcUserId) vcMyLikes[l.post_id] = true;
+      });
+    }).catch(function(){});
+  }
+  function vcLoadMyFollows(){
+    return vcRest("/vc_follows?follower_id=eq." + vcUserId + "&select=following_id").then(function(res){
+      if (vcMissing(res)){ vcBackend.follows = false; return; }
+      if (res.status !== 200 || !Array.isArray(res.body)) return;
+      vcMyFollows = {};
+      res.body.forEach(function(f){ vcMyFollows[f.following_id] = true; });
+    }).catch(function(){});
+  }
+  function vcToggleLike(postId, btn){
+    if (!vcSession || vcBackend.likes === false) return;
+    if (vcMyLikes[postId]){
+      vcRest("/vc_post_likes?post_id=eq." + postId + "&user_id=eq." + vcUserId, "DELETE", null, "return=minimal").then(function(res){
+        if (res.status === 200 || res.status === 204){ delete vcMyLikes[postId]; vcLikeCounts[postId] = Math.max(0, (vcLikeCounts[postId] || 1) - 1); vcPaintLike(btn, postId); }
+      }).catch(function(){});
+    } else {
+      vcRest("/vc_post_likes", "POST", { post_id: postId, user_id: vcUserId }, "return=representation").then(function(res){
+        if (res.status === 201 || res.status === 200){ vcMyLikes[postId] = true; vcLikeCounts[postId] = (vcLikeCounts[postId] || 0) + 1; vcPaintLike(btn, postId); }
+      }).catch(function(){});
+    }
+  }
+  function vcPaintLike(btn, postId){
+    var liked = !!vcMyLikes[postId], count = vcLikeCounts[postId] || 0;
+    btn.classList.toggle("liked", liked);
+    btn.textContent = (liked ? "♥ Liked" : "♥ Like") + (count ? " (" + count + ")" : "");
+  }
+  function vcToggleFollow(userId, btn){
+    if (!vcSession || vcBackend.follows === false || userId === vcUserId) return;
+    if (vcMyFollows[userId]){
+      vcRest("/vc_follows?follower_id=eq." + vcUserId + "&following_id=eq." + userId, "DELETE", null, "return=minimal").then(function(res){
+        if (res.status === 200 || res.status === 204){ delete vcMyFollows[userId]; btn.classList.remove("following"); btn.textContent = "Follow"; }
+      }).catch(function(){});
+    } else {
+      vcRest("/vc_follows", "POST", { follower_id: vcUserId, following_id: userId }, "return=representation").then(function(res){
+        if (res.status === 201 || res.status === 200){ vcMyFollows[userId] = true; btn.classList.add("following"); btn.textContent = "Following"; }
+      }).catch(function(){});
+    }
+  }
+  function vcPublishPostReal(text, ptype){
+    return vcRest("/vc_posts", "POST", { user_id: vcUserId, body: text.slice(0, 2000), type: ptype }, "return=representation").then(function(res){
+      if (vcMissing(res)){ vcBackend.posts = false; vcSetupNote("posts", $("#feedList"), [$("#composerText"), $("#postBtn")]); return null; }
+      if (res.status === 201 || res.status === 200) return (res.body && res.body[0]) || { id: null, user_id: vcUserId, body: text, type: ptype, created_at: new Date().toISOString() };
+      return null;
+    }).catch(function(){ return null; });
+  }
+  /* ----- Shout Wall: real shouts above the labelled samples ----- */
+  function vcShoutEl(s){
+    var prof = vcProfilesById[s.user_id] || {};
+    var div = document.createElement("div");
+    div.className = "shout";
+    var b = document.createElement("b"); b.textContent = (s.user_id === vcUserId) ? "You" : (prof.display_name || "Member");
+    var sp = document.createElement("span"); sp.textContent = s.body;
+    div.appendChild(b); div.appendChild(sp);
+    return div;
+  }
+  function vcLoadShouts(){
+    return vcRest("/vc_shouts?select=*&order=created_at.desc&limit=30").then(function(res){
+      if (vcMissing(res)){ vcBackend.shouts = false; vcSetupNote("shouts", $("#shoutForm"), [$("#shoutText")]); return false; }
+      if (res.status !== 200 || !Array.isArray(res.body)) return false;
+      vcBackend.shouts = true;
+      var rows = res.body;
+      return vcNamesFor(rows.map(function(s){ return s.user_id; })).then(function(){
+        var list = $("#shoutList");
+        var wrap = document.getElementById("vcRealShouts");
+        if (!wrap){ wrap = document.createElement("div"); wrap.id = "vcRealShouts"; list.insertBefore(wrap, list.firstChild); }
+        wrap.innerHTML = "";
+        rows.forEach(function(s){ wrap.appendChild(vcShoutEl(s)); });
+        return true;
+      });
+    }).catch(function(){ return false; });
+  }
+  function vcPostShout(text){
+    var limit = (typeof vcTier !== "undefined" && vcTier === "verified") ? 280 : 140;
+    return vcRest("/vc_shouts", "POST", { user_id: vcUserId, body: text.slice(0, limit) }, "return=representation").then(function(res){
+      if (vcMissing(res)){ vcBackend.shouts = false; vcSetupNote("shouts", $("#shoutForm"), [$("#shoutText")]); return null; }
+      if (res.status === 201 || res.status === 200) return (res.body && res.body[0]) || { id: null, user_id: vcUserId, body: text, created_at: new Date().toISOString() };
+      return null;
+    }).catch(function(){ return null; });
+  }
+  /* Bridge for the shout form, which lives in the separate custom-anthem
+     script below: it cannot see this IIFE's locals. Sample crew / sample
+     post Follow buttons stay DOM-only — they have no real user id to
+     follow, and inventing a mapping would be fake data. */
+  window.__vcBackendAPI = {
+    signedIn: function(){ return !!vcSession; },
+    areaDown: function(a){ return vcBackend[a] === false; },
+    postShout: function(text){ return vcPostShout(text); },
+    shoutEl: function(s){ return vcShoutEl(s); },
+    cacheMe: function(){ if (vcProfile && vcUserId) vcProfilesById[vcUserId] = { id: vcUserId, display_name: vcProfile.display_name, handle: vcProfile.handle, role: vcProfile.role }; }
+  };
+  /* ----- registration: called from finishAccount() after a real signUp ----- */
+  function vcAfterRegister(info){
+    NocturnalAuth.getValidSession().then(function(s){
+      if (!s || !s.user) return;
+      vcSession = s; vcUserId = s.user.id;
+      vcLoadProfile().then(function(){
+        vcApplyProfile();
+        if (!vcProfile) return;
+        var pn = $("#profileNote");
+        if (pn) pn.textContent = "Profile 100% — your account is created and you're live on the real club.";
+        var rs = $("#regSuccessText");
+        if (rs && info) rs.textContent = info.name + " (" + info.handle + ") — " + info.role + " · " + info.city + (info.bio ? " · “" + info.bio + "”" : "") + (info.juiced ? " You're verified — Juiced Up member, so your subscriber version is on: the badge, your anthem, Top 16, the lot. Your posts and chats are live on the real club." : " Your account is created and you're signed in — your posts and chats are live on the real club.");
+      });
+    }).catch(function(){});
+  }
+  /* ----- boot: signed-in member only (gate already redirected others) ----- */
+  function vcInit(){
+    NocturnalAuth.getValidSession().then(function(s){
+      if (!s || !s.user) return;
+      vcSession = s; vcUserId = s.user.id;
+      vcLoadProfile().then(function(){
+        vcApplyProfile();
+        return vcLoadRooms();
+      }).then(function(){
+        return vcLoadMessages(currentRoom || "Bartender");
+      }).then(function(){
+        vcStartMsgPoll();
+        return vcLoadFeed();
+      }).then(function(){
+        return vcLoadShouts();
+      }).catch(function(){});
+    }).catch(function(){});
+  }
+  vcInit();
   function initials(name){
     return name.split(/\s+/).map(function(w){ return w.charAt(0); }).join("").slice(0,2).toUpperCase() || "?";
   }
@@ -1789,6 +2191,20 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
   function publishPost(){
     var ta = $("#composerText"), text = ta.value.trim();
     if (!text){ ta.focus(); return; }
+    if (vcSession && vcBackend.posts !== false){
+      var ptype = /^brief:/i.test(text) ? "brief" : (/live/i.test(text) ? "live" : "night");
+      vcPublishPostReal(text, ptype).then(function(pp){
+        if (!pp) return; /* backend down: setup note shown, composer disabled */
+        if (vcProfile && vcUserId) vcProfilesById[vcUserId] = { id: vcUserId, display_name: vcProfile.display_name, handle: vcProfile.handle, role: vcProfile.role };
+        var wrap = document.getElementById("vcRealFeed");
+        var art = vcPostArticle(pp);
+        if (wrap) wrap.insertBefore(art, wrap.firstChild);
+        else { var list = $("#feedList"); list.insertBefore(art, list.firstChild); }
+        ta.value = "";
+        art.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+      return;
+    }
     var name = myProfile ? myProfile.name : "You";
     var role = myProfile ? myProfile.role : "The Scene";
     var type = /^brief:/i.test(text) ? "brief" : (/live/i.test(text) ? "live" : "night");
@@ -1869,6 +2285,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
       $("#regSuccess").classList.add("show");
       juiceSay(isJuicedUp ? ("Your account is created, " + name.split(" ")[0] + ". You're verified — Juiced Up member, so your subscriber version is on: the badge, your anthem, Top 16, the lot. The Feed and rooms are an interactive preview for now — try a preview post below.") : ("Your account is created, " + name.split(" ")[0] + ". Your profile is set up — the Feed and rooms are an interactive preview for now, so posts and chats stay on this page. Want the verified badge and your anthem? That's Juice+ — say the word."));
       openJuice();
+      vcAfterRegister({ name: name, handle: handle, role: role, city: city, bio: bio, juiced: isJuicedUp });
     }
     NocturnalAuth.signUp(email, pass, meta).then(function(res){
       if (btn) btn.disabled = false;
@@ -2008,6 +2425,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
       list.appendChild(row);
     });
     $("#chatTyping").textContent = "Sample chatter is typing…";
+    if (vcSession && vcRoomsByName[room]) vcLoadMessages(room);
   }
   function addChatBubble(name, text, me){
     var b = document.createElement("div"); b.className = "chat-bubble" + (me ? " me" : "");
@@ -2028,6 +2446,13 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
   $("#chatForm").addEventListener("submit", function(e){
     e.preventDefault();
     var v = $("#chatInput").value.trim(); if(!v) return;
+    if (vcSession && vcCurrentRoomId && vcBackend.messages !== false){
+      $("#chatInput").value = "";
+      vcSendMessage(v).then(function(ok){
+        if (!ok && vcBackend.messages !== false) $("#chatTyping").textContent = "Couldn't send — check your connection and try again.";
+      });
+      return;
+    }
     $("#chatInput").value = "";
     addChatBubble("You — Guest Preview", v, true);
     $("#chatTyping").textContent = "Sample chatter is typing…";
@@ -2041,6 +2466,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
   var lineIdx = 0;
   setInterval(function(){
     if (document.hidden) return;
+    if (vcSession && vcBackend.messages && vcCurrentRoomId) return; /* live room: never inject sample chatter */
     var m = sampleLines[lineIdx % sampleLines.length]; lineIdx++;
     addChatBubble(m[0], m[1], false);
     var box = $("#chatMessages");
@@ -2064,10 +2490,13 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
       $$("#bgGrid .bg-swatch").forEach(function(x){ x.classList.remove("on"); });
       sw.classList.add("on");
       $("#profileCover").style.background = bgStyles[sw.getAttribute("data-bg")] || bgStyles.sunset;
+      vcSaveProfile({ background: sw.getAttribute("data-bg") });
     });
   });
   $("#accentColor").addEventListener("input", function(){
     $("#profilePreview").style.setProperty("--preview-accent", this.value);
+    clearTimeout(vcAccentT);
+    vcAccentT = setTimeout(function(){ var ac = $("#accentColor"); if (ac) vcSaveProfile({ accent: ac.value }); }, 800);
   });
 
   /* ---------- PROFILE ANTHEM: WebAudio sample loop + always-visible player ---------- */
@@ -2123,6 +2552,7 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
       $$("#anthemList .anthem-opt").forEach(function(x){ x.classList.remove("on"); });
       opt.classList.add("on");
       anthemTitle = opt.getAttribute("data-anthem");
+      vcSaveProfile({ anthem_title: anthemTitle, anthem_kind: "sample", anthem_src: null, anthem_artist: null, anthem_song: null });
       if (window.__vcClearCustom) window.__vcClearCustom();
       var short = anthemTitle.split(" — ")[0];
       $("#previewAnthemTitle").textContent = "Anthem: " + short;
@@ -2260,14 +2690,27 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
   function setCustom(c, persist){
     current = c;
     window.__vcCustomAnthem = { active: true, title: c.title };
+    if (window.__vcSaveAnthem) window.__vcSaveAnthem(c);
     $$("#anthemList .anthem-opt").forEach(function(x){ x.classList.remove("on"); });
     var pt = $("#previewAnthemTitle"); if (pt) pt.textContent = "Anthem: " + c.title.split(" — ")[0];
     var ft = $("#fixedAnthemTitle"); if (ft) ft.textContent = c.title;
     if (persist){ try { localStorage.setItem("vc-anthem-custom", JSON.stringify(c)); } catch (e) {} }
     window.__vcPlayCustom();
   }
+
+  /* Restore a profile-saved custom anthem without auto-playing (called by
+     the real-backend layer after profile load; play starts on user tap). */
+  window.__vcLoadCustomAnthem = function(c){
+    if (!c || !c.src) return;
+    current = c;
+    window.__vcCustomAnthem = { active: true, title: c.title };
+    var pt = $("#previewAnthemTitle"); if (pt) pt.textContent = "Anthem: " + c.title.split(" — ")[0];
+    var ft = $("#fixedAnthemTitle"); if (ft) ft.textContent = c.title;
+    if (statusEl) statusEl.textContent = "Your anthem is set: " + c.title + " — from your profile.";
+  };
   function clearCustomFull(){
     window.__vcClearCustom();
+    if (window.__vcClearProfileAnthem) window.__vcClearProfileAnthem();
     var first = document.querySelector("#anthemList .anthem-opt");
     if (first) first.classList.add("on");
     var ft = $("#fixedAnthemTitle"); if (ft) ft.textContent = "Neon Skyline — Sample Track by DJ Nova (Sample)";
@@ -2344,6 +2787,18 @@ footer{border-top:1px solid rgba(255,45,149,.35);box-shadow:0 -12px 32px rgba(25
     var text = (input.value || "").trim();
     if (!text) return;
     var list = $("#shoutList");
+    if (window.__vcBackendAPI && window.__vcBackendAPI.signedIn() && !window.__vcBackendAPI.areaDown("shouts")){
+      input.value = "";
+      window.__vcBackendAPI.postShout(text).then(function(s){
+        if (!s) return;
+        window.__vcBackendAPI.cacheMe();
+        var wrap = document.getElementById("vcRealShouts");
+        var el = window.__vcBackendAPI.shoutEl(s);
+        if (wrap) wrap.insertBefore(el, wrap.firstChild);
+        else if (list) list.insertBefore(el, list.firstChild);
+      });
+      return;
+    }
     var div = document.createElement("div");
     div.className = "shout";
     var b = document.createElement("b"); b.textContent = "You";
