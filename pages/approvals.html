@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Nocturnal Approvals — Draft, Approve, Publish</title>
+<!--
+  Nocturnal Approvals — HeyOrca-style approval flow, built in-house on the $0 stack.
+  - A post is staged (owner board below), and gets a share link: approvals.html?t=<token>
+  - Anyone with the link sees that ONE post's preview and can Approve or Request
+    changes. No login, no account. The link IS the credential, like HeyOrca's
+    shareable calendar link.
+  - The owner board lists every item with its status. Owner sign-in required.
+  - Backend: Supabase table post_approvals + token-checked decide_approval() RPC.
+    Run hidden_files/supabase-post-approvals.sql in the Supabase dashboard.
+    Until then this page degrades honestly: the real flyer draft shows as a
+    preview with decisions disabled, and nothing is presented as saved.
+  - Raw fetch() to Supabase REST, same style as Viral Club — no CDN, no
+    supabase-js, the page stays self-contained. The anon key below is public
+    by design; Row Level Security decides what it can read. The service key
+    is NEVER in this page.
+-->
+<style>
+*{box-sizing:border-box}
+body{font-family:Manrope,system-ui,sans-serif;max-width:860px;margin:0 auto;padding:1.25rem 1rem 3rem;background:#08080d;color:#f4f2ee}
+h1{font-family:Anton,Impact,sans-serif;font-size:2rem;letter-spacing:.04em;color:#fff;margin:.25rem 0}
+h2{font-family:Bebas Neue,Impact,sans-serif;font-size:1.4rem;letter-spacing:.06em;color:#ffd75e;margin:1.5rem 0 .5rem}
+p{line-height:1.55}
+a{color:#ffd75e}
+.sub{color:#bbb;margin-top:0}
+.gold{color:#ffd75e}.pink{color:#ff2e88}
+.card{background:#101018;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:1rem;margin:1rem 0}
+.card img{width:100%;border-radius:12px;display:block}
+.caption{white-space:pre-wrap;font-size:.95rem}
+.meta{color:#bbb;font-size:.85rem;margin:.5rem 0}
+.chip{display:inline-block;padding:.2rem .6rem;border-radius:999px;font-size:.8rem;font-weight:800}
+.chip.awaiting{background:#ffd75e;color:#111}
+.chip.approved{background:#3c3;color:#061}
+.chip.changes{background:#ff2e88;color:#fff}
+.btn{display:inline-block;border:0;border-radius:999px;padding:.6rem 1.1rem;font-weight:800;font-family:Manrope,sans-serif;cursor:pointer;margin:.25rem .25rem .25rem 0}
+.btn.approve{background:#ffd75e;color:#111}
+.btn.changes{background:transparent;color:#ff2e88;border:1px solid #ff2e88}
+.btn.ghost{background:rgba(255,255,255,.09);color:#f4f2ee}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{width:100%;background:#0b0b14;color:#f4f2ee;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:.6rem;margin:.3rem 0 .8rem;font-family:Manrope,sans-serif;font-size:.95rem}
+label{font-size:.85rem;font-weight:700;color:#bbb}
+.filters{margin:.5rem 0}
+.filters .btn{padding:.4rem .9rem;font-size:.85rem}
+.filters .btn.on{background:#ffd75e;color:#111}
+.note{border:1px dashed rgba(255,255,255,.35);border-radius:12px;padding:.8rem 1rem;color:#bbb;font-size:.9rem;margin:1rem 0}
+.note b{color:#ffd75e}
+.linkbox{background:#0b0b14;border:1px solid #ffd75e;border-radius:10px;padding:.6rem .8rem;word-break:break-all;font-size:.9rem;margin:.5rem 0}
+.hidden{display:none}
+.decided{border:1px solid #3c3}
+</style>
+</head>
+<body>
+<h1>NOCTURNAL <span class="gold">APPROVALS</span></h1>
+<p class="sub">Draft it. Share the link. They approve it. Then it publishes. No login needed on the link — the link is the approval.</p>
+
+<div id="setupNote" class="note hidden"><b>Approvals backend is being set up.</b> <span id="setupText">The approval table is not live yet — run the SQL in the Supabase dashboard and this page will start saving decisions.</span> What you see below is a preview only; decisions are disabled until the backend connects.</div>
+
+<div id="signinNote" class="note hidden">This board is owner-only. <a href="../login.html">Sign in as owner</a> to stage posts and decide here. If someone sent you an approval link, open that link — no sign-in needed.</div>
+
+<!-- CLIENT VIEW: one post, one decision -->
+<div id="clientView" class="hidden">
+  <h2>YOUR APPROVAL IS NEEDED</h2>
+  <div id="clientCard"></div>
+</div>
+
+<!-- OWNER BOARD -->
+<div id="boardView" class="hidden">
+  <h2>APPROVAL BOARD</h2>
+  <div class="filters" id="filters">
+    <button class="btn ghost on" data-f="all">All</button>
+    <button class="btn ghost" data-f="awaiting">Awaiting</button>
+    <button class="btn ghost" data-f="approved">Approved</button>
+    <button class="btn ghost" data-f="changes">Changes requested</button>
+  </div>
+  <div id="board"></div>
+
+  <h2>STAGE A POST FOR APPROVAL</h2>
+  <div class="card">
+    <label>Title</label>
+    <input id="fTitle" placeholder="e.g. Venue Post — Slot 3, Roles Showcase">
+    <label>Caption (exact text that will publish)</label>
+    <textarea id="fCaption" rows="4" placeholder="Paste the exact caption…"></textarea>
+    <label>Channel</label>
+    <select id="fChannel">
+      <option>Nocturnal Page</option>
+      <option>Juiced Up Page</option>
+      <option>Instagram — @nocturnalstaffing</option>
+      <option>Instagram — @juicedup_promo</option>
+      <option>Talent hiring — all channels</option>
+    </select>
+    <label>Image URL (optional — file name in /pages/ or full link)</label>
+    <input id="fImage" placeholder="e.g. nocturnal-hiring-flyer-v1.png">
+    <label>Scheduled for (optional)</label>
+    <input id="fWhen" type="datetime-local">
+    <label>Venues tagged (optional, comma separated)</label>
+    <input id="fVenues" placeholder="e.g. Briny Irish Pub, Galuppi's">
+    <button class="btn approve" id="stageBtn">Stage post + get approval link</button>
+    <div id="stageResult"></div>
+  </div>
+</div>
+
+<script>
+var REST = "https://mkyrzikeqpqncgemlsds.supabase.co/rest/v1";
+var ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1reXJ6aWtlcXBxbmNnZW1sc2RzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzNjU0MjcsImV4cCI6MjEwNzk0MTQyN30.N1v7Ndd8hjDDkYCzu5kvQU3St3_mkzNpxwlZVy_SD4g";
+var STORE = "nocturnal-auth-v1";
+var backendLive = null, session = null, isOwner = false, filter = "all", boardRows = [];
+
+/* The one real draft awaiting approval right now (Nov 28, 2026). Shown as a
+   labelled preview ONLY while the backend is down — never presented as saved. */
+var SEED_PREVIEW = {
+  title: "Talent Hiring Flyer v1 — NOW HIRING",
+  caption: "NOCTURNAL STAFFING AGENCY — NOW HIRING — BARTENDERS & DOOR STAFF ONLY. Bartenders, Friday & Saturday nights. Door Staff, Lakeland + Winter Haven. No experience needed. We will train. Register in minutes. (863) 288-0341 — nocturnalstaffing.com",
+  image_url: "nocturnal-hiring-flyer-v1.png",
+  channel: "Talent hiring — all channels",
+  scheduled_for: null, venues: [], status: "awaiting"
+};
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function fmtTime(iso){ if(!iso) return "Not scheduled — draft awaiting approval"; var d = new Date(iso); return isNaN(d) ? "Not scheduled" : d.toLocaleString("en-US", {weekday:"short", month:"short", day:"numeric", hour:"numeric", minute:"2-digit"}); }
+function chip(st){ var m = {awaiting:"AWAITING APPROVAL", approved:"APPROVED", changes:"CHANGES REQUESTED"}; return '<span class="chip ' + st + '">' + (m[st] || st.toUpperCase()) + '</span>'; }
+
+function rest(path, method, body, auth){
+  var h = {"apikey": ANON, "Authorization": "Bearer " + (auth || ANON), "Content-Type": "application/json"};
+  var o = {method: method || "GET", headers: h};
+  if (body !== undefined && body !== null) o.body = JSON.stringify(body);
+  return fetch(REST + path, o).then(function(r){
+    return r.text().then(function(t){ var j = null; try { j = JSON.parse(t); } catch(e){} return {status: r.status, body: j, text: t}; });
+  });
+}
+function missing(res){
+  if (!res) return true;
+  if (res.status === 404) return true;
+  var b = res.body || {};
+  if (b.code === "PGRST205" || b.code === "PGRST204") return true;
+  if (typeof b.message === "string" && /relation .* does not exist|Could not find the table|Could not find the function/i.test(b.message)) return true;
+  return false;
+}
+function readSession(){
+  try { var s = JSON.parse(localStorage.getItem(STORE) || "null"); return (s && s.access_token) ? s : null; } catch(e){ return null; }
+}
+function checkOwner(){
+  session = readSession();
+  if (!session) return Promise.resolve(false);
+  return fetch("https://mkyrzikeqpqncgemlsds.supabase.co/auth/v1/user", {headers: {"apikey": ANON, "Authorization": "Bearer " + session.access_token}})
+    .then(function(r){ return r.json(); })
+    .then(function(u){
+      var m = (u && u.user_metadata) || {};
+      isOwner = (m.owner === true) || (Array.isArray(m.lanes) && m.lanes.indexOf("owner") !== -1);
+      return isOwner;
+    }).catch(function(){ return false; });
+}
+function newToken(){
+  var a = new Uint8Array(18); crypto.getRandomValues(a);
+  return btoa(String.fromCharCode.apply(null, a)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function shareLink(token){ return location.origin + location.pathname + "?t=" + token; }
+
+function cardHTML(row, mode){
+  var decided = row.status !== "awaiting";
+  var venues = (row.venues || []).join(", ");
+  var h = '<div class="card' + (decided ? " decided" : "") + '">';
+  if (row.image_url) h += '<img src="' + esc(row.image_url) + '" alt="">';
+  h += '<h2 style="margin:.6rem 0 .2rem">' + esc(row.title) + '</h2>';
+  h += '<div>' + chip(row.status) + '</div>';
+  h += '<p class="caption">' + esc(row.caption) + '</p>';
+  h += '<p class="meta">' + esc(row.channel) + ' · ' + esc(fmtTime(row.scheduled_for)) + (venues ? ' · Tags: ' + esc(venues) : '') + '</p>';
+  if (decided){
+    h += '<p class="meta">Decided ' + esc(fmtTime(row.decided_at)) + (row.reviewer_comment ? ' — “' + esc(row.reviewer_comment) + '”' : '') + '</p>';
+  }
+  if (mode === "client" && !decided){
+    h += '<label>Comment (required if requesting changes)</label><textarea id="cComment" rows="2" placeholder="Anything to change?"></textarea>';
+    h += '<button class="btn approve" onclick="decide(\'' + esc(row.token) + '\', \'approved\')">Approve — good to publish</button>';
+    h += '<button class="btn changes" onclick="decide(\'' + esc(row.token) + '\', \'changes\')">Request changes</button>';
+  }
+  if (mode === "board" && isOwner){
+    h += '<button class="btn ghost" onclick="copyLink(\'' + esc(row.token) + '\')">Copy approval link</button>';
+    if (!decided){
+      h += '<button class="btn approve" onclick="decide(\'' + esc(row.token) + '\', \'approved\')">Approve</button>';
+      h += '<button class="btn changes" onclick="decide(\'' + esc(row.token) + '\', \'changes\', true)">Request changes</button>';
+    }
+  }
+  if (mode === "board" && !isOwner){
+    h += '<button class="btn ghost" onclick="copyLink(\'' + esc(row.token) + '\')">Copy approval link</button>';
+  }
+  h += '</div>';
+  return h;
+}
+function copyLink(token){
+  var link = shareLink(token);
+  if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(link); }
+  else { prompt("Approval link — copy it:", link); }
+  alert("Approval link copied:\n" + link);
+}
+function decide(token, status, askComment){
+  var comment = "";
+  var box = $("cComment");
+  if (box) comment = box.value.trim();
+  if (status === "changes" && !comment){
+    if (askComment){ comment = prompt("What should change?") || ""; if (!comment) return; }
+    else { alert("Tell us what should change first — add a comment, then tap Request changes."); return; }
+  }
+  rest("/rpc/decide_approval", "POST", {p_token: token, p_status: status, p_comment: comment}).then(function(res){
+    if (missing(res)){ showSetup(); return; }
+    if (res.status !== 200){ alert("That decision did not save. The link may have already been decided — refresh and check the status."); return; }
+    loadView();
+  }).catch(function(){ alert("Connection problem — decision not saved. Try again."); });
+}
+window.decide = decide; window.copyLink = copyLink;
+
+function renderBoard(){
+  var rows = boardRows.filter(function(r){ return filter === "all" || r.status === filter; });
+  if (!rows.length){ $("board").innerHTML = '<div class="note">Nothing here yet. Stage a post below and its approval link will appear here.</div>'; return; }
+  $("board").innerHTML = rows.map(function(r){ return cardHTML(r, "board"); }).join("");
+}
+function loadBoard(){
+  return rest("/post_approvals?select=*&order=created_at.desc").then(function(res){
+    if (missing(res)){ backendLive = false; showSetup(); renderSeedPreview(); return; }
+    backendLive = true;
+    if (res.status === 200 && Array.isArray(res.body)){ boardRows = res.body; renderBoard(); }
+  }).catch(function(){ backendLive = false; showSetup(); renderSeedPreview(); });
+}
+function renderSeedPreview(){
+  $("board").innerHTML = cardHTML(SEED_PREVIEW, "board") +
+    '<div class="note">Preview only — the backend is not connected yet, so this decision is not saved. Run the SQL in the Supabase dashboard and refresh.</div>';
+}
+function showSetup(){ $("setupNote").classList.remove("hidden"); }
+
+function loadClient(token){
+  return rest("/post_approvals?token=eq." + encodeURIComponent(token) + "&select=*").then(function(res){
+    if (missing(res)){ backendLive = false; showSetup(); $("clientCard").innerHTML = cardHTML(SEED_PREVIEW, "client") + '<div class="note">Preview only — backend not connected yet.</div>'; return; }
+    backendLive = true;
+    var row = (res.body && res.body[0]) || null;
+    if (!row){ $("clientCard").innerHTML = '<div class="note">That approval link was not found. Ask the sender for a fresh link.</div>'; return; }
+    $("clientCard").innerHTML = cardHTML(row, "client");
+    if (row.status !== "awaiting"){
+      $("clientCard").innerHTML += '<div class="note">This post was already decided: <b>' + esc(row.status) + '</b>. No further action needed.</div>';
+    }
+  }).catch(function(){ backendLive = false; showSetup(); $("clientCard").innerHTML = cardHTML(SEED_PREVIEW, "client"); });
+}
+function loadView(){
+  var params = new URLSearchParams(location.search);
+  var token = params.get("t");
+  if (token){ $("clientView").classList.remove("hidden"); loadClient(token); return; }
+  checkOwner().then(function(ok){
+    if (!ok){ $("signinNote").classList.remove("hidden"); }
+    $("boardView").classList.remove("hidden");
+    loadBoard();
+  });
+}
+
+$("filters").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if (!b) return;
+  filter = b.getAttribute("data-f");
+  Array.prototype.forEach.call($("filters").children, function(x){ x.classList.toggle("on", x === b); });
+  renderBoard();
+});
+$("stageBtn").addEventListener("click", function(){
+  if (!isOwner || !session){ alert("Sign in as owner to stage a post."); return; }
+  var title = $("fTitle").value.trim(), caption = $("fCaption").value.trim();
+  if (!title || !caption){ alert("Title and caption are both needed."); return; }
+  var token = newToken();
+  var row = {
+    token: token, title: title, caption: caption,
+    image_url: $("fImage").value.trim(),
+    channel: $("fChannel").value,
+    scheduled_for: $("fWhen").value ? new Date($("fWhen").value).toISOString() : null,
+    venues: $("fVenues").value.split(",").map(function(s){ return s.trim(); }).filter(Boolean),
+    status: "awaiting"
+  };
+  rest("/post_approvals", "POST", row, session.access_token).then(function(res){
+    if (missing(res)){ showSetup(); return; }
+    if (res.status !== 201){ alert("Could not stage that post. Check the fields and try again."); return; }
+    $("stageResult").innerHTML = '<p>Staged. Send this link for approval:</p><div class="linkbox">' + esc(shareLink(token)) + '</div><button class="btn ghost" onclick="copyLink(\'' + esc(token) + '\')">Copy link</button>';
+    $("fTitle").value = ""; $("fCaption").value = ""; $("fImage").value = ""; $("fWhen").value = ""; $("fVenues").value = "";
+    loadBoard();
+  }).catch(function(){ alert("Connection problem — post not staged. Try again."); });
+});
+
+loadView();
+</script>
+</body>
+</html>
